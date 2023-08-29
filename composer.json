@@ -1,7 +1,7 @@
 {
-  "name": "jumprock_packages/image-handling",
+  "name": "jumprock_packages/avacy",
   "type": "wordpress-muplugin",
-  "description": "Bundle of Depencies for handling images in WP projects",
+  "description": "Bundle of Dependencies for handling images in WP projects",
   "homepage": "http://jumpgroup.it",
   "repositories": [
     {
@@ -10,15 +10,11 @@
     }
   ],
   "require": {
-    "php": ">=7.4",
-    "aws/aws-sdk-php": "^3",
-    "humanmade/s3-uploads": "^3",
-    "wpackagist-plugin/clean-image-filenames": "^1",
-    "wpackagist-plugin/performance-lab":"^2"
+    "php": ">=7.4"
   },
   "autoload": {
     "psr-4": {
-      "JumpGroup\\ImageHanding\\": "src/"
+      "Jumpgroup\\Avacy\\": "src/"
     }
   }
 }
