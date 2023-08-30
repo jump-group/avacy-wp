@@ -22,12 +22,11 @@ class ConsentSolutionLogger
 
   public static function send(ConsentForm $form)
   {
-
-    $data = $form->getData();
+    $payload = $form->getPayload();
     // Headers for the request
     $headers = array(
       'Accept'        => 'application/json',
-      'Authorization' => 'Bearer 78|h0XmJRkfkTtsclrNIhVBOKJ88ESl2cqbkTcd12Hg',
+      'Authorization' => 'Bearer 104|YvitpPnFFOzVTUKkn72dXilwyveVew0gzo7xsAsJ',
     );
 
     // API endpoint URL
@@ -37,10 +36,12 @@ class ConsentSolutionLogger
     $args = array(
       'method'      => 'POST',
       'headers'     => $headers,
-      'body'        => $data,
+      'body'        => $payload,
     );
 
-    // Make the POST request using wp_remote_request()
+    // print_r($args); die();
     wp_remote_request($url, $args);
+    // Make the POST request using wp_remote_request()
+    
   }
 }
