@@ -3,6 +3,7 @@
 namespace Jumpgroup\Avacy;
 
 use Jumpgroup\Avacy\FormPlugins\ContactForm7;
+use Jumpgroup\Avacy\FormPlugins\WooCommerceCheckoutForm;
 
 class ConsentSolutionLogger
 {
@@ -14,6 +15,8 @@ class ConsentSolutionLogger
   private static function registerFormListeners()
   {
     ContactForm7::listen();
+    WooCommerceCheckoutForm::listen();
+
     // listener 2
     // listener 3
     // listener 4

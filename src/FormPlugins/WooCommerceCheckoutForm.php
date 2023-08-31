@@ -11,13 +11,15 @@ class WooCommerceCheckoutForm implements FormPlugin
 
     public static function listen() : void
     {
-        add_action('woocommerce_checkout_order_processed', [__CLASS__, 'sendFormData']);
+        add_action('woocommerce_thankyou', [__CLASS__, 'sendFormData']);
     }
 
     public static function convertToConsentForm($order_id) : ConsentForm
     {
         $order = wc_get_order($order_id);
 
+        $email = $order->get_billing_email();
+        $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
         $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $proofs = json_encode('<html>...</html>');
@@ -41,8 +43,8 @@ class WooCommerceCheckoutForm implements FormPlugin
         ];
 
         return new ConsentForm(
-            name: '',
-            mail: '',
+            name: $name,
+            mail: $email,
             identifier: $identifier,
             ipAddress: $ipAddress,
             proofs: $proofs,
