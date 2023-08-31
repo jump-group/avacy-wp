@@ -40,8 +40,8 @@ class ConsentForm
             'identifier' => $this->identifier,
             'ip_address' => $this->ipAddress,
             'proofs' => $this->proofs,
-            'legal_notices' => json_encode($this->legalNotices),
-            'preferences' => json_encode($this->preferences)
+            'legal_notices' => $this->legalNotices,
+            'preferences' => $this->preferences
         ];
     }
 }
