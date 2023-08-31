@@ -20,7 +20,7 @@ class ContactForm7 implements FormPlugin
         $submission = WPCF7_Submission::get_instance();
         $posted_data = $submission->get_posted_data();
 
-        $identifier = 'email'; // TODO: get identifier from settings
+        $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $proofs = json_encode($contact_form->form);
 

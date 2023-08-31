@@ -23,14 +23,18 @@ class ConsentSolutionLogger
   public static function send(ConsentForm $form)
   {
     $payload = $form->getPayload();
+    $apiToken = get_option('avacy_api_token');
+    $tenant = get_option('avacy_tenant');
+    $webspaceId = get_option('avacy_webspace_id');
+
     // Headers for the request
     $headers = array(
       'Accept'        => 'application/json',
-      'Authorization' => 'Bearer 104|YvitpPnFFOzVTUKkn72dXilwyveVew0gzo7xsAsJ',
+      'Authorization' => $apiToken,
     );
 
     // API endpoint URL
-    $url = 'https://api.avacy.eu/jumpgroup/domains_groups/23/consents';
+    $url = 'https://api.avacy.eu/' . $tenant . '/domains_groups/' . $webspaceId . '/consents';
 
     // Set the arguments for the POST request
     $args = array(
