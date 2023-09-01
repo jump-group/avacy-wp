@@ -18,11 +18,23 @@ class WooCommerceCheckoutForm implements FormPlugin
     {
         $order = wc_get_order($order_id);
 
+        ob_start();
+
+        wc_get_template(
+            'checkout/form-checkout.php',
+            array(
+                'checkout' => wc()->checkout(),
+            )
+        );
+
+        $checkoutForm = ob_get_contents();
+        ob_end_clean();
+
         $email = $order->get_billing_email();
         $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
         $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
-        $proofs = json_encode('<html>...</html>');
+        $proofs = json_encode($checkoutForm);
 
         // TODO: get legal notices from settings
         $legalNotices = [
