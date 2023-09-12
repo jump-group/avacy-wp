@@ -33,7 +33,7 @@ class ConsentSolutionLogger
     // Headers for the request
     $headers = array(
       'Accept'        => 'application/json',
-      'Authorization' => $apiToken,
+      'Authorization' => 'Bearer ' . $apiToken,
     );
 
     // API endpoint URL
