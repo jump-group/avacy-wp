@@ -1,0 +1,23 @@
+/* Stile per la tabella */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* Stile per le celle della tabella */
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+
+/* Nascondi il contenuto del dettaglio per default */
+details[open] > div {
+    display: block;
+}
+
+/* Nascondi le frecce del dettaglio */
+summary::-webkit-details-marker {
+    display: none;
+}

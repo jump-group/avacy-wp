@@ -10,7 +10,8 @@ License:      MIT License
 
 namespace Jumpgroup\Avacy;
 
-use Jumpgroup\Avacy\ConsentSolutionLogger;
+use Jumpgroup\Avacy\SendFormsToConsentSolution;
+use Jumpgroup\Avacy\AddAdminInterface;
 
 if (!defined('WPINC')) {
   die;
@@ -31,7 +32,8 @@ class Init
 
   protected function __construct()
   {
-    ConsentSolutionLogger::init();
+    SendFormsToConsentSolution::init();
+    AddAdminInterface::init();
   }
 }
 
