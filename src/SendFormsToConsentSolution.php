@@ -2,10 +2,10 @@
 
 namespace Jumpgroup\Avacy;
 
-use Jumpgroup\Avacy\FormPlugins\ContactForm7;
-use Jumpgroup\Avacy\FormPlugins\WooCommerceCheckoutForm;
+use Jumpgroup\Avacy\Integrations\ContactForm7;
+use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 
-class ConsentSolutionLogger
+class SendFormsToConsentSolution
 {
   public static function init()
   {
@@ -23,7 +23,7 @@ class ConsentSolutionLogger
     // ...
   }
 
-  public static function send(ConsentForm $form)
+  public static function send(FormSubmission $form)
   {
     $payload = $form->getPayload();
     $apiToken = get_option('avacy_api_token');

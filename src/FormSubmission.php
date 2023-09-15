@@ -2,10 +2,9 @@
 
 namespace Jumpgroup\Avacy;
 
-class ConsentForm
+class FormSubmission
 {
-    private string $name;
-    private string $mail;
+    private array $fields;
     private string $identifier;
     private string $ipAddress;
     private string $proofs;
@@ -13,16 +12,14 @@ class ConsentForm
     private array $preferences;
 
     public function __construct(
-        $name,
-        $mail,
+        $fields,
         $identifier,
         $ipAddress,
         $proofs,
         $legalNotices,
         $preferences
     ) {
-        $this->name = $name;
-        $this->mail = $mail;
+        $this->fields = $fields;
         $this->identifier = $identifier;
         $this->ipAddress = $ipAddress;
         $this->proofs = $proofs;
@@ -33,10 +30,7 @@ class ConsentForm
     public function getPayload(): array
     {
         return [
-            'subject' => [
-                'email' => $this->mail,
-                'name' => $this->name,
-            ],
+            'subject' => $this->fields,
             'identifier' => $this->identifier,
             'ip_address' => $this->ipAddress,
             'proofs' => $this->proofs,
