@@ -1,12 +1,12 @@
 <?php
 
-namespace Jumpgroup\Avacy\FormPlugins;
+namespace Jumpgroup\Avacy\Integrations;
 
-use Jumpgroup\Avacy\Interfaces\FormPlugin;
-use Jumpgroup\Avacy\ConsentSolutionLogger;
-use Jumpgroup\Avacy\ConsentForm;
+use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\SendFormsToConsentSolution;
+use Jumpgroup\Avacy\FormSubmission;
 
-class WooCommerceCheckoutForm implements FormPlugin
+class WooCommerceCheckoutForm implements Integration
 {
 
     public static function listen() : void
@@ -14,10 +14,8 @@ class WooCommerceCheckoutForm implements FormPlugin
         add_action('woocommerce_thankyou', [__CLASS__, 'sendFormData']);
     }
 
-    public static function convertToConsentForm($order_id) : ConsentForm
+    public static function convertToFormSubmission($order_id) : FormSubmission
     {
-        $order = wc_get_order($order_id);
-
         ob_start();
 
         wc_get_template(
@@ -30,11 +28,10 @@ class WooCommerceCheckoutForm implements FormPlugin
         $checkoutForm = ob_get_contents();
         ob_end_clean();
 
-        $email = $order->get_billing_email();
-        $name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
         $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $proofs = json_encode($checkoutForm);
+        $fields = []; // TODO: get fields using woocommerce api and/or hooks
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -54,9 +51,8 @@ class WooCommerceCheckoutForm implements FormPlugin
             ]
         ];
 
-        return new ConsentForm(
-            name: $name,
-            mail: $email,
+        return new FormSubmission(
+            fields: $fields,
             identifier: $identifier,
             ipAddress: $ipAddress,
             proofs: $proofs,
@@ -67,7 +63,13 @@ class WooCommerceCheckoutForm implements FormPlugin
 
     public static function sendFormData($order_id) : void
     {
-        $form = self::convertToConsentForm($order_id);
-        ConsentSolutionLogger::send($form);
+        $form = self::convertToFormSubmission($order_id);
+        SendFormsToConsentSolution::send($form);
+    }
+
+    public static function detectAllForms(): array {
+        
+
+        return [];
     }
 }
