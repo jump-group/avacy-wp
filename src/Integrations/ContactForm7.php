@@ -112,7 +112,7 @@ class ContactForm7 implements Integration
     private static function getFields() {
         $options = wp_load_alloptions();
         $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_') === 0;
+            return strpos($key, 'avacy_form_field_wpcf7_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
