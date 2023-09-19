@@ -2,6 +2,11 @@
 
 namespace Jumpgroup\Avacy;
 
+use Jumpgroup\Avacy\Integrations\ContactForm7;
+use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
+use Jumpgroup\Avacy\Integrations\WpForms;
+use WP;
+
 class AddAdminInterface
 {
   public static function init()
@@ -48,15 +53,16 @@ class AddAdminInterface
   }
 
   public static function detectAllForms() {
-    $cf7Forms = \Jumpgroup\Avacy\Integrations\ContactForm7::detectAllForms();
+    $cf7Forms = ContactForm7::detectAllForms();
 
     // wcForms
+    $wcForms = WooCommerceCheckoutForm::detectAllForms();
 
-    // wpCommentsForms
+    // wpPosts
+    $wpForms = WpForms::detectAllForms();
 
     // etc. etc.
-
-    return $cf7Forms;
+    return array_merge($cf7Forms, $wcForms, $wpForms);
   }
 
 }
