@@ -27,7 +27,7 @@ settings_fields('avacy-plugin-settings-group'); ?>
             </tr>
         </table>
 
-        <?php $cf7Forms = AddAdminInterface::detectAllForms(); ?>
+        <?php $forms = AddAdminInterface::detectAllForms(); ?>
         <h2>Moduli</h2>
         <table>
             <thead>
@@ -38,7 +38,7 @@ settings_fields('avacy-plugin-settings-group'); ?>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($cf7Forms as $form) : ?>
+                <?php foreach ($forms as $form) : ?>
                     <tr>
                         <td><?php echo $form->getId(); ?></td>
                         <td><?php echo $form->getType(); ?></td>
