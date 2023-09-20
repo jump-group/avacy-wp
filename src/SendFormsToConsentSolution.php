@@ -3,6 +3,7 @@
 namespace Jumpgroup\Avacy;
 
 use Jumpgroup\Avacy\Integrations\ContactForm7;
+use Jumpgroup\Avacy\Integrations\ElementorForms;
 use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 use Jumpgroup\Avacy\Integrations\WpForms;
 
@@ -18,6 +19,7 @@ class SendFormsToConsentSolution
     ContactForm7::listen();
     WooCommerceCheckoutForm::listen();
     WpForms::listen();
+    ElementorForms::listen();
 
     // listener 2
     // listener 3
