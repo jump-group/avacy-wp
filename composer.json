@@ -11,11 +11,43 @@
   ],
   "require": {
     "php": ">=7.4",
-    "spatie/ray": "^1.37"
+    "spatie/ray": "^1.37",
+    "composer/installers": "~1.0"
   },
   "autoload": {
     "psr-4": {
       "Jumpgroup\\Avacy\\": "src/"
+    }
+  },
+  "extra": {
+    "mozart": {
+      "dep_namespace": "Jumpgroup\\Avacy\\Dependencies\\",
+      "dep_directory": "/src/Dependencies/",
+      "classmap_directory": "/classes/dependencies/",
+      "classmap_prefix": "Avacy_",
+      "packages": [
+      ],
+      "excluded_packages": [
+          "psr/container"
+      ],
+      "override_autoload": {
+          "google/apiclient": {
+              "classmap": [
+                  "src/"
+              ]
+          }
+      },
+      "delete_vendor_directories": true,
+      "scripts": {
+        "post-install-cmd": [
+            "\"vendor/bin/mozart\" compose",
+            "composer dump-autoload"
+        ],
+        "post-update-cmd": [
+            "\"vendor/bin/mozart\" compose",
+            "composer dump-autoload"
+        ]
+      }
     }
   }
 }
