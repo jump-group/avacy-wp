@@ -11,8 +11,7 @@
   ],
   "require": {
     "php": ">=7.4",
-    "spatie/ray": "^1.37",
-    "composer/installers": "~1.0"
+    "spatie/ray": "^1.37"
   },
   "autoload": {
     "psr-4": {
