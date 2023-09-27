@@ -21,10 +21,6 @@ class SendFormsToConsentSolution
     WpForms::listen();
     ElementorForms::listen();
 
-    // listener 2
-    // listener 3
-    // listener 4
-    // ...
   }
 
   public static function send(FormSubmission $form)
