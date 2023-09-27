@@ -6,6 +6,7 @@ use Jumpgroup\Avacy\Integrations\ContactForm7;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
 use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 use Jumpgroup\Avacy\Integrations\WpForms;
+use Jumpgroup\Avacy\Integrations\HtmlForms;
 
 class SendFormsToConsentSolution
 {
@@ -20,6 +21,7 @@ class SendFormsToConsentSolution
     WooCommerceCheckoutForm::listen();
     WpForms::listen();
     ElementorForms::listen();
+    HtmlForms::listen();
 
   }
 

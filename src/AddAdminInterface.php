@@ -3,6 +3,7 @@
 namespace Jumpgroup\Avacy;
 
 use Jumpgroup\Avacy\Integrations\ContactForm7;
+use Jumpgroup\Avacy\Integrations\HtmlForms;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
 use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 use Jumpgroup\Avacy\Integrations\WpForms;
@@ -63,9 +64,12 @@ class AddAdminInterface
 
     // elementor Forms
     $elForms = ElementorForms::detectAllForms();
+    
+    // elementor Forms
+    $htmlForms = HtmlForms::detectAllForms();
 
     // etc. etc.
-    return array_merge($cf7Forms, $wcForms, $wpForms, $elForms);
+    return array_merge($cf7Forms, $wcForms, $wpForms, $elForms, $htmlForms);
   }
 
 }
