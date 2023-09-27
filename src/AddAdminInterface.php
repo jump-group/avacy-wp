@@ -6,7 +6,6 @@ use Jumpgroup\Avacy\Integrations\ContactForm7;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
 use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 use Jumpgroup\Avacy\Integrations\WpForms;
-use WP;
 
 class AddAdminInterface
 {
