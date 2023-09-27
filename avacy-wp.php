@@ -13,7 +13,7 @@ namespace Jumpgroup\Avacy;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\AddAdminInterface;
 
-require_once __DIR__ . '/vendor/autoload.php';
+// require_once __DIR__ . '/vendor/autoload.php';
 
 if (!defined('WPINC')) {
   die;
