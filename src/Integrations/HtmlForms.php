@@ -15,11 +15,16 @@ class HtmlForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
+        $identifier = get_option('avacy_HTML_Forms_form_user_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
 
         $proofs = json_encode($contact_form['source']);
-        $fields = self::getFields($contact_form['submission']->data);
+        $fields = self::getFields();
+        
+        $selectedFields = [];
+        foreach($fields as $field) {
+            $selectedFields[$field] = $contact_form['submission'][$field];
+        }
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -40,7 +45,7 @@ class HtmlForms implements Integration {
         ];
 
         return new FormSubmission(
-            fields: $fields,
+            fields: $selectedFields,
             identifier: $identifier,
             ipAddress: $ipAddress,
             proofs: $proofs,
@@ -52,7 +57,13 @@ class HtmlForms implements Integration {
     public static function formSubmitted($submission, $form) : void {
         
         // eventually we want to do something with the form...
-        $formData['submission'] = $submission;
+        $submissionInput = [];
+        $submissionData = $submission->data;
+        foreach($submissionData as $field => $value) {
+            $submissionInput[strtolower($field)] = $value;
+        }
+
+        $formData['submission'] = $submissionInput;
         $formData['source'] = htmlentities($form->markup);
 
         self::sendFormData($formData);
@@ -113,13 +124,18 @@ class HtmlForms implements Integration {
         return $parsedFields;
     }
 
-    private static function getFields($fields) {
-        $res = [];
-        foreach($fields as $field => $value) {
-            $res[strtolower($field)] = $value;
-        }
-
-        return $res;
+    private static function getFields() {
+        $options = wp_load_alloptions();
+        $formFields = array_filter($options, function($key) {
+            return strpos($key, 'avacy_form_field_HTMLForms_') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+    
+        $fieldNames = array_keys($formFields);
+        return array_map( function($field) {
+            return str_replace('avacy_form_field_HTMLForms_', '', $field);
+            }, 
+            $fieldNames
+        );
     }
 
 }
