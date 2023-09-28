@@ -29,7 +29,7 @@ class ContactForm7 implements Integration
             $selectedFields[$field] = $posted_data[$field];
         }
 
-        $identifier = get_option('avacy_identifier'); // TODO: get identifier from settings
+        $identifier = get_option('avacy_Contact_Form_7_form_user_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $proofs = json_encode($contact_form->form);
 
