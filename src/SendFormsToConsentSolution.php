@@ -4,9 +4,9 @@ namespace Jumpgroup\Avacy;
 
 use Jumpgroup\Avacy\Integrations\ContactForm7;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
+use Jumpgroup\Avacy\Integrations\HtmlForms;
 use Jumpgroup\Avacy\Integrations\WooCommerceCheckoutForm;
 use Jumpgroup\Avacy\Integrations\WpForms;
-use Jumpgroup\Avacy\Integrations\HtmlForms;
 
 class SendFormsToConsentSolution
 {

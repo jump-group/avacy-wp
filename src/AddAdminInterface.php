@@ -31,7 +31,6 @@ class AddAdminInterface
   }
 
   public static function registerSettings() {
-    register_setting('avacy-plugin-settings-group', 'avacy_identifier');
     register_setting('avacy-plugin-settings-group', 'avacy_tenant');
     register_setting('avacy-plugin-settings-group', 'avacy_webspace_id');
     register_setting('avacy-plugin-settings-group', 'avacy_api_token');
@@ -40,13 +39,14 @@ class AddAdminInterface
   public static function saveFields() {
     // get all the fields from $_REQUEST that start with avacy_form_field_
     $fields = array_filter($_REQUEST, function($key) {
-      return strpos($key, 'avacy_form_field_') === 0;
+      return strpos($key, 'avacy_') === 0;
     }, ARRAY_FILTER_USE_KEY);
 
-    foreach(array_keys($fields) as $field) {
+    foreach($fields as $field => $value) {
       // save the field name in the database
-      update_option($field, true);
+      update_option(strtolower($field), $value);
     }
+
   }
 
   public static function addMenuPage() {
@@ -64,8 +64,8 @@ class AddAdminInterface
 
     // elementor Forms
     $elForms = ElementorForms::detectAllForms();
-    
-    // elementor Forms
+
+    // HTML Forms
     $htmlForms = HtmlForms::detectAllForms();
 
     // etc. etc.
