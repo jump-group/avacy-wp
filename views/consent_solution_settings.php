@@ -37,38 +37,41 @@ settings_fields('avacy-plugin-settings-group'); ?>
             </thead>
             <tbody>
                 <?php foreach ($forms as $form) : ?>
-                    <?php $type = strtolower(str_replace(' ', '_', $form->getType())) ?>
+                    <?php 
+                        $type = strtolower(str_replace(' ', '_', $form->getType()));
+                        $id = $form->getId();
+                    ?>
 
                     <tr>
                         <td><?php echo $form->getId(); ?></td>
                         <td><?php echo $form->getType(); ?></td>
                         <td>
                             <div>
-                                <?php $enabled = (get_option('avacy_' . $type . '_radio_enabled') === 'on')? 'checked' : ''; ?>
-                                <?php $disabled = (get_option('avacy_' . $type . '_radio_enabled') === 'off')? 'checked' : ''; ?>
-                                <div><input type="radio" name="avacy_<?=$type?>_radio_enabled" value="on" <?=$enabled?>/><label for="<?=$type?>_enabled">Attivo</label></div>
-                                <div><input type="radio" name="avacy_<?=$type?>_radio_enabled" value="off" <?=$disabled?>/><label for="<?=$type?>_enabled">Non Attivo</label></div>
+                                <?php $enabled = (get_option('avacy_' . $type . '_' . $id . '_radio_enabled') === 'on')? 'checked' : ''; ?>
+                                <?php $disabled = (get_option('avacy_' . $type . '_' . $id . '_radio_enabled') === 'off')? 'checked' : ''; ?>
+                                <div><input type="radio" name="avacy_<?=$type?>_<?=$id?>_radio_enabled" value="on" <?=$enabled?>/><label for="<?=$type?>_enabled">Attivo</label></div>
+                                <div><input type="radio" name="avacy_<?=$type?>_<?=$id?>_radio_enabled" value="off" <?=$disabled?>/><label for="<?=$type?>_enabled">Non Attivo</label></div>
                             </div>
                         </td>
                         <td>
                             <details>
                                 <summary>Dettagli</summary>
                                 <?php foreach ($form->getFields() as $field) : ?>
-                                    <?php $checked = (get_option('avacy_form_field_' . $field['type'] . '_' . $field['name']) === 'on')? 'checked' : '';
+                                    <?php $checked = (get_option('avacy_form_field_' . $field['type'] . '_' . $id . '_' . $field['name']) === 'on')? 'checked' : '';
                                         
                                     ?>
-                                    <div><input type="checkbox" name="avacy_form_field_<?=$field['type']?>_<?=$field['name']?>" <?=$checked?>><?=$field['name']?></input></div>
+                                    <div><input type="checkbox" name="avacy_form_field_<?=$field['type']?>_<?=$id?>_<?=$field['name']?>" <?=$checked?>><?=$field['name']?></input></div>
                                 <?php endforeach; ?>
                             </details>
                         </td>
                         <td>
-                            <select name="avacy_<?=$form->getType()?>_form_user_identifier" id="<?=$form->getType()?>_form_user_identifier">
+                            <select name="avacy_<?=$form->getType()?>_<?=$id?>_form_user_identifier" id="<?=$form->getType()?>_<?=$id?>_form_user_identifier">
                                 <option name="avacy_form_option_none" value="" disabled>Choose an option</option>
                                 <?php foreach ($form->getFields() as $key => $field) : ?>
                                     <?php
-                                        $selected = (get_option('avacy_' . $type . '_form_user_identifier') === $field['name'])? 'selected' : '';
+                                        $selected = (get_option('avacy_' . $type . '_' . $id . '_form_user_identifier') === $field['name'])? 'selected' : '';
                                     ?>
-                                    <option name="avacy_form_option_<?=$key?>_<?=$field['type']?>" value="<?=$field['name']?>" <?=$selected?>><?=$field['name']?></option>
+                                    <option name="avacy_form_option_<?=$key?>_<?=$field['type']?>_<?=$id?>" value="<?=$field['name']?>" <?=$selected?>><?=$field['name']?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>

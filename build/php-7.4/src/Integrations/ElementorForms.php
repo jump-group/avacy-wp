@@ -132,7 +132,7 @@ class ElementorForms implements Integration {
             if($field['custom_id'] !== '') {
                 $parsedFields[] = [
                     'name' => $field['custom_id'],
-                    'type' => 'elementorForms'
+                    'type' => 'elementorforms'
                 ];
             }
         }
@@ -143,12 +143,12 @@ class ElementorForms implements Integration {
     private static function getFields() {
         $options = wp_load_alloptions();
         $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_elementorForms_') === 0;
+            return strpos($key, 'avacy_form_field_elementorforms_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) {
-            return str_replace('avacy_form_field_elementorForms_', '', $field);
+            return str_replace('avacy_form_field_elementorforms_', '', $field);
             }, 
             $fieldNames
         );
