@@ -2,7 +2,6 @@
 
 namespace Jumpgroup\Avacy\Integrations;
 
-use Elementor\Plugin;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Integration;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
@@ -16,7 +15,8 @@ class ElementorForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $identifier = get_option('avacy_Elementor_Forms_form_user_identifier'); // TODO: get identifier from settings
+        $form_id = $contact_form['id'];
+        $identifier = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $submittedData = $contact_form;
 
@@ -67,6 +67,7 @@ class ElementorForms implements Integration {
             $formData[strtolower($k)] = $v;
         }
 
+        $formData['id'] = $record->get('form_settings')['id'];
         self::sendFormData($formData);
     }
 
@@ -132,7 +133,7 @@ class ElementorForms implements Integration {
             if($field['custom_id'] !== '') {
                 $parsedFields[] = [
                     'name' => $field['custom_id'],
-                    'type' => 'elementorForms'
+                    'type' => 'elementorforms'
                 ];
             }
         }
@@ -143,12 +144,12 @@ class ElementorForms implements Integration {
     private static function getFields() {
         $options = wp_load_alloptions();
         $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_elementorForms_') === 0;
+            return strpos($key, 'avacy_form_field_elementorforms_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) {
-            return str_replace('avacy_form_field_elementorForms_', '', $field);
+            return str_replace('avacy_form_field_elementorforms_', '', $field);
             }, 
             $fieldNames
         );
