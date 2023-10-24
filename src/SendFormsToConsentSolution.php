@@ -48,7 +48,6 @@ class SendFormsToConsentSolution
       'body'        => $payload,
     );
 
-    // print_r($args); die();
     wp_remote_request($url, $args);
     // Make the POST request using wp_remote_request()
     
