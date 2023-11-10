@@ -29,7 +29,7 @@ class ElementorForms implements Integration {
             }
         }
 
-        $proofs = json_encode([]);
+        $proofs = $contact_form['source'];
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -68,6 +68,8 @@ class ElementorForms implements Integration {
         }
 
         $formData['id'] = $record->get('form_settings')['id'];
+        $formData['source'] = json_encode($record->get('fields'));
+
         self::sendFormData($formData);
     }
 

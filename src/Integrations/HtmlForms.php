@@ -11,7 +11,7 @@ use WP_Query;
 
 class HtmlForms implements Integration {
     public static function listen() : void {
-        add_action('hf_form_success', [__CLASS__, 'formSubmitted'], 10, 2);
+        add_action('hf_form_success', [__CLASS__, 'formSubmitted']);
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
@@ -55,7 +55,6 @@ class HtmlForms implements Integration {
     }
 
     public static function formSubmitted($submission, $form) : void {
-        
         // eventually we want to do something with the form...
         $submissionInput = [];
         $submissionData = $submission->data;
