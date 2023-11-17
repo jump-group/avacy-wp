@@ -22,14 +22,15 @@ class ContactForm7 implements Integration
     {
         $submission = WPCF7_Submission::get_instance();
         $posted_data = $submission->get_posted_data();
+        $id = $contact_form->id();
 
-        $fields = self::getFields();
+        $fields = self::getFields($id);
         $selectedFields = [];
         foreach($fields as $field) {
             $selectedFields[$field] = $posted_data[$field];
         }
 
-        $identifier = get_option('avacy_Contact_Form_7_form_user_identifier'); // TODO: get identifier from settings
+        $identifier = get_option('avacy_Contact_Form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $proofs = json_encode($contact_form->form);
 
@@ -109,15 +110,15 @@ class ContactForm7 implements Integration
         return $fields;
     }
 
-    private static function getFields() {
+    private static function getFields($id) {
         $options = wp_load_alloptions();
-        $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_wpcf7_') === 0;
+        $formFields = array_filter($options, function($key) use($id) {
+            return strpos($key, 'avacy_form_field_wpcf7_' . $id . '_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
-        return array_map( function($field) {
-            return str_replace('avacy_form_field_wpcf7_', '', $field);
+        return array_map( function($field) use ($id) {
+            return str_replace('avacy_form_field_wpcf7_' . $id . '_', '', $field);
             }, 
             $fieldNames
         );
