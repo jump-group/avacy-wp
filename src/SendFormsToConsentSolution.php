@@ -39,7 +39,7 @@ class SendFormsToConsentSolution
     );
 
     // API endpoint URL
-    $url = 'https://api.avacy.eu/' . $tenant . '/domains_groups/' . $webspaceId . '/consents';
+    $url = 'https://api.avacy.eu/' . $tenant . '/v2/webspaces/' . $webspaceId . '/consents';
 
     // Set the arguments for the POST request
     $args = array(
