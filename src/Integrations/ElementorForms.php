@@ -102,7 +102,7 @@ class ElementorForms implements Integration {
                 $form_ids       = array();
 
                 if ( $elementor_data ) {
-                    $elementor_data = json_decode( $elementor_data, true );
+                    $elementor_data = is_array($elementor_data)? $elementor_data : json_decode( $elementor_data, true );
 
                     self::find_elementor_form_id( $elementor_data, $form_ids );
                 }
