@@ -17,7 +17,8 @@ class WpForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $identifier = get_option('avacy_WP_Forms_form_user_identifier'); // TODO: get identifier from settings
+        $id = $contact_form['id'];
+        $identifier = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         
         $fields = self::getFields();

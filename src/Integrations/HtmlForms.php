@@ -11,11 +11,11 @@ use WP_Query;
 
 class HtmlForms implements Integration {
     public static function listen() : void {
-        add_action('hf_form_success', [__CLASS__, 'formSubmitted']);
+        add_action('hf_form_success', [__CLASS__, 'formSubmitted'], 10, 2);
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $identifier = get_option('avacy_HTML_Forms_form_user_identifier'); // TODO: get identifier from settings
+        $identifier = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
         $ipAddress = $_SERVER['REMOTE_ADDR'];
 
         $proofs = json_encode($contact_form['source']);

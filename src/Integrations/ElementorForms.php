@@ -20,7 +20,7 @@ class ElementorForms implements Integration {
         $ipAddress = $_SERVER['REMOTE_ADDR'];
         $submittedData = $contact_form;
 
-        $fields = self::getFields();
+        $fields = self::getFields($form_id);
         $selectedFields = [];
 
         foreach($fields as $field) {
@@ -143,15 +143,15 @@ class ElementorForms implements Integration {
         return $parsedFields;
     }
 
-    private static function getFields() {
+    private static function getFields($form_id) {
         $options = wp_load_alloptions();
-        $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_elementorforms_') === 0;
+        $formFields = array_filter($options, function($key) use ($form_id) {
+            return strpos($key, 'avacy_form_field_elementorforms_' . $form_id . '_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
-        return array_map( function($field) {
-            return str_replace('avacy_form_field_elementorforms_', '', $field);
+        return array_map( function($field) use($form_id) {
+            return str_replace('avacy_form_field_elementorforms_' . $form_id . '_', '', $field);
             }, 
             $fieldNames
         );
