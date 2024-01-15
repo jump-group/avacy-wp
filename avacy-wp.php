@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name:  Avacy Wordpress Plugin
+Plugin Name:  Avacy
 Plugin URI:   https://jumpgroup.it/
-Description:  Consent Solution Wordpress Plugin
+Description:  Avacy configurator plugin for Wordpress
 Version:      0.0.1
 Author:       Jump Group
 License:      MIT License
