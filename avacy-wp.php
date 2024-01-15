@@ -12,6 +12,7 @@ namespace Jumpgroup\Avacy;
 
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\AddAdminInterface;
+use Jumpgroup\Avacy\PreemptiveBlock;
 
 // require_once __DIR__ . '/vendor/autoload.php';
 
@@ -36,6 +37,7 @@ class Init
   {
     SendFormsToConsentSolution::init();
     AddAdminInterface::init();
+    PreemptiveBlock::init();
   }
 }
 

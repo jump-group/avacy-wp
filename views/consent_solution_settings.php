@@ -4,9 +4,9 @@
         <h2>Account</h2>
         <?php
 
-use Jumpgroup\Avacy\AddAdminInterface;
+        use Jumpgroup\Avacy\AddAdminInterface;
 
-settings_fields('avacy-plugin-settings-group'); ?>
+        settings_fields('avacy-plugin-settings-group'); ?>
         <?php do_settings_sections('avacy-plugin-settings-group'); ?>
         <table class="form-table">
             <tr valign="top">
@@ -79,6 +79,12 @@ settings_fields('avacy-plugin-settings-group'); ?>
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <h2>Blocco preventivo</h2>
+        <div>
+            <?php $enabled = (get_option('avacy_enable_preemptive_block') === 'on')? 'checked' : ''; ?>
+            <input type="checkbox" name="avacy_enable_preemptive_block" value="on" <?=$enabled?>/><label for="avacy_enable_preemptive_block"> Blocca preventivamente tutti gli script</label>
+        </div>
         <?php submit_button(); ?>
     </form>
 </div>
