@@ -49,16 +49,6 @@ class PreemptiveBlock {
                 'loader.engage.gsfn.us/loader.js'
             ]
         ],
-        'example' => [
-            'id' => 'd5000',
-            'name' => 'Example',
-            'purposes' => [1,5,7,8,9,10],
-            'features' => [2,3],
-            'attribute' => 'data-custom-vendor',
-            'sources' => [
-                'script.js'
-            ]
-        ],
         'headway' => [
             'id' => 'd156',
             'name' => 'Headway',
@@ -325,26 +315,19 @@ class PreemptiveBlock {
     public static function output_callback( $buffer ) {
         // Modify $buffer (HTML content) here
 
+        $dom = new DOMDocument();
+        $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
         if( !empty($buffer) ) {
-            $dom = new DOMDocument();
-            $dom->loadHTML($buffer);
     
             $scripts = $dom->getElementsByTagName('script');
-    
-            // create an array with all the src's
-            $scripts = array_map(function($script) {
-                return $script;
-            }, iterator_to_array($scripts));
-    
             foreach($scripts as $script) {
                 // if src is in the list of scripts to block
                 $src = $script->getAttribute('src');
                 $type = $script->getAttribute('type');
 
-
-                if ( ( $src !== '' && $type !== '' && ($emt = self::src_contains($src, self::$blackList)) ) || 
+                if ( ( $src !== '' && ($emt = self::src_contains($src, self::$blackList)) ) || 
                      ( $emt = self::inner_html_contains($script) ) ) {
-    
                     // change script type to text/plain
                     $script->setAttribute('type', 'as-oil');
     
@@ -360,11 +343,10 @@ class PreemptiveBlock {
                     $script->setAttribute('data-purposes', implode(',', $emt['purposes']));
                 }
             }
-    
-            $newBuffer = $dom->saveHTML();
-            return $newBuffer;
+
         }
 
+        $buffer = $dom->saveHTML();
         return $buffer;
     }
 
@@ -376,7 +358,7 @@ class PreemptiveBlock {
     private static function src_contains($src, $blackList) {
         foreach($blackList as $item) {
             foreach($item['sources'] as $source) {
-                if (str_contains($source, $src) !== false) {
+                if (str_contains($src, $source) !== false) {
                     return $item;
                 }
             }
