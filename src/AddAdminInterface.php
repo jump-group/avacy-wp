@@ -34,6 +34,7 @@ class AddAdminInterface
     register_setting('avacy-plugin-settings-group', 'avacy_tenant');
     register_setting('avacy-plugin-settings-group', 'avacy_webspace_id');
     register_setting('avacy-plugin-settings-group', 'avacy_api_token');
+    register_setting('avacy-plugin-settings-group', 'avacy_enable_preemptive_block');
   }
 
   public static function saveFields() {
