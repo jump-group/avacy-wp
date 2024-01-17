@@ -43,7 +43,9 @@ class Init
   {
     SendFormsToConsentSolution::init();
     AddAdminInterface::init();
-    PreemptiveBlock::init();
+    if(!empty(get_option('avacy_enable_preemptive_block'))) {
+      PreemptiveBlock::init();
+    }
   }
 }
 
