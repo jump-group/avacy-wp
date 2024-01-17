@@ -25,7 +25,7 @@ class PreemptiveBlock {
         $dom = new DOMDocument();
         $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-        $blackListFile = file_get_contents('https://assets.avacy-cdn.eu/assets/blacklist.json');
+        $blackListFile = file_get_contents('https://assets.avacy-cdn.com/assets/blacklist.json');
         $blackList = json_decode($blackListFile, true);
 
         if( !empty($buffer) ) {
