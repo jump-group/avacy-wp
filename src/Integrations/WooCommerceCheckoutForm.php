@@ -91,12 +91,12 @@ class WooCommerceCheckoutForm implements Integration
         ];
 
         return new FormSubmission(
-            fields: $selectedFields,
-            identifier: $identifier,
-            ipAddress: $ipAddress,
-            proofs: $proofs,
-            legalNotices: $legalNotices,
-            preferences: $preferences
+            $selectedFields,
+            $identifier,
+            $ipAddress,
+            $proofs,
+            $legalNotices,
+            $preferences
         );
     }
 

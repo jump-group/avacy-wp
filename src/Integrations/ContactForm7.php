@@ -53,12 +53,12 @@ class ContactForm7 implements Integration
         ];
 
         $sub = new FormSubmission(
-            fields: $selectedFields,
-            identifier: $identifier,
-            ipAddress: $ipAddress,
-            proofs: $proofs,
-            legalNotices: $legalNotices,
-            preferences: $preferences
+            $selectedFields,
+            $identifier,
+            $ipAddress,
+            $proofs,
+            $legalNotices,
+            $preferences
         );
 
         return $sub;
