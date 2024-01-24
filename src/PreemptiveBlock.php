@@ -7,12 +7,12 @@ use DOMDocument;
 class PreemptiveBlock {
 
     public static function init() {
-        add_action( 'template_redirect', [static::class, 'output_start'], 0 ); // al primo momento che php comincia a stampare l'output, catturalo
-        add_action( 'shutdown', [static::class, 'output_end'], 100 ); // prima di chiudere php, ri dai l'output al buffer
+        add_action( 'template_redirect', [static::class, 'output_start'], 0 );
+        add_action( 'shutdown', [static::class, 'output_end'], 100 );
     }
 
-    public static function output_start() { 
-        if ( ! is_admin() ){
+    public static function output_start() {
+        if ( !is_admin() && !wp_doing_ajax() && !defined('REST_REQUEST') ){ // portare le stesse condizioni anche nell'output_end
             if(!empty(get_option('avacy_enable_preemptive_block'))) {
                 ob_start([static::class, 'output_callback']);
             }
@@ -61,7 +61,7 @@ class PreemptiveBlock {
     }
 
     public static function output_end() {
-        if ( ! is_admin() && ob_get_level() )
+        if ( ! is_admin() && !wp_doing_ajax() && !defined('REST_REQUEST') && ob_get_level() )
             ob_end_flush();
     }
 
