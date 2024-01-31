@@ -43,9 +43,8 @@ class PreemptiveBlock {
                     $script->setAttribute('data-src', 'as-oil');
     
                     // add avacy attributes
-                    $preserveType = ($type !== '') ? $type : 'text/javascript';
                     $script->setAttribute('data-managed', 'as-oil');
-                    $script->setAttribute('data-type', $preserveType);
+                    $script->setAttribute('data-type', 'text/javascript');
     
                     // add vendor
                     $script->setAttribute($emt['attribute'], $emt['id']);
