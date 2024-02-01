@@ -40,7 +40,7 @@ class PreemptiveBlock {
                      ( $emt = self::inner_html_contains($script, $blackList) ) ) {
                     // change script type to text/plain
                     $script->setAttribute('type', 'as-oil');
-                    $script->setAttribute('data-src', 'as-oil');
+                    $script->setAttribute('data-src', $src);
     
                     // add avacy attributes
                     $script->setAttribute('data-managed', 'as-oil');
