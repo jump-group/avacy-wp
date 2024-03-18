@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Interfaces;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\FormSubmission;
 

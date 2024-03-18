@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Integration;
@@ -60,7 +63,7 @@ class WooCommerceCheckoutForm implements Integration
         $checkoutForm = self::getWcCheckoutTemplate();
 
         $identifier = get_option('avacy_WooCommerce_Checkout_Form_' . $id . '_form_user_identifier'); // TODO: get identifier from settings
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = sanitize_text_field($_SERVER['REMOTE_ADDR']);
         $proofs = json_encode($checkoutForm);
         $posted_data = wc_get_order($order_id)->get_data()['billing'];
         
@@ -69,7 +72,7 @@ class WooCommerceCheckoutForm implements Integration
 
         foreach($fields as $field) {
             if(isset($posted_data[$field])) 
-                $selectedFields[$field] = $posted_data[$field];
+                $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
         }
 
         // TODO: get legal notices from settings

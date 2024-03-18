@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use DOMDocument;
 use Jumpgroup\Avacy\Form;
@@ -16,14 +19,14 @@ class HtmlForms implements Integration {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $identifier = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = sanitize_text_field($_SERVER['REMOTE_ADDR']);
 
         $proofs = json_encode($contact_form['source']);
         $fields = self::getFields();
-        
+
         $selectedFields = [];
         foreach($fields as $field) {
-            $selectedFields[$field] = $contact_form['submission'][$field];
+            $selectedFields[$field] = sanitize_text_field($contact_form['submission'][$field]);
         }
 
         // TODO: get legal notices from settings
@@ -59,7 +62,7 @@ class HtmlForms implements Integration {
         $submissionInput = [];
         $submissionData = $submission->data;
         foreach($submissionData as $field => $value) {
-            $submissionInput[strtolower($field)] = $value;
+            $submissionInput[strtolower($field)] = sanitize_text_field($value);
         }
 
         $formData['submission'] = $submissionInput;
@@ -112,7 +115,7 @@ class HtmlForms implements Integration {
             foreach($attrs as $attrName => $attrValue) {
                 if($attrName === 'name') {
                     $parsedFields[] = [
-                        'name' => strtolower($attrValue->nodeValue),
+                        'name' => strtolower(sanitize_text_field($attrValue->nodeValue)),
                         'type' => 'HTMLForms'
                     ];
                 }

@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 class Form {
 
@@ -9,9 +12,9 @@ class Form {
     private array $fields;
 
     public function __construct($id, $type, $fields) {
-        $this->id = $id;
-        $this->type = $type;
-        $this->fields = $fields;
+        $this->id = sanitize_text_field($id);
+        $this->type = sanitize_text_field($type);
+        $this->fields = $this->sanitizeFields($fields);
     }
 
     public function getFields() : array {
@@ -24,5 +27,14 @@ class Form {
 
     public function getType() : string {
         return $this->type;
+    }
+
+    private function sanitizeFields($fields) {
+        if (is_array($fields)) {
+            foreach ($fields as $field) {
+                $field['name'] = sanitize_text_field($field['name']);
+            }
+        }
+        return $fields;
     }
 }

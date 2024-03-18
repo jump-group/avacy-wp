@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use DOMDocument;
 
@@ -25,7 +28,7 @@ class PreemptiveBlock {
         $dom = new DOMDocument();
         $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-        $blackListFile = file_get_contents('https://assets.avacy-cdn.com/assets/blacklist.json');
+        $blackListFile = wp_remote_retrieve_body( wp_remote_get( 'https://assets.avacy-cdn.com/assets/blacklist.json' ) );
         $blackList = json_decode($blackListFile, true);
 
         if( !empty($buffer) ) {

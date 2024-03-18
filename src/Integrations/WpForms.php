@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\Form;
 use WPCF7_Submission;
@@ -17,14 +20,14 @@ class WpForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $id = $contact_form['id'];
+        $id = absint($contact_form['id']);
         $identifier = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = sanitize_text_field($_SERVER['REMOTE_ADDR']);
         
         $fields = self::getFields();
         $selectedFields = [];
 
-        $formContent = wpforms()->form->get( $contact_form['id'], array( 'content_only' => true ) );
+        $formContent = wpforms()->form->get( $id, array( 'content_only' => true ) );
 
         $submittedFields = $contact_form['fields'];
         foreach($fields as $field) {
@@ -32,12 +35,12 @@ class WpForms implements Integration {
             foreach($submittedFields as $inputValue) {
                 $slug = strtolower(str_replace(' ', '_', $inputValue['name']));
                 if($field === $slug) {
-                    $selectedFields[$field] = $inputValue['value'];
+                    $selectedFields[$field] = sanitize_text_field($inputValue['value']);
                 }
             }
         }
 
-        $proofs = json_encode($formContent);
+        $proofs = wp_json_encode($formContent);
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -69,7 +72,7 @@ class WpForms implements Integration {
 
     public static function wpfFormSubmitted($fields, $entry, $form_data, $entry_id) {
         $formData['fields'] = $fields;
-        $formData['id'] = $entry['id'];
+        $formData['id'] = absint($entry['id']);
 
         self::sendFormData($formData);
     }
@@ -94,7 +97,7 @@ class WpForms implements Integration {
             $fields = json_decode($postArray['post_content'], true)['fields'];
 
             $parsedFields = self::parseFields($fields);
-            $form = new Form($postArray['ID'], 'WP Forms', $parsedFields);
+            $form = new Form(absint($postArray['ID']), 'WP Forms', $parsedFields);
             $forms[] = $form;
         }
 
@@ -106,7 +109,7 @@ class WpForms implements Integration {
         foreach($fields as $field) {
             if($field['label'] !== '') {
                 $parsedFields[] = [
-                    'name' => strtolower(trim($field['label'])),
+                    'name' => sanitize_text_field(strtolower(trim($field['label']))),
                     'type' => 'wpforms'
                 ];
             }

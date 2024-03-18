@@ -3,18 +3,23 @@
 Plugin Name:  Avacy
 Plugin URI:   https://jumpgroup.it/
 Description:  Avacy configurator plugin for Wordpress
-Version:      0.0.1
+Version:      1.0.0
 Author:       Jump Group
 Contributors: Jumpgroup SRL
 Tags: consent, tracking, privacy, gdpr
-Requires at least: 4.9
-Tested up to: 5.9
-Stable tag: 1.0
+Requires at least: 5.3
+Tested up to: 6.4
+PHP: 7.4
+Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 namespace Jumpgroup\Avacy;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\AddAdminInterface;
