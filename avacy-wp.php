@@ -20,7 +20,7 @@ use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\AddAdminInterface;
 use Jumpgroup\Avacy\PreemptiveBlock;
 
-// require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 if (!defined('WPINC')) {
   die;
