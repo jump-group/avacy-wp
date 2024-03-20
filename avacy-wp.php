@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name:  Avacy
+Plugin Name:  Avacy CMP
 Plugin URI:   https://jumpgroup.it/
 Description:  Avacy configurator plugin for Wordpress
 Version:      1.0.0
