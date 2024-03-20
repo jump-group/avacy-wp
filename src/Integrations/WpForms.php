@@ -22,7 +22,7 @@ class WpForms implements Integration {
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $id = absint($contact_form['id']);
         $identifier = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
-        $ipAddress = sanitize_text_field($_SERVER['REMOTE_ADDR']);
+        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
         
         $fields = self::getFields();
         $selectedFields = [];
