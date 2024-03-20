@@ -1,14 +1,14 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 use Jumpgroup\Avacy\Form;
-use WPCF7_Submission;
 use Jumpgroup\Avacy\Interfaces\Integration;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
-use WP_Query;
-use WPCF7_ContactForm;
 
 class WpForms implements Integration {
     
@@ -17,14 +17,14 @@ class WpForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $id = $contact_form['id'];
+        $id = absint($contact_form['id']);
         $identifier = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
         
-        $fields = self::getFields();
+        $fields = self::getFields($id);
         $selectedFields = [];
 
-        $formContent = wpforms()->form->get( $contact_form['id'], array( 'content_only' => true ) );
+        $formContent = wpforms()->form->get( $id, array( 'content_only' => true ) );
 
         $submittedFields = $contact_form['fields'];
         foreach($fields as $field) {
@@ -32,12 +32,12 @@ class WpForms implements Integration {
             foreach($submittedFields as $inputValue) {
                 $slug = strtolower(str_replace(' ', '_', $inputValue['name']));
                 if($field === $slug) {
-                    $selectedFields[$field] = $inputValue['value'];
+                    $selectedFields[$field] = sanitize_text_field($inputValue['value']);
                 }
             }
         }
 
-        $proofs = json_encode($formContent);
+        $proofs = wp_json_encode($formContent);
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -69,7 +69,7 @@ class WpForms implements Integration {
 
     public static function wpfFormSubmitted($fields, $entry, $form_data, $entry_id) {
         $formData['fields'] = $fields;
-        $formData['id'] = $entry['id'];
+        $formData['id'] = absint($entry['id']);
 
         self::sendFormData($formData);
     }
@@ -94,7 +94,7 @@ class WpForms implements Integration {
             $fields = json_decode($postArray['post_content'], true)['fields'];
 
             $parsedFields = self::parseFields($fields);
-            $form = new Form($postArray['ID'], 'WP Forms', $parsedFields);
+            $form = new Form(absint($postArray['ID']), 'WP Forms', $parsedFields);
             $forms[] = $form;
         }
 
@@ -105,8 +105,9 @@ class WpForms implements Integration {
         $parsedFields = [];
         foreach($fields as $field) {
             if($field['label'] !== '') {
+                $sanitizedField = sanitize_text_field(strtolower(trim(str_replace(' ', '_', $field['label']))));
                 $parsedFields[] = [
-                    'name' => strtolower(trim($field['label'])),
+                    'name' => sanitize_text_field(strtolower(trim($field['label']))),
                     'type' => 'wpforms'
                 ];
             }
@@ -115,15 +116,15 @@ class WpForms implements Integration {
         return $parsedFields;
     }
 
-    private static function getFields() {
+    private static function getFields($id) {
         $options = wp_load_alloptions();
-        $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_wpforms_') === 0;
+        $formFields = array_filter($options, function($key) use($id) {
+            return strpos($key, 'avacy_form_field_wpforms_' . $id . '_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
-        return array_map( function($field) {
-            return str_replace('avacy_form_field_wpforms_', '', $field);
+        return array_map( function($field) use($id) {
+            return str_replace('avacy_form_field_wpforms_' . $id . '_', '', $field);
             }, 
             $fieldNames
         );

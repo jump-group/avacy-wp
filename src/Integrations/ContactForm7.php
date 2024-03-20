@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\Form;
 use WPCF7_Submission;
@@ -27,11 +30,11 @@ class ContactForm7 implements Integration
         $fields = self::getFields($id);
         $selectedFields = [];
         foreach($fields as $field) {
-            $selectedFields[$field] = $posted_data[$field];
+            $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
         }
 
-        $identifier = get_option('avacy_Contact_Form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $identifier = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
+        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
         $proofs = json_encode($contact_form->form);
 
         // TODO: get legal notices from settings
@@ -102,7 +105,7 @@ class ContactForm7 implements Integration
         foreach ($form->scan_form_tags() as $tag) {
             if($tag->name !== '')
                 $fields[] = [
-                    'name' => $tag->name,
+                    'name' => sanitize_text_field($tag->name),
                     'type' => 'wpcf7'
                 ];
         }
@@ -118,7 +121,7 @@ class ContactForm7 implements Integration
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) use ($id) {
-            return str_replace('avacy_form_field_wpcf7_' . $id . '_', '', $field);
+            return str_replace('avacy_form_field_wpcf7_' . $id . '_', '', sanitize_text_field($field));
             }, 
             $fieldNames
         );

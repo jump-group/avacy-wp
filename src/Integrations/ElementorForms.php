@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Integration;
@@ -15,9 +18,9 @@ class ElementorForms implements Integration {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $form_id = $contact_form['id'];
+        $form_id = sanitize_text_field($contact_form['id']);
         $identifier = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier'); // TODO: get identifier from settings
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
         $submittedData = $contact_form;
 
         $fields = self::getFields($form_id);
@@ -25,11 +28,11 @@ class ElementorForms implements Integration {
 
         foreach($fields as $field) {
             if(isset($submittedData[$field])) {
-                $selectedFields[$field] = $submittedData[$field];
+                $selectedFields[$field] = sanitize_text_field($submittedData[$field]);
             }
         }
 
-        $proofs = $contact_form['source'];
+        $proofs = sanitize_text_field($contact_form['source']);
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -64,11 +67,11 @@ class ElementorForms implements Integration {
         $values = $record->get_formatted_data();
 
         foreach($values as $k => $v) {
-            $formData[strtolower($k)] = $v;
+            $formData[strtolower($k)] = sanitize_text_field($v);
         }
 
-        $formData['id'] = $record->get('form_settings')['id'];
-        $formData['source'] = json_encode($record->get('fields'));
+        $formData['id'] = sanitize_text_field($record->get('form_settings')['id']);
+        $formData['source'] = sanitize_text_field(json_encode($record->get('fields')));
 
         self::sendFormData($formData);
     }
@@ -117,7 +120,7 @@ class ElementorForms implements Integration {
 
                     if ( ! empty( $elementor_form ) ) {
                         // Set the form name as in Elementor builder.
-                        $id = $elementor_form['id'];
+                        $id = sanitize_text_field($elementor_form['id']);
                         $fields = self::parseFields($elementor_form['settings']['form_fields']);
 
                         $forms[] = new Form($id, 'Elementor Forms', $fields);
@@ -134,7 +137,7 @@ class ElementorForms implements Integration {
         foreach($fields as $field) {
             if($field['custom_id'] !== '') {
                 $parsedFields[] = [
-                    'name' => $field['custom_id'],
+                    'name' => sanitize_text_field($field['custom_id']),
                     'type' => 'elementorforms'
                 ];
             }
@@ -151,7 +154,7 @@ class ElementorForms implements Integration {
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) use($form_id) {
-            return str_replace('avacy_form_field_elementorforms_' . $form_id . '_', '', $field);
+            return str_replace('avacy_form_field_elementorforms_' . $form_id . '_', '', sanitize_text_field($field));
             }, 
             $fieldNames
         );
@@ -161,7 +164,7 @@ class ElementorForms implements Integration {
 		if ( is_array( $data ) ) {
 			foreach ( $data as $item ) {
 				if ( isset( $item['elType'] ) && 'widget' === $item['elType'] && 'form' === $item['widgetType'] ) {
-					$form_ids[] = $item['id'];
+					$form_ids[] = sanitize_text_field($item['id']);
 				} elseif ( isset( $item['elements'] ) && is_array( $item['elements'] ) ) {
 					self::find_elementor_form_id( $item['elements'], $form_ids );
 				}

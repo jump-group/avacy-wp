@@ -1,6 +1,9 @@
 <?php
-
 namespace Jumpgroup\Avacy\Integrations;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 use DOMDocument;
 use Jumpgroup\Avacy\Form;
@@ -16,14 +19,14 @@ class HtmlForms implements Integration {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $identifier = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
 
         $proofs = json_encode($contact_form['source']);
-        $fields = self::getFields();
-        
+        $fields = self::getFields($contact_form['id']);
+
         $selectedFields = [];
         foreach($fields as $field) {
-            $selectedFields[$field] = $contact_form['submission'][$field];
+            $selectedFields[$field] = sanitize_text_field($contact_form['submission'][$field]);
         }
 
         // TODO: get legal notices from settings
@@ -63,6 +66,7 @@ class HtmlForms implements Integration {
         }
 
         $formData['submission'] = $submissionInput;
+        $formData['id'] = $submission->form_id;
         $formData['source'] = htmlentities($form->markup);
 
         self::sendFormData($formData);
@@ -112,8 +116,9 @@ class HtmlForms implements Integration {
             foreach($attrs as $attrName => $attrValue) {
                 if($attrName === 'name') {
                     $parsedFields[] = [
-                        'name' => strtolower($attrValue->nodeValue),
-                        'type' => 'HTMLForms'
+                        'name' => strtolower(sanitize_text_field($attrValue->nodeValue)),
+                        'type' => 'htmlforms',
+                        'label' => 'htmlforms'
                     ];
                 }
 
@@ -123,15 +128,15 @@ class HtmlForms implements Integration {
         return $parsedFields;
     }
 
-    private static function getFields() {
+    private static function getFields($id) {
         $options = wp_load_alloptions();
-        $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_HTMLForms_') === 0;
+        $formFields = array_filter($options, function($key) use($id) {
+            return strpos($key, 'avacy_form_field_htmlforms_' . $id . '_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
-        return array_map( function($field) {
-            return str_replace('avacy_form_field_HTMLForms_', '', $field);
+        return array_map( function($field) use ($id) {
+            return str_replace('avacy_form_field_htmlforms_' . $id . '_', '', $field);
             }, 
             $fieldNames
         );

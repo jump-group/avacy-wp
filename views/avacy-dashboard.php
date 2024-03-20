@@ -58,7 +58,7 @@
                                 <summary>Dettagli</summary>
                                 <?php foreach ($form->getFields() as $field) : ?>
                                     <?php $checked = (get_option('avacy_form_field_' . $field['type'] . '_' . $id . '_' . $field['name']) === 'on')? 'checked' : '';
-                                        
+                                    
                                     ?>
                                     <div><input type="checkbox" name="avacy_form_field_<?php echo $field['type']?>_<?php echo $id?>_<?php echo $field['name']?>" <?php echo $checked?>><?php echo $field['name']?></input></div>
                                 <?php endforeach; ?>
