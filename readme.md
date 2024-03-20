@@ -51,10 +51,10 @@ This plugin integrates with Avacy, a consent management platform, to ensure comp
 Avacy is utilized whenever users provide consent through forms or interactions on your WordPress site. The plugin sends this consent data to Avacy's servers for storage and processing.
 
 #### Avacy Service Link
-For more information about Avacy and its features, visit Avacy's [https://avacysolution.com/](website).
+For more information about Avacy and its features, visit Avacy's [website](https://avacysolution.com/).
 
 #### Avacy Terms of Use and Privacy Policies
-Before integrating Avacy with this plugin, please review the Avacy [https://avacy.eu/terms-and-conditions](Terms of Use) and [https://api.avacy.eu/jumpgroup/privacypolicy/14/it](Privacy Policy) to understand how your data is handled and what responsibilities you have as a user of their service.
+Before integrating Avacy with this plugin, please review the Avacy [Terms of use](https://avacy.eu/terms-and-conditions) and [Privacy Policy](https://api.avacy.eu/jumpgroup/privacypolicy/14/it) to understand how your data is handled and what responsibilities you have as a user of their service.
 
 We welcome your feedback and suggestions to improve the functionality of the plugin.
 
