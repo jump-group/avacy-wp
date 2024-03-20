@@ -22,7 +22,7 @@ class HtmlForms implements Integration {
         $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
 
         $proofs = json_encode($contact_form['source']);
-        $fields = self::getFields();
+        $fields = self::getFields($contact_form['id']);
 
         $selectedFields = [];
         foreach($fields as $field) {
@@ -62,10 +62,11 @@ class HtmlForms implements Integration {
         $submissionInput = [];
         $submissionData = $submission->data;
         foreach($submissionData as $field => $value) {
-            $submissionInput[strtolower($field)] = sanitize_text_field($value);
+            $submissionInput[strtolower($field)] = $value;
         }
 
         $formData['submission'] = $submissionInput;
+        $formData['id'] = $submission->form_id;
         $formData['source'] = htmlentities($form->markup);
 
         self::sendFormData($formData);
@@ -116,7 +117,8 @@ class HtmlForms implements Integration {
                 if($attrName === 'name') {
                     $parsedFields[] = [
                         'name' => strtolower(sanitize_text_field($attrValue->nodeValue)),
-                        'type' => 'HTMLForms'
+                        'type' => 'htmlforms',
+                        'label' => 'htmlforms'
                     ];
                 }
 
@@ -126,15 +128,15 @@ class HtmlForms implements Integration {
         return $parsedFields;
     }
 
-    private static function getFields() {
+    private static function getFields($id) {
         $options = wp_load_alloptions();
-        $formFields = array_filter($options, function($key) {
-            return strpos($key, 'avacy_form_field_HTMLForms_') === 0;
+        $formFields = array_filter($options, function($key) use($id) {
+            return strpos($key, 'avacy_form_field_htmlforms_' . $id . '_') === 0;
         }, ARRAY_FILTER_USE_KEY);
     
         $fieldNames = array_keys($formFields);
-        return array_map( function($field) {
-            return str_replace('avacy_form_field_HTMLForms_', '', $field);
+        return array_map( function($field) use ($id) {
+            return str_replace('avacy_form_field_htmlforms_' . $id . '_', '', $field);
             }, 
             $fieldNames
         );

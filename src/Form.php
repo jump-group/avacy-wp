@@ -26,7 +26,7 @@ class Form {
     }
 
     public function getType() : string {
-        return $this->type;
+        return strtolower($this->type);
     }
 
     private function sanitizeFields($fields) {

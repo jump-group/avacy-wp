@@ -33,7 +33,7 @@ class ContactForm7 implements Integration
             $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
         }
 
-        $identifier = get_option('avacy_Contact_Form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
+        $identifier = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
         $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
         $proofs = json_encode($contact_form->form);
 
