@@ -42,18 +42,70 @@ class AddAdminInterface
   }
 
   public static function saveFields() {
-    // get all the fields from $_REQUEST that start with avacy_form_field_
-    $fields = array_filter($_REQUEST, function($key) {
-      return strpos($key, 'avacy_') === 0;
-    }, ARRAY_FILTER_USE_KEY);
+    // get all forms saved in the database
+    $forms = self::detectAllForms();
 
+    // get all id from $forms
+    $formValues = [];
 
-    foreach ($fields as $field => $value) {
-      // sanitize and escape the field value
-      $sanitized_value = sanitize_text_field($value);
+    // create an array of fields that you have to search in $request
+    foreach($forms as $form) {
+      $type = str_replace(' ', '_',$form->getType());
+      $fields = $form->getFields();
+      $id = $form->getId();
+      
+      foreach($fields as $field) {
+        $fieldName = str_replace(' ', '_', $field['name']);
+        $formFieldOpt = 'avacy_form_field_' . $field['type'] . '_' . $form->getId() . '_' . $fieldName;
+        $formValues[$id]['fields'][$formFieldOpt] = get_option($formFieldOpt) ?? 'off';
+      }
 
-      // save the field name in the database
-      update_option(strtolower($field), $sanitized_value);
+      $enabledOption = 'avacy_' . $type . '_' . $form->getId() . '_radio_enabled';
+      $enabled = get_option($enabledOption) ?? 'off';
+      
+      $identifierOption = 'avacy_' . $type . '_' . $id . '_form_user_identifier';
+      $identifier = get_option($identifierOption) ?? null;
+
+      $formValues[$id][$enabledOption] = $enabled;
+      $formValues[$id][$identifierOption] = $identifier;
+    }
+
+    if($_REQUEST['option_page'] === 'avacy-plugin-settings-group') {
+      // for each field in $fields check if it exists in $request
+      foreach($formValues as $key => $value) {
+
+        // update fields
+        foreach($value['fields'] as $k => $option) {
+          if(isset($_REQUEST[$k])) {
+            $v = $_REQUEST[$k];
+
+            // sanitize and escape the field value
+            $sanitized_value = sanitize_text_field($v);
+
+            // save the field name in the database then update option
+            update_option($k, $sanitized_value);
+          } else {
+            update_option($k, 'off');
+          }
+        }
+
+        // take the remaining keys in the array to update
+        foreach($value as $k => $v) {
+          if($k !== 'fields') {
+            if(isset($_REQUEST[$k])) {
+              $v = $_REQUEST[$k];
+
+              // sanitize and escape the field value
+              $sanitized_value = sanitize_text_field($v);
+
+              // save the field name in the database
+              update_option($k, $sanitized_value);
+            } else {
+              update_option($k, 'off');
+            }
+          }
+        }
+      }
     }
   }
 
