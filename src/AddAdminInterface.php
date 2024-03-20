@@ -22,15 +22,15 @@ class AddAdminInterface
 
   public static function registerSettingsPage() {
     wp_register_style(
-        'consent_solution_settings',
-        plugins_url( '/../styles/consent_solution_settings.css', __FILE__ ),
+        'avacy-dashboard',
+        plugins_url( '/../styles/avacy-dashboard.css', __FILE__ ),
         array(),
         '2023-09-13',
         'screen'
     );
-    wp_enqueue_style( 'consent_solution_settings' );
+    wp_enqueue_style( 'avacy-dashboard' );
 
-    require_once(__DIR__ . '/../views/consent_solution_settings.php');
+    require_once(__DIR__ . '/../views/avacy-dashboard.php');
   }
 
   public static function registerSettings()
