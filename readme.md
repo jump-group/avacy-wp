@@ -1,4 +1,4 @@
-=== Avacy WordPress Plugin ===
+# Avacy WordPress Plugin
 
 Contributors: Jumpgroup SRL
 Tags: consent, tracking, privacy, gdpr
