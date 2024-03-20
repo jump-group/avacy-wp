@@ -115,10 +115,7 @@ class AddAdminInterface
 
   public static function detectAllForms()
   {
-    $cf7Forms = [];
-    if(class_exists('WPCF7_ContactForm')) {
-      $cf7Forms = ContactForm7::detectAllForms();
-    }
+    $cf7Forms = ContactForm7::detectAllForms();
     $wcForms = WooCommerceCheckoutForm::detectAllForms();
     $wpForms = WpForms::detectAllForms();
     $elForms = ElementorForms::detectAllForms();

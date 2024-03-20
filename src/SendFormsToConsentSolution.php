@@ -20,10 +20,7 @@ class SendFormsToConsentSolution
 
   private static function registerFormListeners()
   {
-    if(class_exists('WPCF7_ContactForm')) {
-      ContactForm7::listen();
-    }
-
+    ContactForm7::listen();
     WooCommerceCheckoutForm::listen();
     WpForms::listen();
     ElementorForms::listen();
