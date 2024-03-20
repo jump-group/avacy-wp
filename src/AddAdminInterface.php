@@ -64,29 +64,13 @@ class AddAdminInterface
   public static function detectAllForms()
   {
     $cf7Forms = [];
-    if (class_exists('WPCF7')) {
+    if(class_exists('WPCF7_ContactForm')) {
       $cf7Forms = ContactForm7::detectAllForms();
     }
-
-    $wcForms = [];
-    if (class_exists('WooCommerce')) {
-      $wcForms = WooCommerceCheckoutForm::detectAllForms();
-    }
-
-    $wpForms = [];
-    if (class_exists('WPForms')) {
-      $wpForms = WpForms::detectAllForms();
-    }
-
-    $elForms = [];
-    if (class_exists('ElementorPro\Modules\Forms\Module')) {
-      $elForms = ElementorForms::detectAllForms();
-    }
-
-    $htmlForms = [];
-    if (class_exists('HtmlForms')) {
-      $htmlForms = HtmlForms::detectAllForms();
-    }
+    $wcForms = WooCommerceCheckoutForm::detectAllForms();
+    $wpForms = WpForms::detectAllForms();
+    $elForms = ElementorForms::detectAllForms();
+    $htmlForms = HtmlForms::detectAllForms();
 
     // etc. etc.
     return array_merge($cf7Forms, $wcForms, $wpForms, $elForms, $htmlForms);
