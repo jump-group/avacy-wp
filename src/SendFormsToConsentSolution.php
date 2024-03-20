@@ -61,7 +61,7 @@ class SendFormsToConsentSolution
     );
 
     // Sanitize and escape the payload
-    $args['body'] = wp_kses_post($args['body']);
+    // $args['body'] = wp_kses_post($args['body']);
 
     // Make the POST request using wp_remote_request()
     wp_remote_request($url, $args);
