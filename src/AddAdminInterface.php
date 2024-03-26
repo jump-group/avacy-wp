@@ -31,7 +31,7 @@ class AddAdminInterface
     echo '
       <style>
       .dashicons-avacy {
-          background-image: url("'.plugins_url(). '/Jumprock_Avacy/assets/avacy-icon.svg'.'");
+          background-image: url("'.AVACY_PLUGIN_DIR_URL. 'assets/avacy-icon.svg'.'");
           background-repeat: no-repeat;
           background-position: center; 
           background-size: 70%;

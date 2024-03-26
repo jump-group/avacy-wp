@@ -46,6 +46,7 @@ class Init
 
   protected function __construct()
   {
+    define('AVACY_PLUGIN_DIR_URL', plugin_dir_url(__FILE__));
     SendFormsToConsentSolution::init();
     AddAdminInterface::init();
     if(!empty(get_option('avacy_enable_preemptive_block'))) {
