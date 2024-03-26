@@ -97,7 +97,7 @@
         <h2>Blocco preventivo</h2>
         <div>
             <?php $enabled = (get_option('avacy_enable_preemptive_block') === 'on')? 'checked' : ''; ?>
-            <sl-checkbox size="medium"  value="on" <?php echo $enabled?>>Blocca preventivamente tutti gli script</sl-checkbox>
+            <sl-checkbox name="avacy_enable_preemptive_block" size="medium"  value="on" <?php echo $enabled?>>Blocca preventivamente tutti gli script</sl-checkbox>
         </div>
 
         <sl-button class="Submit" variant="primary" type="submit">Salva</sl-button>
