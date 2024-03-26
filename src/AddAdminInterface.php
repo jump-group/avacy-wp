@@ -15,9 +15,29 @@ class AddAdminInterface
 {
   public static function init()
   {
+    add_action('admin_menu', [static::class, 'registerAvacyDashicon']);
     add_action('admin_menu', [static::class, 'addMenuPage']);
     add_action('admin_init', [static::class, 'registerSettings']);
     add_action('admin_init', [static::class, 'saveFields']);
+  }
+
+  public static function registerAvacyDashicon()
+  {
+    // dump(AVACY_PLUGIN_DIR.'assets/avacy-icon.png');
+    // dd(plugins_url(). '/Jumprock_Avacy/assets/avacy-icon.png');
+
+     add_action('admin_head', function () {
+
+    echo '
+      <style>
+      .dashicons-avacy {
+          background-image: url("'.plugins_url(). '/Jumprock_Avacy/assets/avacy-icon.svg'.'");
+          background-repeat: no-repeat;
+          background-position: center; 
+          background-size: 70%;
+      }
+      </style>'; 
+  });
   }
 
   public static function registerSettingsPage() {
@@ -70,7 +90,7 @@ class AddAdminInterface
       $formValues[$id][$identifierOption] = $identifier;
     }
 
-    if($_REQUEST['option_page'] === 'avacy-plugin-settings-group') {
+    if(isset($_REQUEST['option_page']) && $_REQUEST['option_page'] === 'avacy-plugin-settings-group') {
       // for each field in $fields check if it exists in $request
       foreach($formValues as $key => $value) {
 
@@ -110,7 +130,7 @@ class AddAdminInterface
   }
 
   public static function addMenuPage() {
-    add_menu_page('Avacy Plugin', 'Avacy Plugin', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage']);
+    add_menu_page('Avacy Plugin', 'Avacy Plugin', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
   }
 
   public static function detectAllForms()
