@@ -1,7 +1,7 @@
 # Avacy WordPress Plugin
 
 Contributors: Jumpgroup SRL
-Tags: consent, tracking, privacy, gdpr
+Tags: consent, cookie, cookiebanner, tracking, privacy, gdpr
 Requires at least: 4.9
 Tested up to: 6.4
 Stable tag: 1.0

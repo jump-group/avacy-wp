@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name:  Avacy CMP
-Plugin URI:   https://jumpgroup.it/
-Description:  Avacy configurator plugin for Wordpress
+Plugin Name:  Avacy
+Plugin URI:   https://avacysolution.com/
+Description:  Avacy plugin for Wordpress
 Version:      1.0.0
 Author:       Jump Group
 Contributors: Jumpgroup SRL
-Tags: consent, tracking, privacy, gdpr
+Tags: consent, cookie, cookiebanner, tracking, privacy, gdpr
 Requires at least: 5.3
 Tested up to: 6.4
 PHP: 7.4
@@ -46,6 +46,7 @@ class Init
 
   protected function __construct()
   {
+    define('AVACY_PLUGIN_DIR_URL', plugin_dir_url(__FILE__));
     SendFormsToConsentSolution::init();
     AddAdminInterface::init();
     if(!empty(get_option('avacy_enable_preemptive_block'))) {
