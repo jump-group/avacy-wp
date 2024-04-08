@@ -1,7 +1,7 @@
 # Avacy WordPress Plugin
 
 Contributors: Jumpgroup SRL
-Tags: consent, cookie, cookiebanner, tracking, privacy, gdpr
+Tags: consent, cookie, cookie banner, tracking, privacy, gdpr, cookie consent, cookie notice, privacy policy
 Requires at least: 4.9
 Tested up to: 6.4
 Stable tag: 1.0
@@ -17,7 +17,7 @@ The WordPress Consent Solution Plugin is a powerful tool that empowers website o
 
 1. Consent Management Platform (CMP)
 User-Friendly Interface: The plugin offers an intuitive dashboard for configuring and customizing the Consent Management Platform to suit your website's needs.
-Customizable Consent Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
+Customizable Cookie Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
 Consent Logging: Keep track of user consent preferences and ensure compliance with privacy regulations.
 2. Tracker Preemptive Blocking
 Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy.
@@ -31,9 +31,9 @@ Activate: Activate the plugin through the 'Plugins' menu in WordPress.
 
 ## Usage
 
-### Consent Banners:
+### Cookie Banners:
 
-Consent banners will automatically appear on your site once configured.
+Cookie banners will automatically appear on your site once configured.
 Users can manage their consent preferences through these banners.
 
 ### Tracker Control:
@@ -45,7 +45,7 @@ For support or to report issues, please visit our support forum.
 
 ### Avacy Consent Solution API
 
-This plugin integrates with Avacy, a consent management platform, to ensure compliance with data protection regulations and manage user consent preferences effectively.
+This plugin integrates with Avacy, a consent management platform, to ensure compliance with data protection regulations, such as GDPR and ePrivacy, and manage user consent preferences effectively.
 
 #### Under What Circumstances is Avacy Used?
 Avacy is utilized whenever users provide consent through forms or interactions on your WordPress site. The plugin sends this consent data to Avacy's servers for storage and processing.
