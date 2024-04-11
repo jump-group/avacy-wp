@@ -77,10 +77,7 @@ class AddAdminInterface
         // update fields
         foreach($value['fields'] as $k => $option) {
           if(isset($_REQUEST[$k])) {
-            $v = $_REQUEST[$k];
-
-            // sanitize and escape the field value
-            $sanitized_value = sanitize_text_field($v);
+            $sanitized_value = sanitize_text_field($_REQUEST[$k]);
 
             // save the field name in the database then update option
             update_option($k, $sanitized_value);
@@ -93,10 +90,7 @@ class AddAdminInterface
         foreach($value as $k => $v) {
           if($k !== 'fields') {
             if(isset($_REQUEST[$k])) {
-              $v = $_REQUEST[$k];
-
-              // sanitize and escape the field value
-              $sanitized_value = sanitize_text_field($v);
+              $sanitized_value = sanitize_text_field($_REQUEST[$k]);
 
               // save the field name in the database
               update_option($k, $sanitized_value);

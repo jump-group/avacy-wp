@@ -20,7 +20,8 @@ class ElementorForms implements Integration {
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $form_id = sanitize_text_field($contact_form['id']);
         $identifier = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier'); // TODO: get identifier from settings
-        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
+        $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
+        $ipAddress = $remoteAddr ?: '0.0.0.0';
         $submittedData = $contact_form;
 
         $fields = self::getFields($form_id);

@@ -34,7 +34,8 @@ class ContactForm7 implements Integration
         }
 
         $identifier = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
-        $ipAddress = $_SERVER['REMOTE_ADDR']? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
+        $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
+        $ipAddress = $remoteAddr ?: '0.0.0.0';
         $proofs = json_encode($contact_form->form);
 
         // TODO: get legal notices from settings
