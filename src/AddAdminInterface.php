@@ -15,6 +15,8 @@ class AddAdminInterface
 {
   public static function init()
   {
+    // admin_enqueue_scripts
+    add_action('admin_enqueue_scripts', [static::class, 'enqueueShoelace']);
     add_action('admin_menu', [static::class, 'registerAvacyDashicon']);
     add_action('admin_menu', [static::class, 'addMenuPage']);
     add_action('admin_init', [static::class, 'registerSettings']);
@@ -23,10 +25,7 @@ class AddAdminInterface
 
   public static function registerAvacyDashicon()
   {
-    // dump(AVACY_PLUGIN_DIR.'assets/avacy-icon.png');
-    // dd(plugins_url(). '/Jumprock_Avacy/assets/avacy-icon.png');
-
-     add_action('admin_head', function () {
+    add_action('admin_head', function () {
 
     echo '
       <style>
@@ -37,7 +36,36 @@ class AddAdminInterface
           background-size: 70%;
       }
       </style>'; 
-  });
+    });
+  }
+
+  public static function enqueueShoelace() {
+    // register cdn for shoelace
+    wp_register_script(
+      'shoelace-autoloader',
+      'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js',
+      array(),
+      '2.15.0',
+  );
+  
+    // register css shoelace cdn
+    wp_register_style(
+        'shoelace-light',
+        'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css',
+        array(),
+        '2.15.0',
+        'screen'
+    );
+    wp_enqueue_script('shoelace-autoloader');
+    wp_enqueue_style('shoelace-light');
+
+    //add_filter to add type module to script tag shoelace-autoloader
+    add_filter('script_loader_tag', function($tag, $handle) {
+      if ('shoelace-autoloader' !== $handle) {
+        return $tag;
+      }
+      return str_replace(' src', ' type="module" src', $tag);
+    }, 10, 2);
   }
 
   public static function registerSettingsPage() {
@@ -45,9 +73,17 @@ class AddAdminInterface
         'avacy-dashboard',
         plugins_url( '/../styles/avacy-dashboard.css', __FILE__ ),
         array(),
-        '2023-09-13',
+        '1.0',
         'screen'
     );
+    wp_register_script(
+      'avacy-dashboard',
+      plugins_url( '/../styles/avacy-dashboard.js', __FILE__ ),
+      array(),
+      '1.0'
+    );
+
+    wp_enqueue_script( 'avacy-dashboard' );
     wp_enqueue_style( 'avacy-dashboard' );
 
     require_once(__DIR__ . '/../views/avacy-dashboard.php');
@@ -58,6 +94,7 @@ class AddAdminInterface
     register_setting('avacy-plugin-settings-group', 'avacy_tenant', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_webspace_id', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_api_token', 'sanitize_text_field');
+    register_setting('avacy-plugin-settings-group', 'avacy_show_banner', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_enable_preemptive_block', 'sanitize_text_field');
   }
 

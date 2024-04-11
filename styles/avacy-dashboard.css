@@ -1,13 +1,45 @@
 /* Stile per la tabella */
 :root {
   --section-max-width: 500px;
+  --description-max-width: 600px;
   --avacy-status-interaction-standard: #2c6ecb;
   --avacy-neutral-grey-secondary: #707070;
   --min-cell-width: 100px;
+  --sl-color-primary-500: var(--avacy-status-interaction-standard);
+  --sl-color-primary-600: var(--avacy-status-interaction-standard);
 }
 
 body.toplevel_page_avacy-plugin-settings {
   background: #ffffff;
+}
+
+body.toplevel_page_avacy-plugin-settings form.hidden {
+  display: none;
+}
+
+body.toplevel_page_avacy-plugin-settings .wrap {
+  margin: 1rem 0;
+  min-height: calc(100vh - 65px - 32px);
+}
+
+.AvacyLoader {
+  font-size: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.AvacyDescription {
+  max-width: var(--description-max-width);
+  text-wrap: balance;
+}
+.AvacyDescription.AvacyDescription--First > p:first-child {
+  margin-top: 0;
+}
+
+.AvacyLoader.hidden {
+  display: none;
 }
 
 /* table {
@@ -36,6 +68,29 @@ td {
 /* Section Styles */
 .AvacySection {
   margin-bottom: 2rem;
+}
+
+.AvacySection__InlineForm {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+.AvacySection__InlineForm sl-input {
+  flex: 1;
+  margin: 0;
+}
+.AvacySection__InlineForm sl-button.Submit {
+  margin-top: 0;
+}
+
+/* Account Details */
+.AccountDetail {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.AccountDetail__Key {
+  font-weight: bold;
 }
 
 /* Input Styles */
@@ -80,18 +135,12 @@ sl-details::part(content) {
 }
 
 /* Select */
-sl-select {
-  --sl-color-primary-600: var(--avacy-status-interaction-standard);
-}
 sl-select::part(listbox) {
   margin-block: 0.5rem;
   padding: 0;
 }
 
 /* Switch / Toggle */
-sl-switch {
-  --sl-color-primary-600: var(--avacy-status-interaction-standard);
-}
 
 sl-switch[size="medium"] {
   --thumb-size: calc(var(--sl-toggle-size-medium) - 2px);
@@ -101,16 +150,24 @@ sl-switch[size="large"] {
   --thumb-size: calc(var(--sl-toggle-size-large) - 4px);
 }
 
-sl-checkbox {
-  --sl-color-primary-500: var(--avacy-status-interaction-standard);
-  --sl-color-primary-600: var(--avacy-status-interaction-standard);
+/* Tabs */
+/* Tab Panel */
+sl-tab-panel {
+  --sl-spacing-medium: 2rem;
 }
 
 /* Button Styles */
 sl-button.Submit {
-  --sl-color-primary-600: var(--avacy-status-interaction-standard);
-  --sl-color-primary-500: var(--avacy-status-interaction-standard);
   margin-top: 1rem;
+}
+
+sl-button.Edit {
+  margin-top: 1rem;
+}
+sl-button.Edit::part(base) {
+  line-height: 1;
+  padding-inline-start: 0;
+  min-height: auto;
 }
 
 /* Media Queries */
@@ -129,6 +186,7 @@ sl-button.Submit {
 @media screen and (min-width: 1200px) {
   .AvacySection.AvacySection--Table {
     max-width: 80%;
+    margin-top: 3rem;
   }
 }
 

@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\AddAdminInterface;
 use Jumpgroup\Avacy\PreemptiveBlock;
+use Jumpgroup\Avacy\EnqueueBanner;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -49,6 +50,9 @@ class Init
     define('AVACY_PLUGIN_DIR_URL', plugin_dir_url(__FILE__));
     SendFormsToConsentSolution::init();
     AddAdminInterface::init();
+    if(!empty(get_option('avacy_show_banner'))) {
+      EnqueueBanner::init();
+    }
     if(!empty(get_option('avacy_enable_preemptive_block'))) {
       PreemptiveBlock::init();
     }
