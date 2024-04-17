@@ -13,7 +13,7 @@ class EnqueueBanner {
 
     public static function enqueueScripts() {
         $avacy_team = esc_attr(get_option('avacy_tenant'));
-        $avacy_uuid = esc_attr(get_option('avacy_webspace_id'));
+        $avacy_uuid = esc_attr(get_option('avacy_webspace_key'));
 
         if (!empty($avacy_team) && !empty($avacy_uuid)) {
             wp_enqueue_script( 'avacy-stub', 'https://jumpgroup.avacy-cdn.com/current/dist/oilstub.min.js', array(), '1.0.0', false );

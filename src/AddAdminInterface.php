@@ -15,12 +15,224 @@ class AddAdminInterface
 {
   public static function init()
   {
-    // admin_enqueue_scripts
+    add_action( 'admin_post_avacy_admin_save', [static::class, 'AvacyAdminSave'] );
     add_action('admin_enqueue_scripts', [static::class, 'enqueueShoelace']);
     add_action('admin_menu', [static::class, 'registerAvacyDashicon']);
     add_action('admin_menu', [static::class, 'addMenuPage']);
     add_action('admin_init', [static::class, 'registerSettings']);
     add_action('admin_init', [static::class, 'saveFields']);
+  }
+  
+  public static function AvacyAdminSave() {
+    $redirect_to = $_POST['redirectToUrl'];
+    $tenant = isset($_POST['avacy_tenant']) ? $_POST['avacy_tenant'] : '';
+    $webspaceKey = isset($_POST['avacy_webspace_key']) ? $_POST['avacy_webspace_key'] : '';
+    $apiToken = isset($_POST['avacy_api_token']) ? $_POST['avacy_api_token'] : '';
+    $showBanner = isset($_POST['avacy_show_banner']) ? $_POST['avacy_show_banner'] : '';
+    $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? $_POST['avacy_enable_preemptive_block'] : '';
+    $activeTab = isset($_POST['avacy_active_tab']) ? $_POST['avacy_active_tab'] : '';
+    $notices = [];
+
+    $warning_error = [
+      'avacy_account',
+      'account_not_found',
+      __('Attenzione! Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo qui.', 'avacy-wp'),
+      'warning'
+    ];
+
+    if (empty($tenant) || empty($webspaceKey)) {
+      add_settings_error($warning_error);
+      set_transient('settings_errors', get_settings_errors(), 30);
+      wp_safe_redirect($redirect_to);
+      exit;
+    }
+
+    $can_update = true;
+
+    $checkSaasAccount = self::checkSaasAccount($tenant, $webspaceKey);
+    if (!empty($checkSaasAccount)) {
+      $notices[] = $checkSaasAccount['notice'];
+    } else if (!empty($checkSaasAccount) && $checkSaasAccount['status'] !== 200) {
+      $can_update = false;
+    }
+
+    $checkConsentSolutionToken = self::checkConsentSolutionToken($apiToken);
+    if (!empty($checkConsentSolutionToken)) {
+      $notices[] = $checkConsentSolutionToken['notice'];
+    } else if (!empty($checkConsentSolutionToken) && $checkConsentSolutionToken['status'] !== 200) {
+      $can_update = false;
+    }
+
+    if (!empty($can_update) && isset($_POST['avacy_active_tab'])) {
+      update_option('avacy_show_banner', esc_attr($showBanner));
+      update_option('avacy_enable_preemptive_block', esc_attr($enablePreemptiveBlock));
+  
+      $notices[] = [
+        'avacy_settings',
+        'settings_saved',
+        __('Le modifiche sono state salvate correttamente.', 'avacy-wp'),
+        'success'
+      ];
+    }
+
+    // For each notice, add a settings error
+    foreach ($notices as $notice) {
+      if (!empty($notice)) {
+        add_settings_error(
+          $notice[0],
+          $notice[1],
+          $notice[2],
+          $notice[3]
+        );
+      }
+    }
+    set_transient('settings_errors', get_settings_errors(), 30);
+    set_transient('avacy_active_tab', $activeTab, 30);
+    wp_safe_redirect($redirect_to);
+    exit;
+  }
+
+  private static function checkSaasAccount($tenant, $webspaceKey) {
+    $option_tenant = get_option('avacy_tenant');
+    $option_webspace_key = get_option('avacy_webspace_key');
+
+    if ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) {
+      return [];
+    }
+    
+    $endpoint = 'https://api.avacy.eu/wp/' . $tenant . '/' . $webspaceKey;
+
+    $response = wp_remote_get($endpoint);
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    $setting = '';
+    $code = '';
+    $message = '';
+    $type = '';
+
+    if ($status_code !== 200) {
+      $error_code = $data['message']['error'] ?? 'team_not_found';
+      switch ($error_code) {
+        case 'team_not_found':
+          $setting = 'avacy_team';
+          $code = 'team_not_found';
+          $message = __('Team non trovato. Controlla i dati inseriti.', 'avacy-wp');
+          $type = 'danger';
+          break;
+        
+        case 'webspace_not_found':
+          $setting = 'avacy_webspace';
+          $code = 'webspace_not_found';
+          $message = __('Webspace non trovato. Controlla i dati inseriti.', 'avacy-wp');
+          $type = 'danger';
+          break;
+      }
+    } else {
+      $webspaceId = $data['id'];
+      if (!empty($tenant)) {
+        update_option('avacy_tenant', esc_attr($tenant));
+      }
+      if (!empty($webspaceKey)) {
+        update_option('avacy_webspace_key', esc_attr($webspaceKey));
+      }
+      if (!empty($webspaceId)) {
+        update_option('avacy_webspace_id', esc_attr($webspaceId));
+      }
+      
+      $setting = 'avacy_tenant';
+      $code = 'tenant_found';
+      $message = __('Le credenziali inserite sono valide.', 'avacy-wp');
+      $type = 'success';
+
+    }
+
+    return [
+      'status' => $status_code,
+      'notice' => [
+        $setting,
+        $code,
+        $message,
+        $type
+      ]
+    ];
+  }
+
+  public static function checkConsentSolutionToken($apiToken) {
+    $option_api_token = get_option('avacy_api_token');
+
+    if ($apiToken === $option_api_token) {
+      return [];
+    }
+
+    $setting = '';
+    $code = '';
+    $message = '';
+    $type = '';
+    
+    if (!empty($apiToken)) {
+      $option_tenant = get_option('avacy_tenant');
+      $option_webspace_key = get_option('avacy_webspace_key');
+
+      $endpoint = 'https://api.avacy.eu/wp/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+
+      $response = wp_remote_get($endpoint);
+
+      $status_code = wp_remote_retrieve_response_code($response);
+      $body = wp_remote_retrieve_body($response);
+      $data = json_decode($body, true);
+  
+      if ($status_code !== 200) {
+        $error_code = $data['message']['error'] ?? 'invalid_token';
+        switch ($error_code) {
+          case 'invalid_token':
+            $setting = 'avacy_api_token';
+            $code = 'invalid_token';
+            $message = __('Il token inserito ha un formato non corretto.', 'avacy-wp');
+            $type = 'warning';
+            break;
+
+          case 'token_not_found_or_expired':
+            $setting = 'avacy_api_token';
+            $code = 'token_not_found_or_expired';
+            $message = __('Token non trovato o scaduto. Controlla i dati inseriti.', 'avacy-wp');
+            $type = 'danger';
+            break;
+        }
+
+
+      } else {
+        update_option('avacy_api_token', esc_attr($apiToken));
+        
+        $setting = 'avacy_api_token';
+        $code = 'valid_token';
+        $message = __('Il token è stato salvato correttamente.', 'avacy-wp');
+        $type = 'success';
+      }
+    } else {
+      if (!empty($option_api_token)) {
+        update_option('avacy_api_token', '');
+  
+        $setting = 'avacy_api';
+        $code = 'remove_token';
+        $message = __('Il token è stato rimosso correttamente', 'avacy-wp');
+        $type = 'success';
+        $status_code = 200;
+      } else {
+        return [];
+      }
+    }
+
+    return [
+      'status' => $status_code,
+      'notice' => [
+        $setting,
+        $code,
+        $message,
+        $type
+      ]
+    ];
   }
 
   public static function registerAvacyDashicon()
@@ -80,7 +292,8 @@ class AddAdminInterface
       'avacy-dashboard',
       plugins_url( '/../styles/avacy-dashboard.js', __FILE__ ),
       array(),
-      '1.0'
+      '1.0',
+      true
     );
 
     wp_enqueue_script( 'avacy-dashboard' );
@@ -92,6 +305,7 @@ class AddAdminInterface
   public static function registerSettings()
   {
     register_setting('avacy-plugin-settings-group', 'avacy_tenant', 'sanitize_text_field');
+    register_setting('avacy-plugin-settings-group', 'avacy_webspace_key', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_webspace_id', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_api_token', 'sanitize_text_field');
     register_setting('avacy-plugin-settings-group', 'avacy_show_banner', 'sanitize_text_field');

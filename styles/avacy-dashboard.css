@@ -13,8 +13,8 @@ body.toplevel_page_avacy-plugin-settings {
   background: #ffffff;
 }
 
-body.toplevel_page_avacy-plugin-settings form.hidden {
-  display: none;
+body.toplevel_page_avacy-plugin-settings .wrap.hide {
+  visibility: hidden;
 }
 
 body.toplevel_page_avacy-plugin-settings .wrap {
@@ -68,6 +68,9 @@ td {
 /* Section Styles */
 .AvacySection {
   margin-bottom: 2rem;
+}
+.AvacySection.AvacySection--Table {
+  margin-bottom: 0;
 }
 
 .AvacySection__InlineForm {
@@ -157,10 +160,6 @@ sl-tab-panel {
 }
 
 /* Button Styles */
-sl-button.Submit {
-  margin-top: 1rem;
-}
-
 sl-button.Edit {
   margin-top: 1rem;
 }
@@ -168,6 +167,11 @@ sl-button.Edit::part(base) {
   line-height: 1;
   padding-inline-start: 0;
   min-height: auto;
+}
+
+/* Alert */
+sl-alert {
+  margin-top: 1rem;
 }
 
 /* Media Queries */
