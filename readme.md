@@ -37,15 +37,21 @@ Cookie banners will automatically appear on your site once configured.
 Users can manage their consent preferences through these banners.
 
 ### Tracker Control:
+Trackers are preemptively blocked based on a blacklist JSON file hosted on an AWS content delivery network.
+Every time a page in the website is loaded, Avacy checks if scripts injected in the current page have `src` attribute or the `innerHTML` property containing a string matching the patterns in the blacklist and, if so, overrides some attributes and blocks the script.
+Every script blocked this way will be launched only if user grants consent to the corresponding vendor and purposes by opting-in from the first layer or by selecting the vendor and its purposes from the second layer (the preference center).
 
-Trackers are preemptively blocked based on your configuration.
-Users who grant consent will have the necessary trackers unblocked.
-Support and Feedback
+### Support and Feedback
 For support or to report issues, please visit our support forum.
 
 ### Avacy Consent Solution API
+The plugin provides an interface that allows connecting to your consent archive on Avacy. To do this, it's necessary to generate a token from the Avacy platform and insert it into the Token field in the API token tab. This way, all the forms present on the page will be visible, and it will be possible to select various options, including:
 
-This plugin integrates with Avacy, a consent management platform, to ensure compliance with data protection regulations, such as GDPR and ePrivacy, and manage user consent preferences effectively.
+* the ability to store consents given for that specific form in the consent archive;
+* the fields to store for that form;
+* a field to identify the user who has given the consent to be stored in the archive.
+
+Everytime a user submits his data from a contact form, Avacy will perform a POST request towards Avacy Consent API, using the previously generated token as authenticator.
 
 #### Under What Circumstances is Avacy Used?
 Avacy is utilized whenever users provide consent through forms or interactions on your WordPress site. The plugin sends this consent data to Avacy's servers for storage and processing.
@@ -54,6 +60,7 @@ Avacy is utilized whenever users provide consent through forms or interactions o
 For more information about Avacy and its features, visit Avacy's [website](https://avacysolution.com/).
 
 #### Avacy Terms of Use and Privacy Policies
+Avacy uses 3rd party services as the Avacy REST API and AWS distributions to provide assets as the blacklist JSON file.
 Before integrating Avacy with this plugin, please review the Avacy [Terms of use](https://avacy.eu/terms-and-conditions) and [Privacy Policy](https://api.avacy.eu/jumpgroup/privacypolicy/14/it) to understand how your data is handled and what responsibilities you have as a user of their service.
 
 We welcome your feedback and suggestions to improve the functionality of the plugin.
