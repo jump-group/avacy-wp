@@ -21,6 +21,68 @@ class AddAdminInterface
     add_action('admin_menu', [static::class, 'addMenuPage']);
     add_action('admin_init', [static::class, 'registerSettings']);
     add_action('admin_init', [static::class, 'saveFields']);
+
+    // add action on plugin page load
+    add_action('load-toplevel_page_avacy-plugin-settings', [static::class, 'checkDataOnPageLoad']);
+  }
+
+  public static function checkDataOnPageLoad() {
+    $redirect_to = esc_url(admin_url('admin.php?page=avacy-plugin-settings'));
+    $tenant = get_option('avacy_tenant');
+    $webspaceKey = get_option('avacy_webspace_key');
+    $webspaceId = get_option('avacy_webspace_id');
+    $apiToken = get_option('avacy_api_token');
+    $checkSaasAccount = self::checkSaasAccount($tenant, $webspaceKey);
+    
+
+    if(empty($webspaceId) ){
+      return;
+    }
+
+    if (empty($checkSaasAccount) || ( !empty($checkSaasAccount) && $checkSaasAccount['status'] === 200) ) {
+      if(empty($apiToken)){
+        return;
+      }
+      $checkConsentSolutionToken = self::checkConsentSolutionToken($apiToken);
+      if (empty($checkConsentSolutionToken) || ( !empty($checkConsentSolutionToken) && $checkConsentSolutionToken['status'] === 200) ) {
+        return;
+      }
+
+      // dd('ciao', $checkConsentSolutionToken, $apiToken, $checkSaasAccount);
+      if ($checkConsentSolutionToken['status'] !== 200) {
+        $notices[] = $checkConsentSolutionToken['notice'];
+        update_option('avacy_api_token', '');
+        set_transient('avacy_active_tab', 'consent-archive', 30);
+        // dd('ciao');
+      }
+    } 
+
+    
+    if (!empty($checkSaasAccount) && $checkSaasAccount['status'] !== 200) {
+      $notices[] = $checkSaasAccount['notice'];
+      update_option('avacy_tenant', '');
+      update_option('avacy_webspace_key', '');
+      update_option('avacy_webspace_id', '');
+      update_option('avacy_api_token', '');
+    }
+
+    if (!empty($notices)) {
+      foreach ($notices as $notice) {
+        if (!empty($notice)) {
+          add_settings_error(
+            $notice[0],
+            $notice[1],
+            $notice[2],
+            $notice[3]
+          );
+        }
+      }
+    }
+
+    set_transient('settings_errors', get_settings_errors(), 30);
+    $form_errors = get_transient("settings_errors");
+    wp_safe_redirect($redirect_to);
+    exit;
   }
   
   public static function AvacyAdminSave() {
@@ -95,12 +157,8 @@ class AddAdminInterface
   private static function checkSaasAccount($tenant, $webspaceKey) {
     $option_tenant = get_option('avacy_tenant');
     $option_webspace_key = get_option('avacy_webspace_key');
-
-    if ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) {
-      return [];
-    }
     
-    $endpoint = 'https://api.avacy.eu/wp/' . $tenant . '/' . $webspaceKey;
+    $endpoint = 'https://api.avacy.eu/wp/validate/' . $tenant . '/' . $webspaceKey;
 
     $response = wp_remote_get($endpoint);
     $status_code = wp_remote_retrieve_response_code($response);
@@ -130,6 +188,10 @@ class AddAdminInterface
           break;
       }
     } else {
+      if ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) {
+        return [];
+      }
+
       $webspaceId = $data['id'];
       if (!empty($tenant)) {
         update_option('avacy_tenant', esc_attr($tenant));
@@ -162,10 +224,6 @@ class AddAdminInterface
   public static function checkConsentSolutionToken($apiToken) {
     $option_api_token = get_option('avacy_api_token');
 
-    if ($apiToken === $option_api_token) {
-      return [];
-    }
-
     $setting = '';
     $code = '';
     $message = '';
@@ -175,7 +233,7 @@ class AddAdminInterface
       $option_tenant = get_option('avacy_tenant');
       $option_webspace_key = get_option('avacy_webspace_key');
 
-      $endpoint = 'https://api.avacy.eu/wp/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+      $endpoint = 'https://api.avacy.eu/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
 
       $response = wp_remote_get($endpoint);
 
@@ -184,7 +242,7 @@ class AddAdminInterface
       $data = json_decode($body, true);
   
       if ($status_code !== 200) {
-        $error_code = $data['message']['error'] ?? 'invalid_token';
+        $error_code = $data['message']['error'] ?? 'token_not_found_or_expired';
         switch ($error_code) {
           case 'invalid_token':
             $setting = 'avacy_api_token';
@@ -200,9 +258,10 @@ class AddAdminInterface
             $type = 'danger';
             break;
         }
-
-
       } else {
+        if ($apiToken === $option_api_token) {
+          return [];
+        }
         update_option('avacy_api_token', esc_attr($apiToken));
         
         $setting = 'avacy_api_token';

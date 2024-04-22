@@ -111,7 +111,7 @@
                         <div class="AvacyDescription">
                             <p>
                                 <?php 
-                                    $cookie_banner_href = $base_api_url.'/cookie-banner/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
+                                    $cookie_banner_href = $base_api_url.'/redirect/cookie-banner/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                                 ?>
                                 <?php echo __('Per modificare l\'aspetto del cookie banner', 'avacy-wp')?> <a href="<?php echo esc_attr($cookie_banner_href)?>" target="_blank"><?php echo __('clicca qui', 'avacy-wp') ?></a>
                             </p>
@@ -125,7 +125,7 @@
                         <div class="AvacyDescription">
                             <p>
                                 <?php 
-                                    $vendors_href = $base_api_url.'/vendors/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
+                                    $vendors_href = $base_api_url.'/redirect/vendors/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                                 ?>
                                 <?php echo __('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy-wp')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo __('i tuoi fornitori', 'avacy-wp')?></a>.
                                 <br>
@@ -141,7 +141,7 @@
                         </p>
                         <p>
                             <?php 
-                                $consent_solution_href = $base_api_url.'/consent-solution/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
+                                $consent_solution_href = $base_api_url.'/redirect/consent-solution/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                             ?>
                             <?php echo __('Nella sezione dell\'', 'avacy-wp')?><a href="<?php echo esc_attr($consent_solution_href)?>" target="_blank"><?php echo __('archivio consensi', 'avacy-wp')?></a>, <?php echo __('crea un nuovo token per collegare il servizio con Wordpress e inseriscilo nel campo sottostante', 'avacy-wp')?></a>.
                         </p>
