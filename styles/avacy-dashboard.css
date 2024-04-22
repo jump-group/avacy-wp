@@ -1,23 +1,232 @@
 /* Stile per la tabella */
-
-table {
-    border-collapse: collapse;
-    width: 100%;
+:root {
+  --section-max-width: 500px;
+  --description-max-width: 600px;
+  --avacy-status-interaction-standard: #2c6ecb;
+  --avacy-neutral-grey-secondary: #707070;
+  --min-cell-width: 100px;
+  --sl-color-primary-500: var(--avacy-status-interaction-standard);
+  --sl-color-primary-600: var(--avacy-status-interaction-standard);
 }
+
+body.toplevel_page_avacy-plugin-settings {
+  background: #ffffff;
+}
+
+body.toplevel_page_avacy-plugin-settings .wrap.hide {
+  visibility: hidden;
+}
+
+body.toplevel_page_avacy-plugin-settings .wrap {
+  margin: 1rem 0;
+  min-height: calc(100vh - 65px - 32px);
+}
+
+.AvacyLoader {
+  font-size: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.AvacyDescription {
+  max-width: var(--description-max-width);
+  text-wrap: balance;
+}
+.AvacyDescription.AvacyDescription--First > p:first-child {
+  margin-top: 0;
+}
+
+.AvacyLoader.hidden {
+  display: none;
+}
+
+/* table {
+  border-collapse: collapse;
+  width: 100%;
+} */
 
 /* Stile per le celle della tabella */
-th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ccc;
-}
+/* th,
+td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
+} */
 
 /* Nascondi il contenuto del dettaglio per default */
-details[open] > div {
-    display: block;
-}
+/* details[open] > div {
+  display: block;
+} */
 
 /* Nascondi le frecce del dettaglio */
-summary::-webkit-details-marker {
-    display: none;
+/* summary::-webkit-details-marker {
+  display: none;
+} */
+
+/* Section Styles */
+.AvacySection {
+  margin-bottom: 2rem;
+}
+.AvacySection.AvacySection--Table {
+  margin-bottom: 0;
+}
+
+.AvacySection__InlineForm {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+.AvacySection__InlineForm sl-input {
+  flex: 1;
+  margin: 0;
+}
+.AvacySection__InlineForm sl-button.Submit {
+  margin-top: 0;
+}
+
+/* Account Details */
+.AccountDetail {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.AccountDetail__Key {
+  font-weight: bold;
+}
+
+/* Input Styles */
+
+sl-input {
+  /* display: block; */
+  margin-bottom: 1rem;
+}
+
+sl-input label {
+  /* display: flex;
+  align-items: center;
+  gap: 0.5rem; */
+  margin: 0 0 0.25rem;
+  font-weight: bold;
+}
+
+sl-input label span {
+  /* display: flex;
+  align-items: center; */
+}
+
+sl-input sl-tooltip {
+  display: flex;
+}
+
+/* Details */
+sl-details::part(base) {
+  border: none;
+}
+sl-details::part(header) {
+  padding: 0;
+  gap: 0.5rem;
+}
+sl-details::part(summary) {
+  flex: revert;
+}
+sl-details::part(content) {
+  display: inline-flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Select */
+sl-select::part(listbox) {
+  margin-block: 0.5rem;
+  padding: 0;
+}
+
+/* Switch / Toggle */
+
+sl-switch[size="medium"] {
+  --thumb-size: calc(var(--sl-toggle-size-medium) - 2px);
+}
+
+sl-switch[size="large"] {
+  --thumb-size: calc(var(--sl-toggle-size-large) - 4px);
+}
+
+/* Tabs */
+/* Tab Panel */
+sl-tab-panel {
+  --sl-spacing-medium: 2rem;
+}
+
+/* Button Styles */
+sl-button.Edit {
+  margin-top: 1rem;
+}
+sl-button.Edit::part(base) {
+  line-height: 1;
+  padding-inline-start: 0;
+  min-height: auto;
+}
+
+/* Alert */
+sl-alert {
+  margin-top: 1rem;
+}
+
+/* Media Queries */
+
+@media screen and (min-width: 768px) {
+  body.toplevel_page_avacy-plugin-settings #wpbody {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .AvacySection.AvacySection--Account {
+    max-width: var(--section-max-width);
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .AvacySection.AvacySection--Table {
+    max-width: 80%;
+    margin-top: 3rem;
+  }
+}
+
+/* Tables */
+table.AvacyForms {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+table.AvacyForms td,
+table.AvacyForms th {
+  padding: 10px 6px;
+}
+table.AvacyForms tbody td {
+  font-size: 13px;
+}
+table.AvacyForms tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+table.AvacyForms thead {
+  background: #cfcfcf;
+  background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #cfcfcf 100%);
+  background: -webkit-linear-gradient(
+    top,
+    #dbdbdb 0%,
+    #d3d3d3 66%,
+    #cfcfcf 100%
+  );
+  background: linear-gradient(to bottom, #dbdbdb 0%, #d3d3d3 66%, #cfcfcf 100%);
+}
+table.AvacyForms thead th {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--avacy-neutral-grey-secondary);
+  text-align: left;
+}
+table.AvacyForms tfoot td {
+  font-size: 14px;
 }
