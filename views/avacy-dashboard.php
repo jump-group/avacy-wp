@@ -127,9 +127,9 @@
                                 <?php 
                                     $vendors_href = $base_api_url.'/redirect/vendors/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                                 ?>
-                                <?php echo __('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy-wp')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo __('i tuoi fornitori', 'avacy-wp')?></a>.
+                                <?php /* echo __('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy-wp')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo __('i tuoi fornitori', 'avacy-wp') */?></a>
                                 <br>
-                                <?php echo __('Per maggiori informazioni', 'avacy-wp')?> <a href="<?php echo esc_attr($documention_url)?>" target="_blank"><?php echo __('consulta la nostra guida', 'avacy-wp')?></a>. 
+                                <?php /* echo __('Per maggiori informazioni', 'avacy-wp')?> <a href="<?php echo esc_attr($documention_url)?>" target="_blank"><?php echo __('consulta la nostra guida', 'avacy-wp') */?></a>
                             </p>
                         </div>
                     </div>
