@@ -9,7 +9,36 @@ use DOMDocument;
 
 class PreemptiveBlock {
 
+    private static $blackList;
+
     public static function init() {
+        // do a get request
+        $blackList = [];
+        $url = 'https://assets.avacy-cdn.com/config/' . get_option('avacy_tenant') . '/' . get_option('avacy_webspace_key') . '/custom-vendor-list.json';
+        // $url = 'https://avacy-cdn.s3.eu-central-1.amazonaws.com/config/test-production/90990663-c953-493f-9311-97aeef0833dc/custom-vendor-list.json';
+        $customVendorListRequest = wp_remote_get($url);
+
+        if($customVendorListRequest['response']['code'] === 200) {
+            $vendors = json_decode($customVendorListRequest['body'], true)['vendors'];
+            
+            // dd('asd', $customVendorListRequest, $customVendorListRequest['body'], json_decode($customVendorListRequest['body'], true));
+            foreach($vendors as $vendor) {
+                $purposes = empty($vendor['purposes']) ? [1] : $vendor['purposes'];
+
+                $blackList[$vendor['name']]['attribute'] = 'data-custom-vendor';
+                $blackList[$vendor['name']]['purposes'] = $purposes;
+                $blackList[$vendor['name']]['name'] = $vendor['name'];
+                $blackList[$vendor['name']]['id'] = $vendor['id'];
+                $blackList[$vendor['name']]['sources'] = [];
+    
+                foreach($vendor['blockUrls'] as $url) {
+                    $blackList[$vendor['name']]['sources'][] = $url;
+                }
+            }
+        }
+
+        self::$blackList = $blackList;
+
         add_action( 'template_redirect', [static::class, 'output_start'], 0 );
         add_action( 'shutdown', [static::class, 'output_end'], 100 );
     }
@@ -28,19 +57,16 @@ class PreemptiveBlock {
         $dom = new DOMDocument();
         $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-        $blackListFile = wp_remote_retrieve_body( wp_remote_get( 'https://assets.avacy-cdn.com/assets/blacklist.json' ) );
-        $blackList = json_decode($blackListFile, true);
-
         if( !empty($buffer) ) {
     
             $scripts = $dom->getElementsByTagName('script');
             foreach($scripts as $script) {
                 // if src is in the list of scripts to block
                 $src = $script->getAttribute('src');
-                $type = $script->getAttribute('type');
 
-                if ( ( $src !== '' && ($emt = self::src_contains($src, $blackList)) ) || 
-                     ( $emt = self::inner_html_contains($script, $blackList) ) ) {
+                if ( ( $src !== '' && ($emt = self::src_contains($src, self::$blackList)) ) || 
+                     ( $emt = self::inner_html_contains($script, self::$blackList) ) ) {
+
                     // change script type to text/plain
                     $script->setAttribute('type', 'as-oil');
                     $script->setAttribute('data-src', $src);

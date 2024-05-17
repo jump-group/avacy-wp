@@ -20,8 +20,8 @@ User-Friendly Interface: The plugin offers an intuitive dashboard for configurin
 Customizable Cookie Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
 Consent Logging: Keep track of user consent preferences and ensure compliance with privacy regulations.
 2. Tracker Preemptive Blocking
-Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy.
-Granular Control: Customize which trackers to block and manage exceptions based on user consent.
+Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy. 
+The plugin preemptively blocks all the scripts that might contain a string in the `src` attribute or in the inner HTML that matches the strings you can configure on [Avacy](https://avacy.eu) for each vendor.
 
 ## Installation
 
