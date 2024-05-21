@@ -86,13 +86,13 @@ class AddAdminInterface
   }
   
   public static function AvacyAdminSave() {
-    $redirect_to = $_POST['redirectToUrl'];
-    $tenant = isset($_POST['avacy_tenant']) ? $_POST['avacy_tenant'] : '';
-    $webspaceKey = isset($_POST['avacy_webspace_key']) ? $_POST['avacy_webspace_key'] : '';
-    $apiToken = isset($_POST['avacy_api_token']) ? $_POST['avacy_api_token'] : '';
-    $showBanner = isset($_POST['avacy_show_banner']) ? $_POST['avacy_show_banner'] : '';
-    $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? $_POST['avacy_enable_preemptive_block'] : '';
-    $activeTab = isset($_POST['avacy_active_tab']) ? $_POST['avacy_active_tab'] : '';
+    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url($_POST['redirectToUrl']) : '';
+    $tenant = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
+    $webspaceKey = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
+    $apiToken = isset($_POST['avacy_api_token']) ? sanitize_text_field($_POST['avacy_api_token']) : '';
+    $showBanner = isset($_POST['avacy_show_banner']) ? sanitize_text_field($_POST['avacy_show_banner']) : '';
+    $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? sanitize_text_field($_POST['avacy_enable_preemptive_block']) : '';
+    $activeTab = isset($_POST['avacy_active_tab']) ? sanitize_text_field($_POST['avacy_active_tab']) : '';
     $notices = [];
 
     $warning_error = [
