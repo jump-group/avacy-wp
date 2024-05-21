@@ -314,7 +314,7 @@ class AddAdminInterface
     // register cdn for shoelace
     wp_register_script(
       'shoelace-autoloader',
-      'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js',
+      plugins_url( '/../assets/libraries/@shoelace-style/shoelace/cdn/shoelace-autoloader.js', __FILE__ ),
       array(),
       '2.15.0',
   );
@@ -322,7 +322,7 @@ class AddAdminInterface
     // register css shoelace cdn
     wp_register_style(
         'shoelace-light',
-        'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css',
+        plugins_url( '/../assets/libraries/@shoelace-style/shoelace/cdn/themes/light.css', __FILE__ ),
         array(),
         '2.15.0',
         'screen'
