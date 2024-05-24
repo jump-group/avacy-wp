@@ -86,13 +86,16 @@ class AddAdminInterface
   }
   
   public static function AvacyAdminSave() {
-    $redirect_to = $_POST['redirectToUrl'];
-    $tenant = isset($_POST['avacy_tenant']) ? $_POST['avacy_tenant'] : '';
-    $webspaceKey = isset($_POST['avacy_webspace_key']) ? $_POST['avacy_webspace_key'] : '';
-    $apiToken = isset($_POST['avacy_api_token']) ? $_POST['avacy_api_token'] : '';
-    $showBanner = isset($_POST['avacy_show_banner']) ? $_POST['avacy_show_banner'] : '';
-    $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? $_POST['avacy_enable_preemptive_block'] : '';
-    $activeTab = isset($_POST['avacy_active_tab']) ? $_POST['avacy_active_tab'] : '';
+    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'avacy-plugin-settings-group-options' ) ) {
+      die( 'Security check' ); 
+    } 
+    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url($_POST['redirectToUrl']) : '';
+    $tenant = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
+    $webspaceKey = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
+    $apiToken = isset($_POST['avacy_api_token']) ? sanitize_text_field($_POST['avacy_api_token']) : '';
+    $showBanner = isset($_POST['avacy_show_banner']) ? sanitize_text_field($_POST['avacy_show_banner']) : '';
+    $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? sanitize_text_field($_POST['avacy_enable_preemptive_block']) : '';
+    $activeTab = isset($_POST['avacy_active_tab']) ? sanitize_text_field($_POST['avacy_active_tab']) : '';
     $notices = [];
 
     $warning_error = [
@@ -314,7 +317,7 @@ class AddAdminInterface
     // register cdn for shoelace
     wp_register_script(
       'shoelace-autoloader',
-      'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js',
+      plugins_url( '/../assets/libraries/@shoelace-style/shoelace/cdn/shoelace-autoloader.js', __FILE__ ),
       array(),
       '2.15.0',
   );
@@ -322,7 +325,7 @@ class AddAdminInterface
     // register css shoelace cdn
     wp_register_style(
         'shoelace-light',
-        'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css',
+        plugins_url( '/../assets/libraries/@shoelace-style/shoelace/cdn/themes/light.css', __FILE__ ),
         array(),
         '2.15.0',
         'screen'
