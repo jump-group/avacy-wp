@@ -86,10 +86,10 @@ class AddAdminInterface
   }
   
   public static function AvacyAdminSave() {
-    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'avacy-plugin-settings-group-options' ) ) {
+    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'avacy-plugin-settings-group-options' ) ) {
       die( 'Security check' ); 
     } 
-    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url($_POST['redirectToUrl']) : '';
+    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url(sanitize_text_field($_POST['redirectToUrl'])) : '';
     $tenant = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
     $webspaceKey = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
     $apiToken = isset($_POST['avacy_api_token']) ? sanitize_text_field($_POST['avacy_api_token']) : '';
