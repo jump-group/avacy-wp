@@ -49,7 +49,6 @@ export default class SlMenuItem extends ShoelaceElement {
     loading: boolean;
     /** Draws the menu item in a disabled state, preventing selection. */
     disabled: boolean;
-    private readonly localize;
     private readonly hasSlotController;
     private submenuController;
     connectedCallback(): void;

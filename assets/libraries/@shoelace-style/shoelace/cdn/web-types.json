@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
   "name": "@shoelace-style/shoelace",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "description-markup": "markdown",
   "contributions": {
     "html": {
@@ -78,75 +78,102 @@
           }
         },
         {
-          "name": "sl-avatar",
-          "description": "Avatars are used to represent a person or object.\n---\n\n\n### **Slots:**\n - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--size** - The size of the avatar. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the avatar's icon.\n- **initials** - The container that wraps the avatar's initials.\n- **image** - The avatar image. Only shown when the `image` attribute is set.",
+          "name": "sl-alert",
+          "description": "Alerts are used to display important messages inline or as toast notifications.\n---\n\n\n### **Events:**\n - **sl-show** - Emitted when the alert opens.\n- **sl-after-show** - Emitted after the alert opens and all animations are complete.\n- **sl-hide** - Emitted when the alert closes.\n- **sl-after-hide** - Emitted after the alert closes and all animations are complete.\n\n### **Methods:**\n - **show()** - Shows the alert.\n- **hide()** - Hides the alert\n- **toast()** - Displays the alert as a toast notification. This will move the alert out of its position in the DOM and, when\ndismissed, it will be removed from the DOM completely. By storing a reference to the alert, you can reuse it by\ncalling this method again. The returned promise will resolve after the alert is hidden.\n\n### **Slots:**\n - _default_ - The alert's main content.\n- **icon** - An icon to show in the alert. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the optional icon.\n- **message** - The container that wraps the alert's main content.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
           "doc-url": "",
           "attributes": [
             {
-              "name": "image",
-              "description": "The image source to use for the avatar.",
-              "value": { "type": "string", "default": "''" }
+              "name": "open",
+              "description": "Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can\nuse the `show()` and `hide()` methods and this attribute will reflect the alert's open state.",
+              "value": { "type": "boolean", "default": "false" }
             },
             {
-              "name": "label",
-              "description": "A label to use to describe the avatar to assistive devices.",
-              "value": { "type": "string", "default": "''" }
+              "name": "closable",
+              "description": "Enables a close button that allows the user to dismiss the alert.",
+              "value": { "type": "boolean", "default": "false" }
             },
             {
-              "name": "initials",
-              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
-              "value": { "type": "string", "default": "''" }
-            },
-            {
-              "name": "loading",
-              "description": "Indicates how the browser should load the image.",
-              "value": { "type": "'eager' | 'lazy'", "default": "'eager'" }
-            },
-            {
-              "name": "shape",
-              "description": "The shape of the avatar.",
+              "name": "variant",
+              "description": "The alert's theme variant.",
               "value": {
-                "type": "'circle' | 'square' | 'rounded'",
-                "default": "'circle'"
+                "type": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'",
+                "default": "'primary'"
               }
+            },
+            {
+              "name": "duration",
+              "description": "The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with\nthe alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning\nthe alert will not close on its own.",
+              "value": { "type": "string", "default": "Infinity" }
             }
           ],
           "slots": [
+            { "name": "", "description": "The alert's main content." },
             {
               "name": "icon",
-              "description": "The default icon to use when no image or initials are present. Works best with `<sl-icon>`."
+              "description": "An icon to show in the alert. Works best with `<sl-icon>`."
             }
           ],
-          "events": [],
+          "events": [
+            {
+              "name": "sl-show",
+              "description": "Emitted when the alert opens."
+            },
+            {
+              "name": "sl-after-show",
+              "description": "Emitted after the alert opens and all animations are complete."
+            },
+            {
+              "name": "sl-hide",
+              "description": "Emitted when the alert closes."
+            },
+            {
+              "name": "sl-after-hide",
+              "description": "Emitted after the alert closes and all animations are complete."
+            }
+          ],
           "js": {
             "properties": [
               {
-                "name": "image",
-                "description": "The image source to use for the avatar.",
-                "value": { "type": "string" }
+                "name": "open",
+                "description": "Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can\nuse the `show()` and `hide()` methods and this attribute will reflect the alert's open state.",
+                "value": { "type": "boolean" }
               },
               {
-                "name": "label",
-                "description": "A label to use to describe the avatar to assistive devices.",
-                "value": { "type": "string" }
+                "name": "closable",
+                "description": "Enables a close button that allows the user to dismiss the alert.",
+                "value": { "type": "boolean" }
               },
               {
-                "name": "initials",
-                "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
-                "value": { "type": "string" }
+                "name": "variant",
+                "description": "The alert's theme variant.",
+                "value": {
+                  "type": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
+                }
               },
               {
-                "name": "loading",
-                "description": "Indicates how the browser should load the image.",
-                "value": { "type": "'eager' | 'lazy'" }
-              },
-              {
-                "name": "shape",
-                "description": "The shape of the avatar.",
-                "value": { "type": "'circle' | 'square' | 'rounded'" }
+                "name": "duration",
+                "description": "The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with\nthe alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning\nthe alert will not close on its own.",
+                "value": {}
               }
             ],
-            "events": []
+            "events": [
+              {
+                "name": "sl-show",
+                "description": "Emitted when the alert opens."
+              },
+              {
+                "name": "sl-after-show",
+                "description": "Emitted after the alert opens and all animations are complete."
+              },
+              {
+                "name": "sl-hide",
+                "description": "Emitted when the alert closes."
+              },
+              {
+                "name": "sl-after-hide",
+                "description": "Emitted after the alert closes and all animations are complete."
+              }
+            ]
           }
         },
         {
@@ -305,194 +332,72 @@
           }
         },
         {
-          "name": "sl-alert",
-          "description": "Alerts are used to display important messages inline or as toast notifications.\n---\n\n\n### **Events:**\n - **sl-show** - Emitted when the alert opens.\n- **sl-after-show** - Emitted after the alert opens and all animations are complete.\n- **sl-hide** - Emitted when the alert closes.\n- **sl-after-hide** - Emitted after the alert closes and all animations are complete.\n\n### **Methods:**\n - **show()** - Shows the alert.\n- **hide()** - Hides the alert\n- **toast()** - Displays the alert as a toast notification. This will move the alert out of its position in the DOM and, when\ndismissed, it will be removed from the DOM completely. By storing a reference to the alert, you can reuse it by\ncalling this method again. The returned promise will resolve after the alert is hidden.\n\n### **Slots:**\n - _default_ - The alert's main content.\n- **icon** - An icon to show in the alert. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the optional icon.\n- **message** - The container that wraps the alert's main content.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
+          "name": "sl-avatar",
+          "description": "Avatars are used to represent a person or object.\n---\n\n\n### **Slots:**\n - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--size** - The size of the avatar. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the avatar's icon.\n- **initials** - The container that wraps the avatar's initials.\n- **image** - The avatar image. Only shown when the `image` attribute is set.",
           "doc-url": "",
           "attributes": [
             {
-              "name": "open",
-              "description": "Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can\nuse the `show()` and `hide()` methods and this attribute will reflect the alert's open state.",
-              "value": { "type": "boolean", "default": "false" }
+              "name": "image",
+              "description": "The image source to use for the avatar.",
+              "value": { "type": "string", "default": "''" }
             },
-            {
-              "name": "closable",
-              "description": "Enables a close button that allows the user to dismiss the alert.",
-              "value": { "type": "boolean", "default": "false" }
-            },
-            {
-              "name": "variant",
-              "description": "The alert's theme variant.",
-              "value": {
-                "type": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'",
-                "default": "'primary'"
-              }
-            },
-            {
-              "name": "duration",
-              "description": "The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with\nthe alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning\nthe alert will not close on its own.",
-              "value": { "type": "string", "default": "Infinity" }
-            }
-          ],
-          "slots": [
-            { "name": "", "description": "The alert's main content." },
-            {
-              "name": "icon",
-              "description": "An icon to show in the alert. Works best with `<sl-icon>`."
-            }
-          ],
-          "events": [
-            {
-              "name": "sl-show",
-              "description": "Emitted when the alert opens."
-            },
-            {
-              "name": "sl-after-show",
-              "description": "Emitted after the alert opens and all animations are complete."
-            },
-            {
-              "name": "sl-hide",
-              "description": "Emitted when the alert closes."
-            },
-            {
-              "name": "sl-after-hide",
-              "description": "Emitted after the alert closes and all animations are complete."
-            }
-          ],
-          "js": {
-            "properties": [
-              {
-                "name": "open",
-                "description": "Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can\nuse the `show()` and `hide()` methods and this attribute will reflect the alert's open state.",
-                "value": { "type": "boolean" }
-              },
-              {
-                "name": "closable",
-                "description": "Enables a close button that allows the user to dismiss the alert.",
-                "value": { "type": "boolean" }
-              },
-              {
-                "name": "variant",
-                "description": "The alert's theme variant.",
-                "value": {
-                  "type": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
-                }
-              },
-              {
-                "name": "duration",
-                "description": "The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with\nthe alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning\nthe alert will not close on its own.",
-                "value": {}
-              }
-            ],
-            "events": [
-              {
-                "name": "sl-show",
-                "description": "Emitted when the alert opens."
-              },
-              {
-                "name": "sl-after-show",
-                "description": "Emitted after the alert opens and all animations are complete."
-              },
-              {
-                "name": "sl-hide",
-                "description": "Emitted when the alert closes."
-              },
-              {
-                "name": "sl-after-hide",
-                "description": "Emitted after the alert closes and all animations are complete."
-              }
-            ]
-          }
-        },
-        {
-          "name": "sl-breadcrumb",
-          "description": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n---\n\n\n### **Slots:**\n - _default_ - One or more breadcrumb items to display.\n- **separator** - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
-          "doc-url": "",
-          "attributes": [
             {
               "name": "label",
-              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+              "description": "A label to use to describe the avatar to assistive devices.",
               "value": { "type": "string", "default": "''" }
+            },
+            {
+              "name": "initials",
+              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
+              "value": { "type": "string", "default": "''" }
+            },
+            {
+              "name": "loading",
+              "description": "Indicates how the browser should load the image.",
+              "value": { "type": "'eager' | 'lazy'", "default": "'eager'" }
+            },
+            {
+              "name": "shape",
+              "description": "The shape of the avatar.",
+              "value": {
+                "type": "'circle' | 'square' | 'rounded'",
+                "default": "'circle'"
+              }
             }
           ],
           "slots": [
             {
-              "name": "",
-              "description": "One or more breadcrumb items to display."
-            },
-            {
-              "name": "separator",
-              "description": "The separator to use between breadcrumb items. Works best with `<sl-icon>`."
+              "name": "icon",
+              "description": "The default icon to use when no image or initials are present. Works best with `<sl-icon>`."
             }
           ],
           "events": [],
           "js": {
             "properties": [
+              {
+                "name": "image",
+                "description": "The image source to use for the avatar.",
+                "value": { "type": "string" }
+              },
               {
                 "name": "label",
-                "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+                "description": "A label to use to describe the avatar to assistive devices.",
                 "value": { "type": "string" }
-              }
-            ],
-            "events": []
-          }
-        },
-        {
-          "name": "sl-breadcrumb-item",
-          "description": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n---\n\n\n### **Slots:**\n - _default_ - The breadcrumb item's label.\n- **prefix** - An optional prefix, usually an icon or icon button.\n- **suffix** - An optional suffix, usually an icon or icon button.\n- **separator** - The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **label** - The breadcrumb item's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.\n- **separator** - The container that wraps the separator.",
-          "doc-url": "",
-          "attributes": [
-            {
-              "name": "href",
-              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
-              "value": { "type": "string | undefined" }
-            },
-            {
-              "name": "target",
-              "description": "Tells the browser where to open the link. Only used when `href` is set.",
-              "value": {
-                "type": "'_blank' | '_parent' | '_self' | '_top' | undefined"
-              }
-            },
-            {
-              "name": "rel",
-              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
-              "value": { "type": "string", "default": "'noreferrer noopener'" }
-            }
-          ],
-          "slots": [
-            { "name": "", "description": "The breadcrumb item's label." },
-            {
-              "name": "prefix",
-              "description": "An optional prefix, usually an icon or icon button."
-            },
-            {
-              "name": "suffix",
-              "description": "An optional suffix, usually an icon or icon button."
-            },
-            {
-              "name": "separator",
-              "description": "The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead."
-            }
-          ],
-          "events": [],
-          "js": {
-            "properties": [
-              {
-                "name": "href",
-                "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
-                "value": { "type": "string | undefined" }
               },
               {
-                "name": "target",
-                "description": "Tells the browser where to open the link. Only used when `href` is set.",
-                "value": {
-                  "type": "'_blank' | '_parent' | '_self' | '_top' | undefined"
-                }
+                "name": "initials",
+                "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
+                "value": { "type": "string" }
               },
               {
-                "name": "rel",
-                "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
-                "value": { "type": "string" }
+                "name": "loading",
+                "description": "Indicates how the browser should load the image.",
+                "value": { "type": "'eager' | 'lazy'" }
+              },
+              {
+                "name": "shape",
+                "description": "The shape of the avatar.",
+                "value": { "type": "'circle' | 'square' | 'rounded'" }
               }
             ],
             "events": []
@@ -542,6 +447,39 @@
                 "name": "pulse",
                 "description": "Makes the badge pulsate to draw attention.",
                 "value": { "type": "boolean" }
+              }
+            ],
+            "events": []
+          }
+        },
+        {
+          "name": "sl-breadcrumb",
+          "description": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n---\n\n\n### **Slots:**\n - _default_ - One or more breadcrumb items to display.\n- **separator** - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "label",
+              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+              "value": { "type": "string", "default": "''" }
+            }
+          ],
+          "slots": [
+            {
+              "name": "",
+              "description": "One or more breadcrumb items to display."
+            },
+            {
+              "name": "separator",
+              "description": "The separator to use between breadcrumb items. Works best with `<sl-icon>`."
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "label",
+                "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+                "value": { "type": "string" }
               }
             ],
             "events": []
@@ -826,6 +764,68 @@
                 "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
               }
             ]
+          }
+        },
+        {
+          "name": "sl-breadcrumb-item",
+          "description": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n---\n\n\n### **Slots:**\n - _default_ - The breadcrumb item's label.\n- **prefix** - An optional prefix, usually an icon or icon button.\n- **suffix** - An optional suffix, usually an icon or icon button.\n- **separator** - The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **label** - The breadcrumb item's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.\n- **separator** - The container that wraps the separator.",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "href",
+              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
+              "value": { "type": "string | undefined" }
+            },
+            {
+              "name": "target",
+              "description": "Tells the browser where to open the link. Only used when `href` is set.",
+              "value": {
+                "type": "'_blank' | '_parent' | '_self' | '_top' | undefined"
+              }
+            },
+            {
+              "name": "rel",
+              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
+              "value": { "type": "string", "default": "'noreferrer noopener'" }
+            }
+          ],
+          "slots": [
+            { "name": "", "description": "The breadcrumb item's label." },
+            {
+              "name": "prefix",
+              "description": "An optional prefix, usually an icon or icon button."
+            },
+            {
+              "name": "suffix",
+              "description": "An optional suffix, usually an icon or icon button."
+            },
+            {
+              "name": "separator",
+              "description": "The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead."
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "href",
+                "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
+                "value": { "type": "string | undefined" }
+              },
+              {
+                "name": "target",
+                "description": "Tells the browser where to open the link. Only used when `href` is set.",
+                "value": {
+                  "type": "'_blank' | '_parent' | '_self' | '_top' | undefined"
+                }
+              },
+              {
+                "name": "rel",
+                "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
+                "value": { "type": "string" }
+              }
+            ],
+            "events": []
           }
         },
         {
@@ -2624,40 +2624,6 @@
           }
         },
         {
-          "name": "sl-menu",
-          "description": "Menus provide a list of options for the user to choose from.\n---\n\n\n### **Events:**\n - **sl-select** - Emitted when a menu item is selected.\n\n### **Slots:**\n - _default_ - The menu's content, including menu items, menu labels, and dividers.",
-          "doc-url": "",
-          "attributes": [],
-          "slots": [
-            {
-              "name": "",
-              "description": "The menu's content, including menu items, menu labels, and dividers."
-            }
-          ],
-          "events": [
-            {
-              "name": "sl-select",
-              "description": "Emitted when a menu item is selected."
-            }
-          ],
-          "js": {
-            "properties": [
-              { "name": "defaultSlot", "value": { "type": "HTMLSlotElement" } },
-              { "name": "handleClick", "value": {} },
-              { "name": "handleKeyDown", "value": {} },
-              { "name": "handleMouseDown", "value": {} },
-              { "name": "handleSlotChange", "value": {} },
-              { "name": "isMenuItem", "value": {} }
-            ],
-            "events": [
-              {
-                "name": "sl-select",
-                "description": "Emitted when a menu item is selected."
-              }
-            ]
-          }
-        },
-        {
           "name": "sl-input",
           "description": "Inputs collect data from the user.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-change** - Emitted when an alteration to the control's value is committed by the user.\n- **sl-clear** - Emitted when the clear button is activated.\n- **sl-focus** - Emitted when the control gains focus.\n- **sl-input** - Emitted when the control receives input.\n- **sl-invalid** - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus on the input.\n- **blur()** - Removes focus from the input.\n- **select()** - Selects all the text in the input.\n- **setSelectionRange(selectionStart: _number_, selectionEnd: _number_, selectionDirection: _'forward' | 'backward' | 'none'_)** - Sets the start and end positions of the text selection (0-based).\n- **setRangeText(replacement: _string_, start: _number_, end: _number_, selectMode: _'select' | 'start' | 'end' | 'preserve'_)** - Replaces a range of text with a new string.\n- **showPicker()** - Displays the browser picker for an input element (only works if the browser supports it for the input type).\n- **stepUp()** - Increments the value of a numeric input type by the value of the step attribute.\n- **stepDown()** - Decrements the value of a numeric input type by the value of the step attribute.\n- **checkValidity()** - Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid.\n- **getForm(): _HTMLFormElement | null_** - Gets the associated form, if one exists.\n- **reportValidity()** - Checks for validity and shows the browser's validation message if the control is invalid.\n- **setCustomValidity(message: _string_)** - Sets a custom validation message. Pass an empty string to restore validity.\n\n### **Slots:**\n - **label** - The input's label. Alternatively, you can use the `label` attribute.\n- **prefix** - Used to prepend a presentational icon or similar element to the input.\n- **suffix** - Used to append a presentational icon or similar element to the input.\n- **clear-icon** - An icon to use in lieu of the default clear icon.\n- **show-password-icon** - An icon to use in lieu of the default show password icon.\n- **hide-password-icon** - An icon to use in lieu of the default hide password icon.\n- **help-text** - Text that describes how to use the input. Alternatively, you can use the `help-text` attribute.\n\n### **CSS Parts:**\n - **form-control** - The form control that wraps the label, input, and help text.\n- **form-control-label** - The label's wrapper.\n- **form-control-input** - The input's wrapper.\n- **form-control-help-text** - The help text's wrapper.\n- **base** - The component's base wrapper.\n- **input** - The internal `<input>` control.\n- **prefix** - The container that wraps the prefix.\n- **clear-button** - The clear button.\n- **password-toggle-button** - The password toggle button.\n- **suffix** - The container that wraps the suffix.",
           "doc-url": "",
@@ -3073,6 +3039,40 @@
           }
         },
         {
+          "name": "sl-menu",
+          "description": "Menus provide a list of options for the user to choose from.\n---\n\n\n### **Events:**\n - **sl-select** - Emitted when a menu item is selected.\n\n### **Slots:**\n - _default_ - The menu's content, including menu items, menu labels, and dividers.",
+          "doc-url": "",
+          "attributes": [],
+          "slots": [
+            {
+              "name": "",
+              "description": "The menu's content, including menu items, menu labels, and dividers."
+            }
+          ],
+          "events": [
+            {
+              "name": "sl-select",
+              "description": "Emitted when a menu item is selected."
+            }
+          ],
+          "js": {
+            "properties": [
+              { "name": "defaultSlot", "value": { "type": "HTMLSlotElement" } },
+              { "name": "handleClick", "value": {} },
+              { "name": "handleKeyDown", "value": {} },
+              { "name": "handleMouseDown", "value": {} },
+              { "name": "handleSlotChange", "value": {} },
+              { "name": "isMenuItem", "value": {} }
+            ],
+            "events": [
+              {
+                "name": "sl-select",
+                "description": "Emitted when a menu item is selected."
+              }
+            ]
+          }
+        },
+        {
           "name": "sl-menu-item",
           "description": "Menu items provide options for the user to pick from in a menu.\n---\n\n\n### **Methods:**\n - **getTextLabel()** - Returns a text label based on the contents of the menu item's default slot.\n\n### **Slots:**\n - _default_ - The menu item's label.\n- **prefix** - Used to prepend an icon or similar element to the menu item.\n- **suffix** - Used to append an icon or similar element to the menu item.\n- **submenu** - Used to denote a nested menu.\n\n### **CSS Properties:**\n - **--submenu-offset** - The distance submenus shift to overlap the parent menu. _(default: -2px)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **checked-icon** - The checked icon, which is only visible when the menu item is checked.\n- **prefix** - The prefix container.\n- **label** - The menu item label.\n- **suffix** - The suffix container.\n- **spinner** - The spinner that shows when the menu item is in the loading state.\n- **spinner__base** - The spinner's base part.\n- **submenu-icon** - The submenu icon, visible only when the menu item has a submenu (not yet implemented).",
           "doc-url": "",
@@ -3154,48 +3154,13 @@
           }
         },
         {
-          "name": "sl-option",
-          "description": "Options define the selectable items within various form controls such as [select](/components/select).\n---\n\n\n### **Methods:**\n - **getTextLabel()** - Returns a plain text label based on the option's content.\n\n### **Slots:**\n - _default_ - The option's label.\n- **prefix** - Used to prepend an icon or similar element to the menu item.\n- **suffix** - Used to append an icon or similar element to the menu item.\n\n### **CSS Parts:**\n - **checked-icon** - The checked icon, an `<sl-icon>` element.\n- **base** - The component's base wrapper.\n- **label** - The option's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.",
+          "name": "sl-menu-label",
+          "description": "Menu labels are used to describe a group of menu items.\n---\n\n\n### **Slots:**\n - _default_ - The menu label's content.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
           "doc-url": "",
-          "attributes": [
-            {
-              "name": "value",
-              "description": "The option's value. When selected, the containing form control will receive this value. The value must be unique\nfrom other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing\nmultiple values.",
-              "value": { "type": "string", "default": "''" }
-            },
-            {
-              "name": "disabled",
-              "description": "Draws the option in a disabled state, preventing selection.",
-              "value": { "type": "boolean", "default": "false" }
-            }
-          ],
-          "slots": [
-            { "name": "", "description": "The option's label." },
-            {
-              "name": "prefix",
-              "description": "Used to prepend an icon or similar element to the menu item."
-            },
-            {
-              "name": "suffix",
-              "description": "Used to append an icon or similar element to the menu item."
-            }
-          ],
+          "attributes": [],
+          "slots": [{ "name": "", "description": "The menu label's content." }],
           "events": [],
-          "js": {
-            "properties": [
-              {
-                "name": "value",
-                "description": "The option's value. When selected, the containing form control will receive this value. The value must be unique\nfrom other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing\nmultiple values.",
-                "value": { "type": "string" }
-              },
-              {
-                "name": "disabled",
-                "description": "Draws the option in a disabled state, preventing selection.",
-                "value": { "type": "boolean" }
-              }
-            ],
-            "events": []
-          }
+          "js": { "properties": [], "events": [] }
         },
         {
           "name": "sl-mutation-observer",
@@ -3284,13 +3249,48 @@
           }
         },
         {
-          "name": "sl-menu-label",
-          "description": "Menu labels are used to describe a group of menu items.\n---\n\n\n### **Slots:**\n - _default_ - The menu label's content.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
+          "name": "sl-option",
+          "description": "Options define the selectable items within various form controls such as [select](/components/select).\n---\n\n\n### **Methods:**\n - **getTextLabel()** - Returns a plain text label based on the option's content.\n\n### **Slots:**\n - _default_ - The option's label.\n- **prefix** - Used to prepend an icon or similar element to the menu item.\n- **suffix** - Used to append an icon or similar element to the menu item.\n\n### **CSS Parts:**\n - **checked-icon** - The checked icon, an `<sl-icon>` element.\n- **base** - The component's base wrapper.\n- **label** - The option's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.",
           "doc-url": "",
-          "attributes": [],
-          "slots": [{ "name": "", "description": "The menu label's content." }],
+          "attributes": [
+            {
+              "name": "value",
+              "description": "The option's value. When selected, the containing form control will receive this value. The value must be unique\nfrom other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing\nmultiple values.",
+              "value": { "type": "string", "default": "''" }
+            },
+            {
+              "name": "disabled",
+              "description": "Draws the option in a disabled state, preventing selection.",
+              "value": { "type": "boolean", "default": "false" }
+            }
+          ],
+          "slots": [
+            { "name": "", "description": "The option's label." },
+            {
+              "name": "prefix",
+              "description": "Used to prepend an icon or similar element to the menu item."
+            },
+            {
+              "name": "suffix",
+              "description": "Used to append an icon or similar element to the menu item."
+            }
+          ],
           "events": [],
-          "js": { "properties": [], "events": [] }
+          "js": {
+            "properties": [
+              {
+                "name": "value",
+                "description": "The option's value. When selected, the containing form control will receive this value. The value must be unique\nfrom other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing\nmultiple values.",
+                "value": { "type": "string" }
+              },
+              {
+                "name": "disabled",
+                "description": "Draws the option in a disabled state, preventing selection.",
+                "value": { "type": "boolean" }
+              }
+            ],
+            "events": []
+          }
         },
         {
           "name": "sl-popup",
@@ -4001,107 +4001,6 @@
           }
         },
         {
-          "name": "sl-rating",
-          "description": "Ratings give users a way to quickly view and provide feedback.\n---\n\n\n### **Events:**\n - **sl-change** - Emitted when the rating's value changes.\n- **sl-hover** - Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus on the rating.\n- **blur()** - Removes focus from the rating.\n\n### **CSS Properties:**\n - **--symbol-color** - The inactive color for symbols. _(default: undefined)_\n- **--symbol-color-active** - The active color for symbols. _(default: undefined)_\n- **--symbol-size** - The size of symbols. _(default: undefined)_\n- **--symbol-spacing** - The spacing to use around symbols. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
-          "doc-url": "",
-          "attributes": [
-            {
-              "name": "label",
-              "description": "A label that describes the rating to assistive devices.",
-              "value": { "type": "string", "default": "''" }
-            },
-            {
-              "name": "value",
-              "description": "The current rating.",
-              "value": { "type": "number", "default": "0" }
-            },
-            {
-              "name": "max",
-              "description": "The highest rating to show.",
-              "value": { "type": "number", "default": "5" }
-            },
-            {
-              "name": "precision",
-              "description": "The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this\nattribute to `0.5`.",
-              "value": { "type": "number", "default": "1" }
-            },
-            {
-              "name": "readonly",
-              "description": "Makes the rating readonly.",
-              "value": { "type": "boolean", "default": "false" }
-            },
-            {
-              "name": "disabled",
-              "description": "Disables the rating.",
-              "value": { "type": "boolean", "default": "false" }
-            },
-            {
-              "name": "getSymbol",
-              "description": "A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.\nThe function should return a string containing trusted HTML of the symbol to render at the specified value. Works\nwell with `<sl-icon>` elements.",
-              "value": { "type": "(value: number) => string" }
-            }
-          ],
-          "events": [
-            {
-              "name": "sl-change",
-              "description": "Emitted when the rating's value changes."
-            },
-            {
-              "name": "sl-hover",
-              "description": "Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value."
-            }
-          ],
-          "js": {
-            "properties": [
-              {
-                "name": "label",
-                "description": "A label that describes the rating to assistive devices.",
-                "value": { "type": "string" }
-              },
-              {
-                "name": "value",
-                "description": "The current rating.",
-                "value": { "type": "number" }
-              },
-              {
-                "name": "max",
-                "description": "The highest rating to show.",
-                "value": { "type": "number" }
-              },
-              {
-                "name": "precision",
-                "description": "The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this\nattribute to `0.5`.",
-                "value": { "type": "number" }
-              },
-              {
-                "name": "readonly",
-                "description": "Makes the rating readonly.",
-                "value": { "type": "boolean" }
-              },
-              {
-                "name": "disabled",
-                "description": "Disables the rating.",
-                "value": { "type": "boolean" }
-              },
-              {
-                "name": "getSymbol",
-                "description": "A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.\nThe function should return a string containing trusted HTML of the symbol to render at the specified value. Works\nwell with `<sl-icon>` elements.",
-                "value": { "type": "(value: number) => string" }
-              }
-            ],
-            "events": [
-              {
-                "name": "sl-change",
-                "description": "Emitted when the rating's value changes."
-              },
-              {
-                "name": "sl-hover",
-                "description": "Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value."
-              }
-            ]
-          }
-        },
-        {
           "name": "sl-range",
           "description": "Ranges allow the user to select a single value within a given range using a slider.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-change** - Emitted when an alteration to the control's value is committed by the user.\n- **sl-focus** - Emitted when the control gains focus.\n- **sl-input** - Emitted when the control receives input.\n- **sl-invalid** - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus on the range.\n- **blur()** - Removes focus from the range.\n- **stepUp()** - Increments the value of the range by the value of the step attribute.\n- **stepDown()** - Decrements the value of the range by the value of the step attribute.\n- **checkValidity()** - Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid.\n- **getForm(): _HTMLFormElement | null_** - Gets the associated form, if one exists.\n- **reportValidity()** - Checks for validity and shows the browser's validation message if the control is invalid.\n- **setCustomValidity(message: _string_)** - Sets a custom validation message. Pass an empty string to restore validity.\n\n### **Slots:**\n - **label** - The range's label. Alternatively, you can use the `label` attribute.\n- **help-text** - Text that describes how to use the input. Alternatively, you can use the `help-text` attribute.\n\n### **CSS Properties:**\n - **--thumb-size** - The size of the thumb. _(default: undefined)_\n- **--tooltip-offset** - The vertical distance the tooltip is offset from the track. _(default: undefined)_\n- **--track-color-active** - The color of the portion of the track that represents the current value. _(default: undefined)_\n- **--track-color-inactive** - The of the portion of the track that represents the remaining value. _(default: undefined)_\n- **--track-height** - The height of the track. _(default: undefined)_\n- **--track-active-offset** - The point of origin of the active track. _(default: undefined)_\n\n### **CSS Parts:**\n - **form-control** - The form control that wraps the label, input, and help text.\n- **form-control-label** - The label's wrapper.\n- **form-control-input** - The range's wrapper.\n- **form-control-help-text** - The help text's wrapper.\n- **base** - The component's base wrapper.\n- **input** - The internal `<input>` element.\n- **tooltip** - The range's tooltip.",
           "doc-url": "",
@@ -4267,6 +4166,107 @@
               {
                 "name": "sl-invalid",
                 "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied."
+              }
+            ]
+          }
+        },
+        {
+          "name": "sl-rating",
+          "description": "Ratings give users a way to quickly view and provide feedback.\n---\n\n\n### **Events:**\n - **sl-change** - Emitted when the rating's value changes.\n- **sl-hover** - Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus on the rating.\n- **blur()** - Removes focus from the rating.\n\n### **CSS Properties:**\n - **--symbol-color** - The inactive color for symbols. _(default: undefined)_\n- **--symbol-color-active** - The active color for symbols. _(default: undefined)_\n- **--symbol-size** - The size of symbols. _(default: undefined)_\n- **--symbol-spacing** - The spacing to use around symbols. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "label",
+              "description": "A label that describes the rating to assistive devices.",
+              "value": { "type": "string", "default": "''" }
+            },
+            {
+              "name": "value",
+              "description": "The current rating.",
+              "value": { "type": "number", "default": "0" }
+            },
+            {
+              "name": "max",
+              "description": "The highest rating to show.",
+              "value": { "type": "number", "default": "5" }
+            },
+            {
+              "name": "precision",
+              "description": "The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this\nattribute to `0.5`.",
+              "value": { "type": "number", "default": "1" }
+            },
+            {
+              "name": "readonly",
+              "description": "Makes the rating readonly.",
+              "value": { "type": "boolean", "default": "false" }
+            },
+            {
+              "name": "disabled",
+              "description": "Disables the rating.",
+              "value": { "type": "boolean", "default": "false" }
+            },
+            {
+              "name": "getSymbol",
+              "description": "A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.\nThe function should return a string containing trusted HTML of the symbol to render at the specified value. Works\nwell with `<sl-icon>` elements.",
+              "value": { "type": "(value: number) => string" }
+            }
+          ],
+          "events": [
+            {
+              "name": "sl-change",
+              "description": "Emitted when the rating's value changes."
+            },
+            {
+              "name": "sl-hover",
+              "description": "Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value."
+            }
+          ],
+          "js": {
+            "properties": [
+              {
+                "name": "label",
+                "description": "A label that describes the rating to assistive devices.",
+                "value": { "type": "string" }
+              },
+              {
+                "name": "value",
+                "description": "The current rating.",
+                "value": { "type": "number" }
+              },
+              {
+                "name": "max",
+                "description": "The highest rating to show.",
+                "value": { "type": "number" }
+              },
+              {
+                "name": "precision",
+                "description": "The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this\nattribute to `0.5`.",
+                "value": { "type": "number" }
+              },
+              {
+                "name": "readonly",
+                "description": "Makes the rating readonly.",
+                "value": { "type": "boolean" }
+              },
+              {
+                "name": "disabled",
+                "description": "Disables the rating.",
+                "value": { "type": "boolean" }
+              },
+              {
+                "name": "getSymbol",
+                "description": "A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.\nThe function should return a string containing trusted HTML of the symbol to render at the specified value. Works\nwell with `<sl-icon>` elements.",
+                "value": { "type": "(value: number) => string" }
+              }
+            ],
+            "events": [
+              {
+                "name": "sl-change",
+                "description": "Emitted when the rating's value changes."
+              },
+              {
+                "name": "sl-hover",
+                "description": "Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value."
               }
             ]
           }
@@ -4967,7 +4967,7 @@
         },
         {
           "name": "sl-tab",
-          "description": "Tabs are used inside [tab groups](/components/tab-group) to represent and activate [tab panels](/components/tab-panel).\n---\n\n\n### **Events:**\n - **sl-close** - Emitted when the tab is closable and the close button is activated.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus to the tab.\n- **blur()** - Removes focus from the tab.\n\n### **Slots:**\n - _default_ - The tab's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
+          "description": "Tabs are used inside [tab groups](/components/tab-group) to represent and activate [tab panels](/components/tab-panel).\n---\n\n\n### **Events:**\n - **sl-close** - Emitted when the tab is closable and the close button is activated.\n\n### **Slots:**\n - _default_ - The tab's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
           "doc-url": "",
           "attributes": [
             {

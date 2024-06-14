@@ -34,14 +34,11 @@ export default class SlTab extends ShoelaceElement {
     closable: boolean;
     /** Disables the tab and prevents selection. */
     disabled: boolean;
+    tabIndex: number;
     connectedCallback(): void;
     private handleCloseClick;
     handleActiveChange(): void;
     handleDisabledChange(): void;
-    /** Sets focus to the tab. */
-    focus(options?: FocusOptions): void;
-    /** Removes focus from the tab. */
-    blur(): void;
     render(): import("lit-html").TemplateResult<1>;
 }
 declare global {

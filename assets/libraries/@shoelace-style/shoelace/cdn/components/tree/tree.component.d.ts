@@ -33,7 +33,6 @@ export default class SlTree extends ShoelaceElement {
      */
     selection: 'single' | 'multiple' | 'leaf';
     private lastFocusedItem;
-    private readonly localize;
     private mutationObserver;
     private clickTarget;
     constructor();

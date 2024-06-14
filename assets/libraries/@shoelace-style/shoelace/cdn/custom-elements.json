@@ -4,6 +4,192 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "components/animated-image/animated-image.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlAnimatedImage",
+          "cssProperties": [
+            {
+              "description": "The size of the icon box.",
+              "name": "--control-box-size"
+            },
+            {
+              "description": "The size of the play/pause icons.",
+              "name": "--icon-size"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The container that surrounds the pause/play icons and provides their background.",
+              "name": "control-box"
+            }
+          ],
+          "slots": [
+            {
+              "description": "Optional play icon to use instead of the default. Works best with `<sl-icon>`.",
+              "name": "play-icon"
+            },
+            {
+              "description": "Optional pause icon to use instead of the default. Works best with `<sl-icon>`.",
+              "name": "pause-icon"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'sl-icon': SlIcon }"
+            },
+            {
+              "kind": "field",
+              "name": "animatedImage",
+              "type": {
+                "text": "HTMLImageElement"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "frozenFrame",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isLoaded",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "description": "The path to the image to load.",
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "description": "A description of the image used by assistive devices.",
+              "attribute": "alt"
+            },
+            {
+              "kind": "field",
+              "name": "play",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Plays the animation. When this attribute is remove, the animation will pause.",
+              "attribute": "play",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "handleClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleLoad",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleError",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handlePlayChange"
+            },
+            {
+              "kind": "method",
+              "name": "handleSrcChange"
+            }
+          ],
+          "events": [
+            {
+              "description": "Emitted when the image loads successfully.",
+              "name": "sl-load",
+              "reactName": "onSlLoad",
+              "eventName": "SlLoadEvent"
+            },
+            {
+              "description": "Emitted when the image fails to load.",
+              "name": "sl-error",
+              "reactName": "onSlError",
+              "eventName": "SlErrorEvent"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "description": "The path to the image to load.",
+              "fieldName": "src"
+            },
+            {
+              "name": "alt",
+              "type": {
+                "text": "string"
+              },
+              "description": "A description of the image used by assistive devices.",
+              "fieldName": "alt"
+            },
+            {
+              "name": "play",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Plays the animation. When this attribute is remove, the animation will pause.",
+              "fieldName": "play"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "A component for displaying animated GIFs and WEBPs that play and pause on interaction.",
+          "tagNameWithoutPrefix": "animated-image",
+          "tagName": "sl-animated-image",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary A component for displaying animated GIFs and WEBPs that play and pause on interaction.\n * @documentation https://shoelace.style/components/animated-image\n * @status stable\n * @since 2.0\n *\n * @dependency sl-icon\n *\n * @event sl-load - Emitted when the image loads successfully.\n * @event sl-error - Emitted when the image fails to load.\n *\n * @slot play-icon - Optional play icon to use instead of the default. Works best with `<sl-icon>`.\n * @slot pause-icon - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.\n *\n * @part control-box - The container that surrounds the pause/play icons and provides their background.\n *\n * @cssproperty --control-box-size - The size of the icon box.\n * @cssproperty --icon-size - The size of the play/pause icons.\n */",
+          "documentation": "https://shoelace.style/components/animated-image",
+          "status": "stable",
+          "since": "2.0",
+          "dependencies": [
+            "sl-icon"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlAnimatedImage",
+            "module": "components/animated-image/animated-image.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/alert/alert.js",
       "declarations": [
         {
@@ -258,560 +444,6 @@
           "declaration": {
             "name": "SlAlert",
             "module": "components/alert/alert.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/avatar/avatar.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlAvatar",
-          "cssProperties": [
-            {
-              "description": "The size of the avatar.",
-              "name": "--size"
-            }
-          ],
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            },
-            {
-              "description": "The container that wraps the avatar's icon.",
-              "name": "icon"
-            },
-            {
-              "description": "The container that wraps the avatar's initials.",
-              "name": "initials"
-            },
-            {
-              "description": "The avatar image. Only shown when the `image` attribute is set.",
-              "name": "image"
-            }
-          ],
-          "slots": [
-            {
-              "description": "The default icon to use when no image or initials are present. Works best with `<sl-icon>`.",
-              "name": "icon"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "dependencies",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{\n    'sl-icon': SlIcon\n  }"
-            },
-            {
-              "kind": "field",
-              "name": "hasError",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "image",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The image source to use for the avatar.",
-              "attribute": "image"
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "A label to use to describe the avatar to assistive devices.",
-              "attribute": "label"
-            },
-            {
-              "kind": "field",
-              "name": "initials",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
-              "attribute": "initials"
-            },
-            {
-              "kind": "field",
-              "name": "loading",
-              "type": {
-                "text": "'eager' | 'lazy'"
-              },
-              "default": "'eager'",
-              "description": "Indicates how the browser should load the image.",
-              "attribute": "loading"
-            },
-            {
-              "kind": "field",
-              "name": "shape",
-              "type": {
-                "text": "'circle' | 'square' | 'rounded'"
-              },
-              "default": "'circle'",
-              "description": "The shape of the avatar.",
-              "attribute": "shape",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "handleImageChange"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "image",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The image source to use for the avatar.",
-              "fieldName": "image"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "A label to use to describe the avatar to assistive devices.",
-              "fieldName": "label"
-            },
-            {
-              "name": "initials",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
-              "fieldName": "initials"
-            },
-            {
-              "name": "loading",
-              "type": {
-                "text": "'eager' | 'lazy'"
-              },
-              "default": "'eager'",
-              "description": "Indicates how the browser should load the image.",
-              "fieldName": "loading"
-            },
-            {
-              "name": "shape",
-              "type": {
-                "text": "'circle' | 'square' | 'rounded'"
-              },
-              "default": "'circle'",
-              "description": "The shape of the avatar.",
-              "fieldName": "shape"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Avatars are used to represent a person or object.",
-          "tagNameWithoutPrefix": "avatar",
-          "tagName": "sl-avatar",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Avatars are used to represent a person or object.\n * @documentation https://shoelace.style/components/avatar\n * @status stable\n * @since 2.0\n *\n * @dependency sl-icon\n *\n * @slot icon - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n *\n * @csspart base - The component's base wrapper.\n * @csspart icon - The container that wraps the avatar's icon.\n * @csspart initials - The container that wraps the avatar's initials.\n * @csspart image - The avatar image. Only shown when the `image` attribute is set.\n *\n * @cssproperty --size - The size of the avatar.\n */",
-          "documentation": "https://shoelace.style/components/avatar",
-          "status": "stable",
-          "since": "2.0",
-          "dependencies": [
-            "sl-icon"
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlAvatar",
-            "module": "components/avatar/avatar.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/breadcrumb/breadcrumb.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlBreadcrumb",
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            }
-          ],
-          "slots": [
-            {
-              "description": "One or more breadcrumb items to display.",
-              "name": ""
-            },
-            {
-              "description": "The separator to use between breadcrumb items. Works best with `<sl-icon>`.",
-              "name": "separator"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "dependencies",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ 'sl-icon': SlIcon }"
-            },
-            {
-              "kind": "field",
-              "name": "localize",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new LocalizeController(this)"
-            },
-            {
-              "kind": "field",
-              "name": "separatorDir",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "defaultSlot",
-              "type": {
-                "text": "HTMLSlotElement"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "separatorSlot",
-              "type": {
-                "text": "HTMLSlotElement"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
-              "attribute": "label"
-            },
-            {
-              "kind": "method",
-              "name": "getSeparator",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleSlotChange",
-              "privacy": "private"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
-              "fieldName": "label"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.",
-          "tagNameWithoutPrefix": "breadcrumb",
-          "tagName": "sl-breadcrumb",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n * @documentation https://shoelace.style/components/breadcrumb\n * @status stable\n * @since 2.0\n *\n * @slot - One or more breadcrumb items to display.\n * @slot separator - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n *\n * @dependency sl-icon\n *\n * @csspart base - The component's base wrapper.\n */",
-          "documentation": "https://shoelace.style/components/breadcrumb",
-          "status": "stable",
-          "since": "2.0",
-          "dependencies": [
-            "sl-icon"
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlBreadcrumb",
-            "module": "components/breadcrumb/breadcrumb.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/breadcrumb-item/breadcrumb-item.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlBreadcrumbItem",
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            },
-            {
-              "description": "The breadcrumb item's label.",
-              "name": "label"
-            },
-            {
-              "description": "The container that wraps the prefix.",
-              "name": "prefix"
-            },
-            {
-              "description": "The container that wraps the suffix.",
-              "name": "suffix"
-            },
-            {
-              "description": "The container that wraps the separator.",
-              "name": "separator"
-            }
-          ],
-          "slots": [
-            {
-              "description": "The breadcrumb item's label.",
-              "name": ""
-            },
-            {
-              "description": "An optional prefix, usually an icon or icon button.",
-              "name": "prefix"
-            },
-            {
-              "description": "An optional suffix, usually an icon or icon button.",
-              "name": "suffix"
-            },
-            {
-              "description": "The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.",
-              "name": "separator"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "hasSlotController",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new HasSlotController(this, 'prefix', 'suffix')"
-            },
-            {
-              "kind": "field",
-              "name": "href",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
-              "attribute": "href"
-            },
-            {
-              "kind": "field",
-              "name": "target",
-              "type": {
-                "text": "'_blank' | '_parent' | '_self' | '_top' | undefined"
-              },
-              "description": "Tells the browser where to open the link. Only used when `href` is set.",
-              "attribute": "target"
-            },
-            {
-              "kind": "field",
-              "name": "rel",
-              "type": {
-                "text": "string"
-              },
-              "default": "'noreferrer noopener'",
-              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
-              "attribute": "rel"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "href",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
-              "fieldName": "href"
-            },
-            {
-              "name": "target",
-              "type": {
-                "text": "'_blank' | '_parent' | '_self' | '_top' | undefined"
-              },
-              "description": "Tells the browser where to open the link. Only used when `href` is set.",
-              "fieldName": "target"
-            },
-            {
-              "name": "rel",
-              "type": {
-                "text": "string"
-              },
-              "default": "'noreferrer noopener'",
-              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
-              "fieldName": "rel"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.",
-          "tagNameWithoutPrefix": "breadcrumb-item",
-          "tagName": "sl-breadcrumb-item",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n * @documentation https://shoelace.style/components/breadcrumb-item\n * @status stable\n * @since 2.0\n *\n * @slot - The breadcrumb item's label.\n * @slot prefix - An optional prefix, usually an icon or icon button.\n * @slot suffix - An optional suffix, usually an icon or icon button.\n * @slot separator - The separator to use for the breadcrumb item. This will only change the separator for this item. If\n * you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n *\n * @csspart base - The component's base wrapper.\n * @csspart label - The breadcrumb item's label.\n * @csspart prefix - The container that wraps the prefix.\n * @csspart suffix - The container that wraps the suffix.\n * @csspart separator - The container that wraps the separator.\n */",
-          "documentation": "https://shoelace.style/components/breadcrumb-item",
-          "status": "stable",
-          "since": "2.0"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlBreadcrumbItem",
-            "module": "components/breadcrumb-item/breadcrumb-item.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/badge/badge.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlBadge",
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            }
-          ],
-          "slots": [
-            {
-              "description": "The badge's content.",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "variant",
-              "type": {
-                "text": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
-              },
-              "default": "'primary'",
-              "description": "The badge's theme variant.",
-              "attribute": "variant",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "pill",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Draws a pill-style badge with rounded edges.",
-              "attribute": "pill",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "pulse",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Makes the badge pulsate to draw attention.",
-              "attribute": "pulse",
-              "reflects": true
-            }
-          ],
-          "attributes": [
-            {
-              "name": "variant",
-              "type": {
-                "text": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
-              },
-              "default": "'primary'",
-              "description": "The badge's theme variant.",
-              "fieldName": "variant"
-            },
-            {
-              "name": "pill",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Draws a pill-style badge with rounded edges.",
-              "fieldName": "pill"
-            },
-            {
-              "name": "pulse",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Makes the badge pulsate to draw attention.",
-              "fieldName": "pulse"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Badges are used to draw attention and display statuses or counts.",
-          "tagNameWithoutPrefix": "badge",
-          "tagName": "sl-badge",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Badges are used to draw attention and display statuses or counts.\n * @documentation https://shoelace.style/components/badge\n * @status stable\n * @since 2.0\n *\n * @slot - The badge's content.\n *\n * @csspart base - The component's base wrapper.\n */",
-          "documentation": "https://shoelace.style/components/badge",
-          "status": "stable",
-          "since": "2.0"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlBadge",
-            "module": "components/badge/badge.js"
           }
         }
       ]
@@ -1169,6 +801,423 @@
           "declaration": {
             "name": "SlAnimation",
             "module": "components/animation/animation.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/avatar/avatar.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlAvatar",
+          "cssProperties": [
+            {
+              "description": "The size of the avatar.",
+              "name": "--size"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The component's base wrapper.",
+              "name": "base"
+            },
+            {
+              "description": "The container that wraps the avatar's icon.",
+              "name": "icon"
+            },
+            {
+              "description": "The container that wraps the avatar's initials.",
+              "name": "initials"
+            },
+            {
+              "description": "The avatar image. Only shown when the `image` attribute is set.",
+              "name": "image"
+            }
+          ],
+          "slots": [
+            {
+              "description": "The default icon to use when no image or initials are present. Works best with `<sl-icon>`.",
+              "name": "icon"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{\n    'sl-icon': SlIcon\n  }"
+            },
+            {
+              "kind": "field",
+              "name": "hasError",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "image",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The image source to use for the avatar.",
+              "attribute": "image"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "A label to use to describe the avatar to assistive devices.",
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "initials",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
+              "attribute": "initials"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "type": {
+                "text": "'eager' | 'lazy'"
+              },
+              "default": "'eager'",
+              "description": "Indicates how the browser should load the image.",
+              "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "shape",
+              "type": {
+                "text": "'circle' | 'square' | 'rounded'"
+              },
+              "default": "'circle'",
+              "description": "The shape of the avatar.",
+              "attribute": "shape",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "handleImageChange"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "image",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The image source to use for the avatar.",
+              "fieldName": "image"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "A label to use to describe the avatar to assistive devices.",
+              "fieldName": "label"
+            },
+            {
+              "name": "initials",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
+              "fieldName": "initials"
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "'eager' | 'lazy'"
+              },
+              "default": "'eager'",
+              "description": "Indicates how the browser should load the image.",
+              "fieldName": "loading"
+            },
+            {
+              "name": "shape",
+              "type": {
+                "text": "'circle' | 'square' | 'rounded'"
+              },
+              "default": "'circle'",
+              "description": "The shape of the avatar.",
+              "fieldName": "shape"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "Avatars are used to represent a person or object.",
+          "tagNameWithoutPrefix": "avatar",
+          "tagName": "sl-avatar",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary Avatars are used to represent a person or object.\n * @documentation https://shoelace.style/components/avatar\n * @status stable\n * @since 2.0\n *\n * @dependency sl-icon\n *\n * @slot icon - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n *\n * @csspart base - The component's base wrapper.\n * @csspart icon - The container that wraps the avatar's icon.\n * @csspart initials - The container that wraps the avatar's initials.\n * @csspart image - The avatar image. Only shown when the `image` attribute is set.\n *\n * @cssproperty --size - The size of the avatar.\n */",
+          "documentation": "https://shoelace.style/components/avatar",
+          "status": "stable",
+          "since": "2.0",
+          "dependencies": [
+            "sl-icon"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlAvatar",
+            "module": "components/avatar/avatar.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/badge/badge.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlBadge",
+          "cssParts": [
+            {
+              "description": "The component's base wrapper.",
+              "name": "base"
+            }
+          ],
+          "slots": [
+            {
+              "description": "The badge's content.",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
+              },
+              "default": "'primary'",
+              "description": "The badge's theme variant.",
+              "attribute": "variant",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "pill",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Draws a pill-style badge with rounded edges.",
+              "attribute": "pill",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "pulse",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Makes the badge pulsate to draw attention.",
+              "attribute": "pulse",
+              "reflects": true
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant",
+              "type": {
+                "text": "'primary' | 'success' | 'neutral' | 'warning' | 'danger'"
+              },
+              "default": "'primary'",
+              "description": "The badge's theme variant.",
+              "fieldName": "variant"
+            },
+            {
+              "name": "pill",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Draws a pill-style badge with rounded edges.",
+              "fieldName": "pill"
+            },
+            {
+              "name": "pulse",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Makes the badge pulsate to draw attention.",
+              "fieldName": "pulse"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "Badges are used to draw attention and display statuses or counts.",
+          "tagNameWithoutPrefix": "badge",
+          "tagName": "sl-badge",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary Badges are used to draw attention and display statuses or counts.\n * @documentation https://shoelace.style/components/badge\n * @status stable\n * @since 2.0\n *\n * @slot - The badge's content.\n *\n * @csspart base - The component's base wrapper.\n */",
+          "documentation": "https://shoelace.style/components/badge",
+          "status": "stable",
+          "since": "2.0"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlBadge",
+            "module": "components/badge/badge.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "components/breadcrumb/breadcrumb.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlBreadcrumb",
+          "cssParts": [
+            {
+              "description": "The component's base wrapper.",
+              "name": "base"
+            }
+          ],
+          "slots": [
+            {
+              "description": "One or more breadcrumb items to display.",
+              "name": ""
+            },
+            {
+              "description": "The separator to use between breadcrumb items. Works best with `<sl-icon>`.",
+              "name": "separator"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "dependencies",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ 'sl-icon': SlIcon }"
+            },
+            {
+              "kind": "field",
+              "name": "localize",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new LocalizeController(this)"
+            },
+            {
+              "kind": "field",
+              "name": "separatorDir",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "defaultSlot",
+              "type": {
+                "text": "HTMLSlotElement"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "separatorSlot",
+              "type": {
+                "text": "HTMLSlotElement"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "getSeparator",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleSlotChange",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.",
+          "tagNameWithoutPrefix": "breadcrumb",
+          "tagName": "sl-breadcrumb",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n * @documentation https://shoelace.style/components/breadcrumb\n * @status stable\n * @since 2.0\n *\n * @slot - One or more breadcrumb items to display.\n * @slot separator - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n *\n * @dependency sl-icon\n *\n * @csspart base - The component's base wrapper.\n */",
+          "documentation": "https://shoelace.style/components/breadcrumb",
+          "status": "stable",
+          "since": "2.0",
+          "dependencies": [
+            "sl-icon"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlBreadcrumb",
+            "module": "components/breadcrumb/breadcrumb.js"
           }
         }
       ]
@@ -1849,177 +1898,128 @@
     },
     {
       "kind": "javascript-module",
-      "path": "components/animated-image/animated-image.js",
+      "path": "components/breadcrumb-item/breadcrumb-item.js",
       "declarations": [
         {
           "kind": "class",
           "description": "",
-          "name": "SlAnimatedImage",
-          "cssProperties": [
-            {
-              "description": "The size of the icon box.",
-              "name": "--control-box-size"
-            },
-            {
-              "description": "The size of the play/pause icons.",
-              "name": "--icon-size"
-            }
-          ],
+          "name": "SlBreadcrumbItem",
           "cssParts": [
             {
-              "description": "The container that surrounds the pause/play icons and provides their background.",
-              "name": "control-box"
+              "description": "The component's base wrapper.",
+              "name": "base"
+            },
+            {
+              "description": "The breadcrumb item's label.",
+              "name": "label"
+            },
+            {
+              "description": "The container that wraps the prefix.",
+              "name": "prefix"
+            },
+            {
+              "description": "The container that wraps the suffix.",
+              "name": "suffix"
+            },
+            {
+              "description": "The container that wraps the separator.",
+              "name": "separator"
             }
           ],
           "slots": [
             {
-              "description": "Optional play icon to use instead of the default. Works best with `<sl-icon>`.",
-              "name": "play-icon"
+              "description": "The breadcrumb item's label.",
+              "name": ""
             },
             {
-              "description": "Optional pause icon to use instead of the default. Works best with `<sl-icon>`.",
-              "name": "pause-icon"
+              "description": "An optional prefix, usually an icon or icon button.",
+              "name": "prefix"
+            },
+            {
+              "description": "An optional suffix, usually an icon or icon button.",
+              "name": "suffix"
+            },
+            {
+              "description": "The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.",
+              "name": "separator"
             }
           ],
           "members": [
             {
               "kind": "field",
-              "name": "dependencies",
+              "name": "hasSlotController",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new HasSlotController(this, 'prefix', 'suffix')"
+            },
+            {
+              "kind": "field",
+              "name": "href",
               "type": {
-                "text": "object"
+                "text": "string | undefined"
               },
-              "static": true,
-              "default": "{ 'sl-icon': SlIcon }"
+              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
+              "attribute": "href"
             },
             {
               "kind": "field",
-              "name": "animatedImage",
+              "name": "target",
               "type": {
-                "text": "HTMLImageElement"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "frozenFrame",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "isLoaded",
-              "type": {
-                "text": "boolean"
+                "text": "'_blank' | '_parent' | '_self' | '_top' | undefined"
               },
-              "default": "false"
+              "description": "Tells the browser where to open the link. Only used when `href` is set.",
+              "attribute": "target"
             },
             {
               "kind": "field",
-              "name": "src",
+              "name": "rel",
               "type": {
                 "text": "string"
               },
-              "description": "The path to the image to load.",
-              "attribute": "src"
-            },
-            {
-              "kind": "field",
-              "name": "alt",
-              "type": {
-                "text": "string"
-              },
-              "description": "A description of the image used by assistive devices.",
-              "attribute": "alt"
-            },
-            {
-              "kind": "field",
-              "name": "play",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Plays the animation. When this attribute is remove, the animation will pause.",
-              "attribute": "play",
-              "reflects": true
-            },
-            {
-              "kind": "method",
-              "name": "handleClick",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleLoad",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleError",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handlePlayChange"
-            },
-            {
-              "kind": "method",
-              "name": "handleSrcChange"
-            }
-          ],
-          "events": [
-            {
-              "description": "Emitted when the image loads successfully.",
-              "name": "sl-load",
-              "reactName": "onSlLoad",
-              "eventName": "SlLoadEvent"
-            },
-            {
-              "description": "Emitted when the image fails to load.",
-              "name": "sl-error",
-              "reactName": "onSlError",
-              "eventName": "SlErrorEvent"
+              "default": "'noreferrer noopener'",
+              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
+              "attribute": "rel"
             }
           ],
           "attributes": [
             {
-              "name": "src",
+              "name": "href",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
+              "fieldName": "href"
+            },
+            {
+              "name": "target",
+              "type": {
+                "text": "'_blank' | '_parent' | '_self' | '_top' | undefined"
+              },
+              "description": "Tells the browser where to open the link. Only used when `href` is set.",
+              "fieldName": "target"
+            },
+            {
+              "name": "rel",
               "type": {
                 "text": "string"
               },
-              "description": "The path to the image to load.",
-              "fieldName": "src"
-            },
-            {
-              "name": "alt",
-              "type": {
-                "text": "string"
-              },
-              "description": "A description of the image used by assistive devices.",
-              "fieldName": "alt"
-            },
-            {
-              "name": "play",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Plays the animation. When this attribute is remove, the animation will pause.",
-              "fieldName": "play"
+              "default": "'noreferrer noopener'",
+              "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
+              "fieldName": "rel"
             }
           ],
           "superclass": {
             "name": "ShoelaceElement",
             "module": "/src/internal/shoelace-element.js"
           },
-          "summary": "A component for displaying animated GIFs and WEBPs that play and pause on interaction.",
-          "tagNameWithoutPrefix": "animated-image",
-          "tagName": "sl-animated-image",
+          "summary": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.",
+          "tagNameWithoutPrefix": "breadcrumb-item",
+          "tagName": "sl-breadcrumb-item",
           "customElement": true,
-          "jsDoc": "/**\n * @summary A component for displaying animated GIFs and WEBPs that play and pause on interaction.\n * @documentation https://shoelace.style/components/animated-image\n * @status stable\n * @since 2.0\n *\n * @dependency sl-icon\n *\n * @event sl-load - Emitted when the image loads successfully.\n * @event sl-error - Emitted when the image fails to load.\n *\n * @slot play-icon - Optional play icon to use instead of the default. Works best with `<sl-icon>`.\n * @slot pause-icon - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.\n *\n * @part control-box - The container that surrounds the pause/play icons and provides their background.\n *\n * @cssproperty --control-box-size - The size of the icon box.\n * @cssproperty --icon-size - The size of the play/pause icons.\n */",
-          "documentation": "https://shoelace.style/components/animated-image",
+          "jsDoc": "/**\n * @summary Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n * @documentation https://shoelace.style/components/breadcrumb-item\n * @status stable\n * @since 2.0\n *\n * @slot - The breadcrumb item's label.\n * @slot prefix - An optional prefix, usually an icon or icon button.\n * @slot suffix - An optional suffix, usually an icon or icon button.\n * @slot separator - The separator to use for the breadcrumb item. This will only change the separator for this item. If\n * you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n *\n * @csspart base - The component's base wrapper.\n * @csspart label - The breadcrumb item's label.\n * @csspart prefix - The container that wraps the prefix.\n * @csspart suffix - The container that wraps the suffix.\n * @csspart separator - The container that wraps the separator.\n */",
+          "documentation": "https://shoelace.style/components/breadcrumb-item",
           "status": "stable",
-          "since": "2.0",
-          "dependencies": [
-            "sl-icon"
-          ]
+          "since": "2.0"
         }
       ],
       "exports": [
@@ -2027,8 +2027,8 @@
           "kind": "js",
           "name": "default",
           "declaration": {
-            "name": "SlAnimatedImage",
-            "module": "components/animated-image/animated-image.js"
+            "name": "SlBreadcrumbItem",
+            "module": "components/breadcrumb-item/breadcrumb-item.js"
           }
         }
       ]
@@ -7344,13 +7344,6 @@
             },
             {
               "kind": "field",
-              "name": "localize",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new LocalizeController(this)"
-            },
-            {
-              "kind": "field",
               "name": "base",
               "type": {
                 "text": "HTMLElement"
@@ -8864,13 +8857,6 @@
             },
             {
               "kind": "field",
-              "name": "localize",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new LocalizeController(this)"
-            },
-            {
-              "kind": "field",
               "name": "hasSlotController",
               "privacy": "private",
               "readonly": true,
@@ -8883,7 +8869,7 @@
                 "text": "SubmenuController"
               },
               "privacy": "private",
-              "default": "new SubmenuController(this, this.hasSlotController, this.localize)"
+              "default": "new SubmenuController(this, this.hasSlotController)"
             },
             {
               "kind": "method",
@@ -10293,6 +10279,193 @@
     },
     {
       "kind": "javascript-module",
+      "path": "components/qr-code/qr-code.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlQrCode",
+          "cssParts": [
+            {
+              "description": "The component's base wrapper.",
+              "name": "base"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "canvas",
+              "type": {
+                "text": "HTMLElement"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The QR code's value.",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The label for assistive devices to announce. If unspecified, the value will be used instead.",
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "number"
+              },
+              "default": "128",
+              "description": "The size of the QR code, in pixels.",
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "fill",
+              "type": {
+                "text": "string"
+              },
+              "default": "'black'",
+              "description": "The fill color. This can be any valid CSS color, but not a CSS custom property.",
+              "attribute": "fill"
+            },
+            {
+              "kind": "field",
+              "name": "background",
+              "type": {
+                "text": "string"
+              },
+              "default": "'white'",
+              "description": "The background color. This can be any valid CSS color or `transparent`. It cannot be a CSS custom property.",
+              "attribute": "background"
+            },
+            {
+              "kind": "field",
+              "name": "radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "The edge radius of each module. Must be between 0 and 0.5.",
+              "attribute": "radius"
+            },
+            {
+              "kind": "field",
+              "name": "errorCorrection",
+              "type": {
+                "text": "'L' | 'M' | 'Q' | 'H'"
+              },
+              "default": "'H'",
+              "description": "The level of error correction to use. [Learn more](https://www.qrcode.com/en/about/error_correction.html)",
+              "attribute": "error-correction"
+            },
+            {
+              "kind": "method",
+              "name": "generate"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The QR code's value.",
+              "fieldName": "value"
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The label for assistive devices to announce. If unspecified, the value will be used instead.",
+              "fieldName": "label"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "number"
+              },
+              "default": "128",
+              "description": "The size of the QR code, in pixels.",
+              "fieldName": "size"
+            },
+            {
+              "name": "fill",
+              "type": {
+                "text": "string"
+              },
+              "default": "'black'",
+              "description": "The fill color. This can be any valid CSS color, but not a CSS custom property.",
+              "fieldName": "fill"
+            },
+            {
+              "name": "background",
+              "type": {
+                "text": "string"
+              },
+              "default": "'white'",
+              "description": "The background color. This can be any valid CSS color or `transparent`. It cannot be a CSS custom property.",
+              "fieldName": "background"
+            },
+            {
+              "name": "radius",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "description": "The edge radius of each module. Must be between 0 and 0.5.",
+              "fieldName": "radius"
+            },
+            {
+              "name": "error-correction",
+              "type": {
+                "text": "'L' | 'M' | 'Q' | 'H'"
+              },
+              "default": "'H'",
+              "description": "The level of error correction to use. [Learn more](https://www.qrcode.com/en/about/error_correction.html)",
+              "fieldName": "errorCorrection"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "Generates a [QR code](https://www.qrcode.com/) and renders it using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).",
+          "tagNameWithoutPrefix": "qr-code",
+          "tagName": "sl-qr-code",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary Generates a [QR code](https://www.qrcode.com/) and renders it using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).\n * @documentation https://shoelace.style/components/qr-code\n * @status stable\n * @since 2.0\n *\n * @csspart base - The component's base wrapper.\n */",
+          "documentation": "https://shoelace.style/components/qr-code",
+          "status": "stable",
+          "since": "2.0"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlQrCode",
+            "module": "components/qr-code/qr-code.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/radio/radio.js",
       "declarations": [
         {
@@ -10480,193 +10653,6 @@
           "declaration": {
             "name": "SlRadio",
             "module": "components/radio/radio.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/qr-code/qr-code.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlQrCode",
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "canvas",
-              "type": {
-                "text": "HTMLElement"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The QR code's value.",
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The label for assistive devices to announce. If unspecified, the value will be used instead.",
-              "attribute": "label"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "number"
-              },
-              "default": "128",
-              "description": "The size of the QR code, in pixels.",
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "fill",
-              "type": {
-                "text": "string"
-              },
-              "default": "'black'",
-              "description": "The fill color. This can be any valid CSS color, but not a CSS custom property.",
-              "attribute": "fill"
-            },
-            {
-              "kind": "field",
-              "name": "background",
-              "type": {
-                "text": "string"
-              },
-              "default": "'white'",
-              "description": "The background color. This can be any valid CSS color or `transparent`. It cannot be a CSS custom property.",
-              "attribute": "background"
-            },
-            {
-              "kind": "field",
-              "name": "radius",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "The edge radius of each module. Must be between 0 and 0.5.",
-              "attribute": "radius"
-            },
-            {
-              "kind": "field",
-              "name": "errorCorrection",
-              "type": {
-                "text": "'L' | 'M' | 'Q' | 'H'"
-              },
-              "default": "'H'",
-              "description": "The level of error correction to use. [Learn more](https://www.qrcode.com/en/about/error_correction.html)",
-              "attribute": "error-correction"
-            },
-            {
-              "kind": "method",
-              "name": "generate"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The QR code's value.",
-              "fieldName": "value"
-            },
-            {
-              "name": "label",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The label for assistive devices to announce. If unspecified, the value will be used instead.",
-              "fieldName": "label"
-            },
-            {
-              "name": "size",
-              "type": {
-                "text": "number"
-              },
-              "default": "128",
-              "description": "The size of the QR code, in pixels.",
-              "fieldName": "size"
-            },
-            {
-              "name": "fill",
-              "type": {
-                "text": "string"
-              },
-              "default": "'black'",
-              "description": "The fill color. This can be any valid CSS color, but not a CSS custom property.",
-              "fieldName": "fill"
-            },
-            {
-              "name": "background",
-              "type": {
-                "text": "string"
-              },
-              "default": "'white'",
-              "description": "The background color. This can be any valid CSS color or `transparent`. It cannot be a CSS custom property.",
-              "fieldName": "background"
-            },
-            {
-              "name": "radius",
-              "type": {
-                "text": "number"
-              },
-              "default": "0",
-              "description": "The edge radius of each module. Must be between 0 and 0.5.",
-              "fieldName": "radius"
-            },
-            {
-              "name": "error-correction",
-              "type": {
-                "text": "'L' | 'M' | 'Q' | 'H'"
-              },
-              "default": "'H'",
-              "description": "The level of error correction to use. [Learn more](https://www.qrcode.com/en/about/error_correction.html)",
-              "fieldName": "errorCorrection"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Generates a [QR code](https://www.qrcode.com/) and renders it using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).",
-          "tagNameWithoutPrefix": "qr-code",
-          "tagName": "sl-qr-code",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Generates a [QR code](https://www.qrcode.com/) and renders it using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).\n * @documentation https://shoelace.style/components/qr-code\n * @status stable\n * @since 2.0\n *\n * @csspart base - The component's base wrapper.\n */",
-          "documentation": "https://shoelace.style/components/qr-code",
-          "status": "stable",
-          "since": "2.0"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlQrCode",
-            "module": "components/qr-code/qr-code.js"
           }
         }
       ]
@@ -11970,13 +11956,6 @@
               },
               "static": true,
               "default": "{ 'sl-icon': SlIcon }"
-            },
-            {
-              "kind": "field",
-              "name": "localize",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new LocalizeController(this)"
             },
             {
               "kind": "field",
@@ -14109,6 +14088,455 @@
     },
     {
       "kind": "javascript-module",
+      "path": "components/switch/switch.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "SlSwitch",
+          "cssProperties": [
+            {
+              "description": "The width of the switch.",
+              "name": "--width"
+            },
+            {
+              "description": "The height of the switch.",
+              "name": "--height"
+            },
+            {
+              "description": "The size of the thumb.",
+              "name": "--thumb-size"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The component's base wrapper.",
+              "name": "base"
+            },
+            {
+              "description": "The control that houses the switch's thumb.",
+              "name": "control"
+            },
+            {
+              "description": "The switch's thumb.",
+              "name": "thumb"
+            },
+            {
+              "description": "The switch's label.",
+              "name": "label"
+            },
+            {
+              "description": "The help text's wrapper.",
+              "name": "form-control-help-text"
+            }
+          ],
+          "slots": [
+            {
+              "description": "The switch's label.",
+              "name": ""
+            },
+            {
+              "description": "Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.",
+              "name": "help-text"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "formControlController",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new FormControlController(this, {\n    value: (control: SlSwitch) => (control.checked ? control.value || 'on' : undefined),\n    defaultValue: (control: SlSwitch) => control.defaultChecked,\n    setValue: (control: SlSwitch, checked: boolean) => (control.checked = checked)\n  })"
+            },
+            {
+              "kind": "field",
+              "name": "hasSlotController",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new HasSlotController(this, 'help-text')"
+            },
+            {
+              "kind": "field",
+              "name": "input",
+              "type": {
+                "text": "HTMLInputElement"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "hasFocus",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "title"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The name of the switch, submitted as a name/value pair with form data.",
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The current value of the switch, submitted as a name/value pair with form data.",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "'small' | 'medium' | 'large'"
+              },
+              "default": "'medium'",
+              "description": "The switch's size.",
+              "attribute": "size",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disables the switch.",
+              "attribute": "disabled",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Draws the switch in a checked state.",
+              "attribute": "checked",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "defaultChecked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "The default value of the form control. Primarily used for resetting the form control."
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
+              "attribute": "form",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Makes the switch a required field.",
+              "attribute": "required",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "helpText",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
+              "attribute": "help-text"
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "description": "Gets the validity state object",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "description": "Gets the validation message",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "handleBlur",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleInput",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleInvalid",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleFocus",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "handleKeyDown",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleCheckedChange"
+            },
+            {
+              "kind": "method",
+              "name": "handleDisabledChange"
+            },
+            {
+              "kind": "method",
+              "name": "click",
+              "description": "Simulates a click on the switch."
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ],
+              "description": "Sets focus on the switch."
+            },
+            {
+              "kind": "method",
+              "name": "blur",
+              "description": "Removes focus from the switch."
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "description": "Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid."
+            },
+            {
+              "kind": "method",
+              "name": "getForm",
+              "return": {
+                "type": {
+                  "text": "HTMLFormElement | null"
+                }
+              },
+              "description": "Gets the associated form, if one exists."
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "description": "Checks for validity and shows the browser's validation message if the control is invalid."
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Sets a custom validation message. Pass an empty string to restore validity."
+            }
+          ],
+          "events": [
+            {
+              "description": "Emitted when the control loses focus.",
+              "name": "sl-blur",
+              "reactName": "onSlBlur",
+              "eventName": "SlBlurEvent"
+            },
+            {
+              "description": "Emitted when the control's checked state changes.",
+              "name": "sl-change",
+              "reactName": "onSlChange",
+              "eventName": "SlChangeEvent"
+            },
+            {
+              "description": "Emitted when the control receives input.",
+              "name": "sl-input",
+              "reactName": "onSlInput",
+              "eventName": "SlInputEvent"
+            },
+            {
+              "description": "Emitted when the control gains focus.",
+              "name": "sl-focus",
+              "reactName": "onSlFocus",
+              "eventName": "SlFocusEvent"
+            },
+            {
+              "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied.",
+              "name": "sl-invalid",
+              "reactName": "onSlInvalid",
+              "eventName": "SlInvalidEvent"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "title"
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The name of the switch, submitted as a name/value pair with form data.",
+              "fieldName": "name"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "The current value of the switch, submitted as a name/value pair with form data.",
+              "fieldName": "value"
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "'small' | 'medium' | 'large'"
+              },
+              "default": "'medium'",
+              "description": "The switch's size.",
+              "fieldName": "size"
+            },
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Disables the switch.",
+              "fieldName": "disabled"
+            },
+            {
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Draws the switch in a checked state.",
+              "fieldName": "checked"
+            },
+            {
+              "name": "form",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
+              "fieldName": "form"
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Makes the switch a required field.",
+              "fieldName": "required"
+            },
+            {
+              "name": "help-text",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
+              "fieldName": "helpText"
+            }
+          ],
+          "superclass": {
+            "name": "ShoelaceElement",
+            "module": "/src/internal/shoelace-element.js"
+          },
+          "summary": "Switches allow the user to toggle an option on or off.",
+          "tagNameWithoutPrefix": "switch",
+          "tagName": "sl-switch",
+          "customElement": true,
+          "jsDoc": "/**\n * @summary Switches allow the user to toggle an option on or off.\n * @documentation https://shoelace.style/components/switch\n * @status stable\n * @since 2.0\n *\n * @slot - The switch's label.\n * @slot help-text - Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.\n *\n * @event sl-blur - Emitted when the control loses focus.\n * @event sl-change - Emitted when the control's checked state changes.\n * @event sl-input - Emitted when the control receives input.\n * @event sl-focus - Emitted when the control gains focus.\n * @event sl-invalid - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n *\n * @csspart base - The component's base wrapper.\n * @csspart control - The control that houses the switch's thumb.\n * @csspart thumb - The switch's thumb.\n * @csspart label - The switch's label.\n * @csspart form-control-help-text - The help text's wrapper.\n *\n * @cssproperty --width - The width of the switch.\n * @cssproperty --height - The height of the switch.\n * @cssproperty --thumb-size - The size of the thumb.\n */",
+          "documentation": "https://shoelace.style/components/switch",
+          "status": "stable",
+          "since": "2.0"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SlSwitch",
+            "module": "components/switch/switch.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "components/tab/tab.js",
       "declarations": [
         {
@@ -14206,7 +14634,8 @@
               },
               "default": "false",
               "description": "Makes the tab closable and shows a close button.",
-              "attribute": "closable"
+              "attribute": "closable",
+              "reflects": true
             },
             {
               "kind": "field",
@@ -14218,6 +14647,14 @@
               "description": "Disables the tab and prevents selection.",
               "attribute": "disabled",
               "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "tabIndex",
+              "type": {
+                "text": "number"
+              },
+              "default": "-1"
             },
             {
               "kind": "method",
@@ -14239,25 +14676,6 @@
             {
               "kind": "method",
               "name": "handleDisabledChange"
-            },
-            {
-              "kind": "method",
-              "name": "focus",
-              "parameters": [
-                {
-                  "name": "options",
-                  "optional": true,
-                  "type": {
-                    "text": "FocusOptions"
-                  }
-                }
-              ],
-              "description": "Sets focus to the tab."
-            },
-            {
-              "kind": "method",
-              "name": "blur",
-              "description": "Removes focus from the tab."
             }
           ],
           "events": [
@@ -14836,455 +15254,6 @@
           "declaration": {
             "name": "SlTabPanel",
             "module": "components/tab-panel/tab-panel.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "components/switch/switch.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "SlSwitch",
-          "cssProperties": [
-            {
-              "description": "The width of the switch.",
-              "name": "--width"
-            },
-            {
-              "description": "The height of the switch.",
-              "name": "--height"
-            },
-            {
-              "description": "The size of the thumb.",
-              "name": "--thumb-size"
-            }
-          ],
-          "cssParts": [
-            {
-              "description": "The component's base wrapper.",
-              "name": "base"
-            },
-            {
-              "description": "The control that houses the switch's thumb.",
-              "name": "control"
-            },
-            {
-              "description": "The switch's thumb.",
-              "name": "thumb"
-            },
-            {
-              "description": "The switch's label.",
-              "name": "label"
-            },
-            {
-              "description": "The help text's wrapper.",
-              "name": "form-control-help-text"
-            }
-          ],
-          "slots": [
-            {
-              "description": "The switch's label.",
-              "name": ""
-            },
-            {
-              "description": "Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.",
-              "name": "help-text"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "formControlController",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new FormControlController(this, {\n    value: (control: SlSwitch) => (control.checked ? control.value || 'on' : undefined),\n    defaultValue: (control: SlSwitch) => control.defaultChecked,\n    setValue: (control: SlSwitch, checked: boolean) => (control.checked = checked)\n  })"
-            },
-            {
-              "kind": "field",
-              "name": "hasSlotController",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new HasSlotController(this, 'help-text')"
-            },
-            {
-              "kind": "field",
-              "name": "input",
-              "type": {
-                "text": "HTMLInputElement"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "hasFocus",
-              "type": {
-                "text": "boolean"
-              },
-              "privacy": "private",
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "title",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "attribute": "title"
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The name of the switch, submitted as a name/value pair with form data.",
-              "attribute": "name"
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "description": "The current value of the switch, submitted as a name/value pair with form data.",
-              "attribute": "value"
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "'small' | 'medium' | 'large'"
-              },
-              "default": "'medium'",
-              "description": "The switch's size.",
-              "attribute": "size",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disables the switch.",
-              "attribute": "disabled",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "checked",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Draws the switch in a checked state.",
-              "attribute": "checked",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "defaultChecked",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "The default value of the form control. Primarily used for resetting the form control."
-            },
-            {
-              "kind": "field",
-              "name": "form",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
-              "attribute": "form",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Makes the switch a required field.",
-              "attribute": "required",
-              "reflects": true
-            },
-            {
-              "kind": "field",
-              "name": "helpText",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
-              "attribute": "help-text"
-            },
-            {
-              "kind": "field",
-              "name": "validity",
-              "description": "Gets the validity state object",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "validationMessage",
-              "description": "Gets the validation message",
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "handleBlur",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleInput",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleInvalid",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "Event"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "handleClick",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleFocus",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "handleKeyDown",
-              "privacy": "private",
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "KeyboardEvent"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "handleCheckedChange"
-            },
-            {
-              "kind": "method",
-              "name": "handleDisabledChange"
-            },
-            {
-              "kind": "method",
-              "name": "click",
-              "description": "Simulates a click on the switch."
-            },
-            {
-              "kind": "method",
-              "name": "focus",
-              "parameters": [
-                {
-                  "name": "options",
-                  "optional": true,
-                  "type": {
-                    "text": "FocusOptions"
-                  }
-                }
-              ],
-              "description": "Sets focus on the switch."
-            },
-            {
-              "kind": "method",
-              "name": "blur",
-              "description": "Removes focus from the switch."
-            },
-            {
-              "kind": "method",
-              "name": "checkValidity",
-              "description": "Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid."
-            },
-            {
-              "kind": "method",
-              "name": "getForm",
-              "return": {
-                "type": {
-                  "text": "HTMLFormElement | null"
-                }
-              },
-              "description": "Gets the associated form, if one exists."
-            },
-            {
-              "kind": "method",
-              "name": "reportValidity",
-              "description": "Checks for validity and shows the browser's validation message if the control is invalid."
-            },
-            {
-              "kind": "method",
-              "name": "setCustomValidity",
-              "parameters": [
-                {
-                  "name": "message",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "description": "Sets a custom validation message. Pass an empty string to restore validity."
-            }
-          ],
-          "events": [
-            {
-              "description": "Emitted when the control loses focus.",
-              "name": "sl-blur",
-              "reactName": "onSlBlur",
-              "eventName": "SlBlurEvent"
-            },
-            {
-              "description": "Emitted when the control's checked state changes.",
-              "name": "sl-change",
-              "reactName": "onSlChange",
-              "eventName": "SlChangeEvent"
-            },
-            {
-              "description": "Emitted when the control receives input.",
-              "name": "sl-input",
-              "reactName": "onSlInput",
-              "eventName": "SlInputEvent"
-            },
-            {
-              "description": "Emitted when the control gains focus.",
-              "name": "sl-focus",
-              "reactName": "onSlFocus",
-              "eventName": "SlFocusEvent"
-            },
-            {
-              "description": "Emitted when the form control has been checked for validity and its constraints aren't satisfied.",
-              "name": "sl-invalid",
-              "reactName": "onSlInvalid",
-              "eventName": "SlInvalidEvent"
-            }
-          ],
-          "attributes": [
-            {
-              "name": "title",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "fieldName": "title"
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The name of the switch, submitted as a name/value pair with form data.",
-              "fieldName": "name"
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "string"
-              },
-              "description": "The current value of the switch, submitted as a name/value pair with form data.",
-              "fieldName": "value"
-            },
-            {
-              "name": "size",
-              "type": {
-                "text": "'small' | 'medium' | 'large'"
-              },
-              "default": "'medium'",
-              "description": "The switch's size.",
-              "fieldName": "size"
-            },
-            {
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Disables the switch.",
-              "fieldName": "disabled"
-            },
-            {
-              "name": "checked",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Draws the switch in a checked state.",
-              "fieldName": "checked"
-            },
-            {
-              "name": "form",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
-              "fieldName": "form"
-            },
-            {
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "description": "Makes the switch a required field.",
-              "fieldName": "required"
-            },
-            {
-              "name": "help-text",
-              "type": {
-                "text": "string"
-              },
-              "default": "''",
-              "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
-              "fieldName": "helpText"
-            }
-          ],
-          "superclass": {
-            "name": "ShoelaceElement",
-            "module": "/src/internal/shoelace-element.js"
-          },
-          "summary": "Switches allow the user to toggle an option on or off.",
-          "tagNameWithoutPrefix": "switch",
-          "tagName": "sl-switch",
-          "customElement": true,
-          "jsDoc": "/**\n * @summary Switches allow the user to toggle an option on or off.\n * @documentation https://shoelace.style/components/switch\n * @status stable\n * @since 2.0\n *\n * @slot - The switch's label.\n * @slot help-text - Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.\n *\n * @event sl-blur - Emitted when the control loses focus.\n * @event sl-change - Emitted when the control's checked state changes.\n * @event sl-input - Emitted when the control receives input.\n * @event sl-focus - Emitted when the control gains focus.\n * @event sl-invalid - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n *\n * @csspart base - The component's base wrapper.\n * @csspart control - The control that houses the switch's thumb.\n * @csspart thumb - The switch's thumb.\n * @csspart label - The switch's label.\n * @csspart form-control-help-text - The help text's wrapper.\n *\n * @cssproperty --width - The width of the switch.\n * @cssproperty --height - The height of the switch.\n * @cssproperty --thumb-size - The size of the thumb.\n */",
-          "documentation": "https://shoelace.style/components/switch",
-          "status": "stable",
-          "since": "2.0"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SlSwitch",
-            "module": "components/switch/switch.js"
           }
         }
       ]
@@ -16723,13 +16692,6 @@
             },
             {
               "kind": "field",
-              "name": "localize",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new LocalizeController(this)"
-            },
-            {
-              "kind": "field",
               "name": "mutationObserver",
               "type": {
                 "text": "MutationObserver"
@@ -17369,7 +17331,7 @@
   "package": {
     "name": "@shoelace-style/shoelace",
     "description": "A forward-thinking library of web components.",
-    "version": "2.15.0",
+    "version": "2.15.1",
     "author": "Cory LaViska",
     "homepage": "https://github.com/shoelace-style/shoelace",
     "license": "MIT"

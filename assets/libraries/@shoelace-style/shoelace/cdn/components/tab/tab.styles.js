@@ -1,6 +1,6 @@
 import {
   tab_styles_default
-} from "../../chunks/chunk.7TQ2ZD3T.js";
+} from "../../chunks/chunk.DK6N4THU.js";
 import "../../chunks/chunk.CXZZ2LVK.js";
 import "../../chunks/chunk.KIILAQWQ.js";
 export {
