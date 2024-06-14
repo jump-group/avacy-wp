@@ -426,7 +426,7 @@ class AddAdminInterface
   }
 
   public static function addMenuPage() {
-    add_menu_page('Avacy Plugin', 'Avacy Plugin', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
+    add_menu_page('Avacy CMP', 'Avacy CMP', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
   }
 
   public static function detectAllForms()
