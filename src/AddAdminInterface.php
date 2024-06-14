@@ -299,18 +299,7 @@ class AddAdminInterface
 
   public static function registerAvacyDashicon()
   {
-    add_action('admin_head', function () {
-
-    echo '
-      <style>
-      .dashicons-avacy {
-          background-image: url("'.AVACY_PLUGIN_DIR_URL. 'assets/avacy-icon.svg'.'");
-          background-repeat: no-repeat;
-          background-position: center; 
-          background-size: 70%;
-      }
-      </style>'; 
-    });
+    wp_enqueue_style( 'avacy-dashicon', plugins_url( '/../styles/avacy-dashicon.css', __FILE__ ), array('dashicons'), '1.0', 'screen');
   }
 
   public static function enqueueShoelace() {
