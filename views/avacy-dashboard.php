@@ -22,7 +22,7 @@
             <sl-alert variant="warning" open closable class="alert-closable">
                 <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
                 <strong><?php echo esc_html__('Attenzione!', 'avacy')?></strong><br />
-                <?php printf(__('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy'), esc_url($registration_url)); ?>
+                <?php echo sprintf(__('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy'), esc_url($registration_url)); ?>
             </sl-alert>
         <?php endif; ?>
         <?php if( !empty(get_option('avacy_webspace_id'))) : ?>
@@ -190,7 +190,7 @@
                                         <td><?php echo esc_attr($form_type); ?></td>
                                         <td>
                                             <div>
-                                                <?php $enabled = (get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
+                                                <?php $enabled = esc_attr(get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
                                                 <sl-switch name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled" value="on" <?php echo esc_attr($enabled) ?> size="medium">
                                                     <label for="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled"><?php echo esc_html__('Salva', 'avacy')?></label>
                                                 </sl-switch>
@@ -201,13 +201,13 @@
                                                 <sl-icon slot="collapse-icon" name="caret-left-fill"></sl-icon>
                                                 <sl-icon slot="expand-icon" name="caret-down-fill"></sl-icon>
                                                 <?php foreach ($form->getFields() as $field) : ?>
-                                                    <?php $checked = (get_option('avacy_form_field_' . esc_attr($field['type']) . '_' . esc_attr($id) . '_' . esc_attr($field['name'])) === 'on')? 'checked' : '';?>
-                                                    <sl-checkbox size="small" name="avacy_form_field_<?php echo esc_attr($field['type'])?>_<?php echo ($id) ?>_<?php echo esc_attr($field['name'])?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
+                                                    <?php $checked = esc_attr(get_option('avacy_form_field_' . esc_attr($field['type']) . '_' . esc_attr($id) . '_' . esc_attr($field['name'])) === 'on')? 'checked' : '';?>
+                                                    <sl-checkbox size="small" name="avacy_form_field_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>_<?php echo esc_attr($field['name'])?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
                                                 <?php endforeach; ?>
                                             </sl-details>
                                         </td>
                                         <td>
-                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier')?>" size="small" placeholder="Select an option" required>
+                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier'))?>" size="small" placeholder="Select an option" required>
                                                 <?php foreach ($form->getFields() as $key => $field) : ?>
                                                     <sl-option name="avacy_form_option_<?php echo esc_attr($key)?>_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>" value="<?php echo esc_attr($field['name'])?>"><?php echo esc_attr($field['name'])?></sl-option>
                                                 <?php endforeach; ?>
