@@ -1,5 +1,4 @@
 import { type HasSlotController } from '../../internal/slot.js';
-import { type LocalizeController } from '../../utilities/localize.js';
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
 import type SlMenuItem from './menu-item.js';
 /** A reactive controller to manage the registration of event listeners for submenus. */
@@ -11,9 +10,8 @@ export declare class SubmenuController implements ReactiveController {
     private isPopupConnected;
     private skidding;
     private readonly hasSlotController;
-    private readonly localize;
     private readonly submenuOpenDelay;
-    constructor(host: ReactiveControllerHost & SlMenuItem, hasSlotController: HasSlotController, localize: LocalizeController);
+    constructor(host: ReactiveControllerHost & SlMenuItem, hasSlotController: HasSlotController);
     hostConnected(): void;
     hostDisconnected(): void;
     hostUpdated(): void;

@@ -86,10 +86,10 @@ class AddAdminInterface
   }
   
   public static function AvacyAdminSave() {
-    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'avacy-plugin-settings-group-options' ) ) {
+    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'avacy-plugin-settings-group-options' ) ) {
       die( 'Security check' ); 
     } 
-    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url($_POST['redirectToUrl']) : '';
+    $redirect_to = isset($_POST['redirectToUrl']) ? esc_url(sanitize_text_field($_POST['redirectToUrl'])) : '';
     $tenant = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
     $webspaceKey = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
     $apiToken = isset($_POST['avacy_api_token']) ? sanitize_text_field($_POST['avacy_api_token']) : '';
@@ -101,7 +101,7 @@ class AddAdminInterface
     $warning_error = [
       'avacy_account',
       'account_not_found',
-      __('Attenzione! Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo qui.', 'avacy-wp'),
+      __('Attenzione! Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo qui.', 'avacy'),
       'warning'
     ];
 
@@ -135,7 +135,7 @@ class AddAdminInterface
       $notices[] = [
         'avacy_settings',
         'settings_saved',
-        __('Le modifiche sono state salvate correttamente.', 'avacy-wp'),
+        __('Le modifiche sono state salvate correttamente.', 'avacy'),
         'success'
       ];
     }
@@ -179,14 +179,14 @@ class AddAdminInterface
         case 'team_not_found':
           $setting = 'avacy_team';
           $code = 'team_not_found';
-          $message = __('Team non trovato. Controlla i dati inseriti.', 'avacy-wp');
+          $message = __('Team non trovato. Controlla i dati inseriti.', 'avacy');
           $type = 'danger';
           break;
         
         case 'webspace_not_found':
           $setting = 'avacy_webspace';
           $code = 'webspace_not_found';
-          $message = __('Webspace non trovato. Controlla i dati inseriti.', 'avacy-wp');
+          $message = __('Webspace non trovato. Controlla i dati inseriti.', 'avacy');
           $type = 'danger';
           break;
       }
@@ -208,7 +208,7 @@ class AddAdminInterface
       
       $setting = 'avacy_tenant';
       $code = 'tenant_found';
-      $message = __('Le credenziali inserite sono valide.', 'avacy-wp');
+      $message = __('Le credenziali inserite sono valide.', 'avacy');
       $type = 'success';
 
     }
@@ -250,14 +250,14 @@ class AddAdminInterface
           case 'invalid_token':
             $setting = 'avacy_api_token';
             $code = 'invalid_token';
-            $message = __('Il token inserito ha un formato non corretto.', 'avacy-wp');
+            $message = __('Il token inserito ha un formato non corretto.', 'avacy');
             $type = 'warning';
             break;
 
           case 'token_not_found_or_expired':
             $setting = 'avacy_api_token';
             $code = 'token_not_found_or_expired';
-            $message = __('Token non trovato o scaduto. Controlla i dati inseriti.', 'avacy-wp');
+            $message = __('Token non trovato o scaduto. Controlla i dati inseriti.', 'avacy');
             $type = 'danger';
             break;
         }
@@ -269,7 +269,7 @@ class AddAdminInterface
         
         $setting = 'avacy_api_token';
         $code = 'valid_token';
-        $message = __('Il token è stato salvato correttamente.', 'avacy-wp');
+        $message = __('Il token è stato salvato correttamente.', 'avacy');
         $type = 'success';
       }
     } else {
@@ -278,7 +278,7 @@ class AddAdminInterface
   
         $setting = 'avacy_api';
         $code = 'remove_token';
-        $message = __('Il token è stato rimosso correttamente', 'avacy-wp');
+        $message = __('Il token è stato rimosso correttamente', 'avacy');
         $type = 'success';
         $status_code = 200;
       } else {
@@ -299,18 +299,7 @@ class AddAdminInterface
 
   public static function registerAvacyDashicon()
   {
-    add_action('admin_head', function () {
-
-    echo '
-      <style>
-      .dashicons-avacy {
-          background-image: url("'.AVACY_PLUGIN_DIR_URL. 'assets/avacy-icon.svg'.'");
-          background-repeat: no-repeat;
-          background-position: center; 
-          background-size: 70%;
-      }
-      </style>'; 
-    });
+    wp_enqueue_style( 'avacy-dashicon', plugins_url( '/../styles/avacy-dashicon.css', __FILE__ ), array('dashicons'), '1.0', 'screen');
   }
 
   public static function enqueueShoelace() {
@@ -437,7 +426,7 @@ class AddAdminInterface
   }
 
   public static function addMenuPage() {
-    add_menu_page('Avacy Plugin', 'Avacy Plugin', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
+    add_menu_page('Avacy CMP', 'Avacy CMP', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
   }
 
   public static function detectAllForms()

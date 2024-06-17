@@ -3,6 +3,33 @@
   "version": 1.1,
   "tags": [
     {
+      "name": "sl-animated-image",
+      "description": "A component for displaying animated GIFs and WEBPs that play and pause on interaction.\n---\n\n\n### **Events:**\n - **sl-load** - Emitted when the image loads successfully.\n- **sl-error** - Emitted when the image fails to load.\n\n### **Slots:**\n - **play-icon** - Optional play icon to use instead of the default. Works best with `<sl-icon>`.\n- **pause-icon** - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--control-box-size** - The size of the icon box. _(default: undefined)_\n- **--icon-size** - The size of the play/pause icons. _(default: undefined)_\n\n### **CSS Parts:**\n - **control-box** - The container that surrounds the pause/play icons and provides their background.",
+      "attributes": [
+        {
+          "name": "src",
+          "description": "The path to the image to load.",
+          "values": []
+        },
+        {
+          "name": "alt",
+          "description": "A description of the image used by assistive devices.",
+          "values": []
+        },
+        {
+          "name": "play",
+          "description": "Plays the animation. When this attribute is remove, the animation will pause.",
+          "values": []
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/animated-image"
+        }
+      ]
+    },
+    {
       "name": "sl-alert",
       "description": "Alerts are used to display important messages inline or as toast notifications.\n---\n\n\n### **Events:**\n - **sl-show** - Emitted when the alert opens.\n- **sl-after-show** - Emitted after the alert opens and all animations are complete.\n- **sl-hide** - Emitted when the alert closes.\n- **sl-after-hide** - Emitted after the alert closes and all animations are complete.\n\n### **Methods:**\n - **show()** - Shows the alert.\n- **hide()** - Hides the alert\n- **toast()** - Displays the alert as a toast notification. This will move the alert out of its position in the DOM and, when\ndismissed, it will be removed from the DOM completely. By storing a reference to the alert, you can reuse it by\ncalling this method again. The returned promise will resolve after the alert is hidden.\n\n### **Slots:**\n - _default_ - The alert's main content.\n- **icon** - An icon to show in the alert. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the optional icon.\n- **message** - The container that wraps the alert's main content.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
       "attributes": [
@@ -37,129 +64,6 @@
         {
           "name": "Documentation",
           "url": "https://shoelace.style/components/alert"
-        }
-      ]
-    },
-    {
-      "name": "sl-avatar",
-      "description": "Avatars are used to represent a person or object.\n---\n\n\n### **Slots:**\n - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--size** - The size of the avatar. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the avatar's icon.\n- **initials** - The container that wraps the avatar's initials.\n- **image** - The avatar image. Only shown when the `image` attribute is set.",
-      "attributes": [
-        {
-          "name": "image",
-          "description": "The image source to use for the avatar.",
-          "values": []
-        },
-        {
-          "name": "label",
-          "description": "A label to use to describe the avatar to assistive devices.",
-          "values": []
-        },
-        {
-          "name": "initials",
-          "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
-          "values": []
-        },
-        {
-          "name": "loading",
-          "description": "Indicates how the browser should load the image.",
-          "values": [{ "name": "eager" }, { "name": "lazy" }]
-        },
-        {
-          "name": "shape",
-          "description": "The shape of the avatar.",
-          "values": [
-            { "name": "circle" },
-            { "name": "square" },
-            { "name": "rounded" }
-          ]
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/avatar"
-        }
-      ]
-    },
-    {
-      "name": "sl-breadcrumb",
-      "description": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n---\n\n\n### **Slots:**\n - _default_ - One or more breadcrumb items to display.\n- **separator** - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
-      "attributes": [
-        {
-          "name": "label",
-          "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
-          "values": []
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/breadcrumb"
-        }
-      ]
-    },
-    {
-      "name": "sl-breadcrumb-item",
-      "description": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n---\n\n\n### **Slots:**\n - _default_ - The breadcrumb item's label.\n- **prefix** - An optional prefix, usually an icon or icon button.\n- **suffix** - An optional suffix, usually an icon or icon button.\n- **separator** - The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **label** - The breadcrumb item's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.\n- **separator** - The container that wraps the separator.",
-      "attributes": [
-        {
-          "name": "href",
-          "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
-          "values": []
-        },
-        {
-          "name": "target",
-          "description": "Tells the browser where to open the link. Only used when `href` is set.",
-          "values": [
-            { "name": "_blank" },
-            { "name": "_parent" },
-            { "name": "_self" },
-            { "name": "_top" }
-          ]
-        },
-        {
-          "name": "rel",
-          "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
-          "values": []
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/breadcrumb-item"
-        }
-      ]
-    },
-    {
-      "name": "sl-badge",
-      "description": "Badges are used to draw attention and display statuses or counts.\n---\n\n\n### **Slots:**\n - _default_ - The badge's content.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
-      "attributes": [
-        {
-          "name": "variant",
-          "description": "The badge's theme variant.",
-          "values": [
-            { "name": "primary" },
-            { "name": "success" },
-            { "name": "neutral" },
-            { "name": "warning" },
-            { "name": "danger" }
-          ]
-        },
-        {
-          "name": "pill",
-          "description": "Draws a pill-style badge with rounded edges.",
-          "values": []
-        },
-        {
-          "name": "pulse",
-          "description": "Makes the badge pulsate to draw attention.",
-          "values": []
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/badge"
         }
       ]
     },
@@ -227,6 +131,97 @@
         {
           "name": "Documentation",
           "url": "https://shoelace.style/components/animation"
+        }
+      ]
+    },
+    {
+      "name": "sl-avatar",
+      "description": "Avatars are used to represent a person or object.\n---\n\n\n### **Slots:**\n - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--size** - The size of the avatar. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **icon** - The container that wraps the avatar's icon.\n- **initials** - The container that wraps the avatar's initials.\n- **image** - The avatar image. Only shown when the `image` attribute is set.",
+      "attributes": [
+        {
+          "name": "image",
+          "description": "The image source to use for the avatar.",
+          "values": []
+        },
+        {
+          "name": "label",
+          "description": "A label to use to describe the avatar to assistive devices.",
+          "values": []
+        },
+        {
+          "name": "initials",
+          "description": "Initials to use as a fallback when no image is available (1-2 characters max recommended).",
+          "values": []
+        },
+        {
+          "name": "loading",
+          "description": "Indicates how the browser should load the image.",
+          "values": [{ "name": "eager" }, { "name": "lazy" }]
+        },
+        {
+          "name": "shape",
+          "description": "The shape of the avatar.",
+          "values": [
+            { "name": "circle" },
+            { "name": "square" },
+            { "name": "rounded" }
+          ]
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/avatar"
+        }
+      ]
+    },
+    {
+      "name": "sl-badge",
+      "description": "Badges are used to draw attention and display statuses or counts.\n---\n\n\n### **Slots:**\n - _default_ - The badge's content.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
+      "attributes": [
+        {
+          "name": "variant",
+          "description": "The badge's theme variant.",
+          "values": [
+            { "name": "primary" },
+            { "name": "success" },
+            { "name": "neutral" },
+            { "name": "warning" },
+            { "name": "danger" }
+          ]
+        },
+        {
+          "name": "pill",
+          "description": "Draws a pill-style badge with rounded edges.",
+          "values": []
+        },
+        {
+          "name": "pulse",
+          "description": "Makes the badge pulsate to draw attention.",
+          "values": []
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/badge"
+        }
+      ]
+    },
+    {
+      "name": "sl-breadcrumb",
+      "description": "Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.\n---\n\n\n### **Slots:**\n - _default_ - One or more breadcrumb items to display.\n- **separator** - The separator to use between breadcrumb items. Works best with `<sl-icon>`.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
+      "attributes": [
+        {
+          "name": "label",
+          "description": "The label to use for the breadcrumb control. This will not be shown on the screen, but it will be announced by\nscreen readers and other assistive devices to provide more context for users.",
+          "values": []
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/breadcrumb"
         }
       ]
     },
@@ -379,29 +374,34 @@
       ]
     },
     {
-      "name": "sl-animated-image",
-      "description": "A component for displaying animated GIFs and WEBPs that play and pause on interaction.\n---\n\n\n### **Events:**\n - **sl-load** - Emitted when the image loads successfully.\n- **sl-error** - Emitted when the image fails to load.\n\n### **Slots:**\n - **play-icon** - Optional play icon to use instead of the default. Works best with `<sl-icon>`.\n- **pause-icon** - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.\n\n### **CSS Properties:**\n - **--control-box-size** - The size of the icon box. _(default: undefined)_\n- **--icon-size** - The size of the play/pause icons. _(default: undefined)_\n\n### **CSS Parts:**\n - **control-box** - The container that surrounds the pause/play icons and provides their background.",
+      "name": "sl-breadcrumb-item",
+      "description": "Breadcrumb Items are used inside [breadcrumbs](/components/breadcrumb) to represent different links.\n---\n\n\n### **Slots:**\n - _default_ - The breadcrumb item's label.\n- **prefix** - An optional prefix, usually an icon or icon button.\n- **suffix** - An optional suffix, usually an icon or icon button.\n- **separator** - The separator to use for the breadcrumb item. This will only change the separator for this item. If you want to change it for all items in the group, set the separator on `<sl-breadcrumb>` instead.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **label** - The breadcrumb item's label.\n- **prefix** - The container that wraps the prefix.\n- **suffix** - The container that wraps the suffix.\n- **separator** - The container that wraps the separator.",
       "attributes": [
         {
-          "name": "src",
-          "description": "The path to the image to load.",
+          "name": "href",
+          "description": "Optional URL to direct the user to when the breadcrumb item is activated. When set, a link will be rendered\ninternally. When unset, a button will be rendered instead.",
           "values": []
         },
         {
-          "name": "alt",
-          "description": "A description of the image used by assistive devices.",
-          "values": []
+          "name": "target",
+          "description": "Tells the browser where to open the link. Only used when `href` is set.",
+          "values": [
+            { "name": "_blank" },
+            { "name": "_parent" },
+            { "name": "_self" },
+            { "name": "_top" }
+          ]
         },
         {
-          "name": "play",
-          "description": "Plays the animation. When this attribute is remove, the animation will pause.",
+          "name": "rel",
+          "description": "The `rel` attribute to use on the link. Only used when `href` is set.",
           "values": []
         }
       ],
       "references": [
         {
           "name": "Documentation",
-          "url": "https://shoelace.style/components/animated-image"
+          "url": "https://shoelace.style/components/breadcrumb-item"
         }
       ]
     },
@@ -1749,37 +1749,6 @@
       ]
     },
     {
-      "name": "sl-radio",
-      "description": "Radios allow the user to select a single option from a group.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-focus** - Emitted when the control gains focus.\n\n### **Slots:**\n - _default_ - The radio's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **control** - The circular container that wraps the radio's checked state.\n- **control--checked** - The radio control when the radio is checked.\n- **checked-icon** - The checked icon, an `<sl-icon>` element.\n- **label** - The container that wraps the radio's label.",
-      "attributes": [
-        {
-          "name": "value",
-          "description": "The radio's value. When selected, the radio group will receive this value.",
-          "values": []
-        },
-        {
-          "name": "size",
-          "description": "The radio's size. When used inside a radio group, the size will be determined by the radio group's size so this\nattribute can typically be omitted.",
-          "values": [
-            { "name": "small" },
-            { "name": "medium" },
-            { "name": "large" }
-          ]
-        },
-        {
-          "name": "disabled",
-          "description": "Disables the radio.",
-          "values": []
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/radio"
-        }
-      ]
-    },
-    {
       "name": "sl-qr-code",
       "description": "Generates a [QR code](https://www.qrcode.com/) and renders it using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).\n---\n\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.",
       "attributes": [
@@ -1828,6 +1797,37 @@
         {
           "name": "Documentation",
           "url": "https://shoelace.style/components/qr-code"
+        }
+      ]
+    },
+    {
+      "name": "sl-radio",
+      "description": "Radios allow the user to select a single option from a group.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-focus** - Emitted when the control gains focus.\n\n### **Slots:**\n - _default_ - The radio's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **control** - The circular container that wraps the radio's checked state.\n- **control--checked** - The radio control when the radio is checked.\n- **checked-icon** - The checked icon, an `<sl-icon>` element.\n- **label** - The container that wraps the radio's label.",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "The radio's value. When selected, the radio group will receive this value.",
+          "values": []
+        },
+        {
+          "name": "size",
+          "description": "The radio's size. When used inside a radio group, the size will be determined by the radio group's size so this\nattribute can typically be omitted.",
+          "values": [
+            { "name": "small" },
+            { "name": "medium" },
+            { "name": "large" }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the radio.",
+          "values": []
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/radio"
         }
       ]
     },
@@ -2270,8 +2270,65 @@
       ]
     },
     {
+      "name": "sl-switch",
+      "description": "Switches allow the user to toggle an option on or off.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-change** - Emitted when the control's checked state changes.\n- **sl-input** - Emitted when the control receives input.\n- **sl-focus** - Emitted when the control gains focus.\n- **sl-invalid** - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n\n### **Methods:**\n - **click()** - Simulates a click on the switch.\n- **focus(options: _FocusOptions_)** - Sets focus on the switch.\n- **blur()** - Removes focus from the switch.\n- **checkValidity()** - Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid.\n- **getForm(): _HTMLFormElement | null_** - Gets the associated form, if one exists.\n- **reportValidity()** - Checks for validity and shows the browser's validation message if the control is invalid.\n- **setCustomValidity(message: _string_)** - Sets a custom validation message. Pass an empty string to restore validity.\n\n### **Slots:**\n - _default_ - The switch's label.\n- **help-text** - Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.\n\n### **CSS Properties:**\n - **--width** - The width of the switch. _(default: undefined)_\n- **--height** - The height of the switch. _(default: undefined)_\n- **--thumb-size** - The size of the thumb. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **control** - The control that houses the switch's thumb.\n- **thumb** - The switch's thumb.\n- **label** - The switch's label.\n- **form-control-help-text** - The help text's wrapper.",
+      "attributes": [
+        { "name": "title", "values": [] },
+        {
+          "name": "name",
+          "description": "The name of the switch, submitted as a name/value pair with form data.",
+          "values": []
+        },
+        {
+          "name": "value",
+          "description": "The current value of the switch, submitted as a name/value pair with form data.",
+          "values": []
+        },
+        {
+          "name": "size",
+          "description": "The switch's size.",
+          "values": [
+            { "name": "small" },
+            { "name": "medium" },
+            { "name": "large" }
+          ]
+        },
+        {
+          "name": "disabled",
+          "description": "Disables the switch.",
+          "values": []
+        },
+        {
+          "name": "checked",
+          "description": "Draws the switch in a checked state.",
+          "values": []
+        },
+        {
+          "name": "form",
+          "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
+          "values": []
+        },
+        {
+          "name": "required",
+          "description": "Makes the switch a required field.",
+          "values": []
+        },
+        {
+          "name": "help-text",
+          "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
+          "values": []
+        }
+      ],
+      "references": [
+        {
+          "name": "Documentation",
+          "url": "https://shoelace.style/components/switch"
+        }
+      ]
+    },
+    {
       "name": "sl-tab",
-      "description": "Tabs are used inside [tab groups](/components/tab-group) to represent and activate [tab panels](/components/tab-panel).\n---\n\n\n### **Events:**\n - **sl-close** - Emitted when the tab is closable and the close button is activated.\n\n### **Methods:**\n - **focus(options: _FocusOptions_)** - Sets focus to the tab.\n- **blur()** - Removes focus from the tab.\n\n### **Slots:**\n - _default_ - The tab's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
+      "description": "Tabs are used inside [tab groups](/components/tab-group) to represent and activate [tab panels](/components/tab-panel).\n---\n\n\n### **Events:**\n - **sl-close** - Emitted when the tab is closable and the close button is activated.\n\n### **Slots:**\n - _default_ - The tab's label.\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **close-button** - The close button, an `<sl-icon-button>`.\n- **close-button__base** - The close button's exported `base` part.",
       "attributes": [
         {
           "name": "panel",
@@ -2352,63 +2409,6 @@
         {
           "name": "Documentation",
           "url": "https://shoelace.style/components/tab-panel"
-        }
-      ]
-    },
-    {
-      "name": "sl-switch",
-      "description": "Switches allow the user to toggle an option on or off.\n---\n\n\n### **Events:**\n - **sl-blur** - Emitted when the control loses focus.\n- **sl-change** - Emitted when the control's checked state changes.\n- **sl-input** - Emitted when the control receives input.\n- **sl-focus** - Emitted when the control gains focus.\n- **sl-invalid** - Emitted when the form control has been checked for validity and its constraints aren't satisfied.\n\n### **Methods:**\n - **click()** - Simulates a click on the switch.\n- **focus(options: _FocusOptions_)** - Sets focus on the switch.\n- **blur()** - Removes focus from the switch.\n- **checkValidity()** - Checks for validity but does not show a validation message. Returns `true` when valid and `false` when invalid.\n- **getForm(): _HTMLFormElement | null_** - Gets the associated form, if one exists.\n- **reportValidity()** - Checks for validity and shows the browser's validation message if the control is invalid.\n- **setCustomValidity(message: _string_)** - Sets a custom validation message. Pass an empty string to restore validity.\n\n### **Slots:**\n - _default_ - The switch's label.\n- **help-text** - Text that describes how to use the switch. Alternatively, you can use the `help-text` attribute.\n\n### **CSS Properties:**\n - **--width** - The width of the switch. _(default: undefined)_\n- **--height** - The height of the switch. _(default: undefined)_\n- **--thumb-size** - The size of the thumb. _(default: undefined)_\n\n### **CSS Parts:**\n - **base** - The component's base wrapper.\n- **control** - The control that houses the switch's thumb.\n- **thumb** - The switch's thumb.\n- **label** - The switch's label.\n- **form-control-help-text** - The help text's wrapper.",
-      "attributes": [
-        { "name": "title", "values": [] },
-        {
-          "name": "name",
-          "description": "The name of the switch, submitted as a name/value pair with form data.",
-          "values": []
-        },
-        {
-          "name": "value",
-          "description": "The current value of the switch, submitted as a name/value pair with form data.",
-          "values": []
-        },
-        {
-          "name": "size",
-          "description": "The switch's size.",
-          "values": [
-            { "name": "small" },
-            { "name": "medium" },
-            { "name": "large" }
-          ]
-        },
-        {
-          "name": "disabled",
-          "description": "Disables the switch.",
-          "values": []
-        },
-        {
-          "name": "checked",
-          "description": "Draws the switch in a checked state.",
-          "values": []
-        },
-        {
-          "name": "form",
-          "description": "By default, form controls are associated with the nearest containing `<form>` element. This attribute allows you\nto place the form control outside of a form and associate it with the form that has this `id`. The form must be in\nthe same document or shadow root for this to work.",
-          "values": []
-        },
-        {
-          "name": "required",
-          "description": "Makes the switch a required field.",
-          "values": []
-        },
-        {
-          "name": "help-text",
-          "description": "The switch's help text. If you need to display HTML, use the `help-text` slot instead.",
-          "values": []
-        }
-      ],
-      "references": [
-        {
-          "name": "Documentation",
-          "url": "https://shoelace.style/components/switch"
         }
       ]
     },

@@ -18,15 +18,15 @@
     ?>
     <form id="avacy-form" method="post" action="<?php echo esc_url($actionUrl) ?>">
         <?php if( empty(get_option('avacy_webspace_id'))) : ?>
-            <h1><?php echo esc_html__('Collega ad Avacy', 'avacy-wp')?></h1>
+            <h1><?php echo esc_html__('Collega ad Avacy', 'avacy')?></h1>
             <sl-alert variant="warning" open closable class="alert-closable">
                 <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
-                <strong><?php echo esc_html__('Attenzione!', 'avacy-wp')?></strong><br />
-                <?php printf(__('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy-wp'), esc_url($registration_url)); ?>
+                <strong><?php echo esc_html__('Attenzione!', 'avacy')?></strong><br />
+                <?php echo sprintf(__('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy'), esc_url($registration_url)); ?>
             </sl-alert>
         <?php endif; ?>
         <?php if( !empty(get_option('avacy_webspace_id'))) : ?>
-            <h1><?php echo esc_html__('Collegato ad Avacy', 'avacy-wp')?></h1>
+            <h1><?php echo esc_html__('Collegato ad Avacy', 'avacy')?></h1>
         <?php endif; ?>
 
         <?php
@@ -67,19 +67,19 @@
         <br>
         <section class="AvacySection AvacySection--Account">
             <div class="EditAccountPanel <?php echo !empty(get_option('avacy_webspace_id')) ? 'hidden' : ''?>">
-                <sl-input name="avacy_tenant" placeholder="<?php echo esc_html__('Inserisci il nome del tuo team', 'avacy-wp')?>" size="small" value="<?php echo esc_attr(get_option('avacy_tenant')); ?>" required>
+                <sl-input name="avacy_tenant" placeholder="<?php echo esc_html__('Inserisci il nome del tuo team', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_tenant')); ?>" required>
                     <label for="avacy_tenant" slot="label">
-                        <span><?php echo esc_html__('Nome del Team Avacy', 'avacy-wp')?></span>
+                        <span><?php echo esc_html__('Nome del Team Avacy', 'avacy')?></span>
                     </label>
-                    <sl-tooltip slot="suffix" content="<?php echo esc_html__('Inserisci il nome del Team a cui appartiene lo spazio web. Lo trovi in alto a destra in ogni pagina di Avacy.', 'avacy-wp') ?>" hoist>
+                    <sl-tooltip slot="suffix" content="<?php echo esc_html__('Inserisci il nome del Team a cui appartiene lo spazio web. Lo trovi in alto a destra in ogni pagina di Avacy.', 'avacy') ?>" hoist>
                         <sl-icon name="info-circle"></sl-icon>
                     </sl-tooltip>
                 </sl-input>
-                <sl-input name="avacy_webspace_key" placeholder="<?php echo esc_html__('Inserisci la chiave specifica del tuo spazio web', 'avacy-wp')?>" size="small" value="<?php echo esc_attr(get_option('avacy_webspace_key')); ?>" required>
+                <sl-input name="avacy_webspace_key" placeholder="<?php echo esc_html__('Inserisci la chiave specifica del tuo spazio web', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_webspace_key')); ?>" required>
                     <label for="avacy_webspace_key" slot="label">
-                        <span><?php echo esc_html__('Chiave Spazio Web', 'avacy-wp')?></span>
+                        <span><?php echo esc_html__('Chiave Spazio Web', 'avacy')?></span>
                     </label>
-                    <sl-tooltip slot="suffix" content="<?php echo esc_html__('Inserisci la chiave identificativa dello spazio web che trovi alla fine della configurazione dello spazio web oppure nelle impostazioni dello spazio web, alla voce "Integrazione di Avacy sul tuo spazio web".', 'avacy-wp') ?>" hoist>
+                    <sl-tooltip slot="suffix" content="<?php echo esc_html__('Inserisci la chiave identificativa dello spazio web che trovi alla fine della configurazione dello spazio web oppure nelle impostazioni dello spazio web, alla voce "Integrazione di Avacy sul tuo spazio web".', 'avacy') ?>" hoist>
                         <sl-icon name="info-circle"></sl-icon>
                     </sl-tooltip>
                 </sl-input>
@@ -87,11 +87,11 @@
                 <input type="hidden" name="avacy_webspace_key" value="<?php echo esc_attr(get_option('avacy_webspace_key')); ?>">
             </div>
             <div class="RenderAccountPanel <?php echo empty(get_option('avacy_webspace_id')) ? 'hidden' : ''?>">
-                <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Nome del Team Avacy', 'avacy-wp')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_tenant')); ?></span></div>
-                <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Chiave Spazio Web', 'avacy-wp')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_webspace_key')); ?></span></div>
+                <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Nome del Team Avacy', 'avacy')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_tenant')); ?></span></div>
+                <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Chiave Spazio Web', 'avacy')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_webspace_key')); ?></span></div>
                 <sl-button class="Edit" variant="text">
                     <sl-icon slot="prefix" name="pencil"></sl-icon>
-                    <?php echo esc_html__('Modifica', 'avacy-wp'); ?>
+                    <?php echo esc_html__('Modifica', 'avacy'); ?>
                 </sl-button>
             </div>
         </section>
@@ -102,21 +102,21 @@
                 delete_transient("avacy_active_tab");
             ?>
             <sl-tab-group>
-                <sl-tab slot="nav" panel="cookie-banner" <?php echo esc_attr($active_tab) === 'cookie-banner'? 'active' : ''?>><?php echo esc_html__('Cookie banner', 'avacy-wp')?></sl-tab>
-                <sl-tab slot="nav" panel="preemptive-block" <?php echo esc_attr($active_tab) === 'preemptive-block'? 'active' : ''?>><?php echo esc_html__('Blocco preventivo', 'avacy-wp')?></sl-tab>
-                <sl-tab slot="nav" panel="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>><?php echo esc_html__('Archivio consensi', 'avacy-wp')?></sl-tab>
+                <sl-tab slot="nav" panel="cookie-banner" <?php echo esc_attr($active_tab) === 'cookie-banner'? 'active' : ''?>><?php echo esc_html__('Cookie banner', 'avacy')?></sl-tab>
+                <sl-tab slot="nav" panel="preemptive-block" <?php echo esc_attr($active_tab) === 'preemptive-block'? 'active' : ''?>><?php echo esc_html__('Blocco preventivo', 'avacy')?></sl-tab>
+                <sl-tab slot="nav" panel="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>><?php echo esc_html__('Archivio consensi', 'avacy')?></sl-tab>
                 <input type="hidden" name="avacy_active_tab" value="<?php echo esc_attr($active_tab)?>">
 
                 <sl-tab-panel name="cookie-banner" <?php echo esc_attr($active_tab) === 'cookie-banner'? 'active' : ''?>>
                     <div>
                         <?php $enabled = (get_option('avacy_show_banner') === 'on')? 'checked' : ''; ?>
-                        <sl-checkbox name="avacy_show_banner" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Mostra il cookie banner sul sito', 'avacy-wp') ?></sl-checkbox>
+                        <sl-checkbox name="avacy_show_banner" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Mostra il cookie banner sul sito', 'avacy') ?></sl-checkbox>
                         <div class="AvacyDescription">
                             <p>
                                 <?php 
                                     $cookie_banner_href = $base_api_url.'/redirect/cookie-banner/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                                 ?>
-                                <?php echo esc_html__('Per modificare l\'aspetto del cookie banner', 'avacy-wp')?> <a href="<?php echo esc_attr($cookie_banner_href)?>" target="_blank"><?php echo esc_html__('clicca qui', 'avacy-wp') ?></a>
+                                <?php echo esc_html__('Per modificare l\'aspetto del cookie banner', 'avacy')?> <a href="<?php echo esc_attr($cookie_banner_href)?>" target="_blank"><?php echo esc_html__('clicca qui', 'avacy') ?></a>
                             </p>
                         </div>
                     </div>
@@ -124,15 +124,15 @@
                 <sl-tab-panel name="preemptive-block" <?php echo esc_attr($active_tab) === 'preemptive-block'? 'active' : ''?>>
                     <div>
                         <?php $enabled = (get_option('avacy_enable_preemptive_block') === 'on')? 'checked' : ''; ?>
-                        <sl-checkbox name="avacy_enable_preemptive_block" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Blocca preventivamente tutti gli script', 'avacy-wp')?></sl-checkbox>
+                        <sl-checkbox name="avacy_enable_preemptive_block" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Blocca preventivamente tutti gli script', 'avacy')?></sl-checkbox>
                         <div class="AvacyDescription">
                             <p>
                                 <?php 
                                     $vendors_href = esc_url($base_api_url).'/redirect/vendors/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                                 ?>
-                                <?php /* echo esc_html__('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy-wp')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo esc_html__('i tuoi fornitori', 'avacy-wp') */?></a>
+                                <?php /* echo esc_html__('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo esc_html__('i tuoi fornitori', 'avacy') */?></a>
                                 <br>
-                                <?php /* echo esc_html__('Per maggiori informazioni', 'avacy-wp')?> <a href="<?php echo esc_attr($documention_url)?>" target="_blank"><?php echo esc_html__('consulta la nostra guida', 'avacy-wp') */?></a>
+                                <?php /* echo esc_html__('Per maggiori informazioni', 'avacy')?> <a href="<?php echo esc_attr($documention_url)?>" target="_blank"><?php echo esc_html__('consulta la nostra guida', 'avacy') */?></a>
                             </p>
                         </div>
                     </div>
@@ -140,21 +140,21 @@
                 <sl-tab-panel name="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>>
                     <div class="AvacyDescription AvacyDescription--First">
                         <p>
-                            <?php echo esc_html__('Imposta come Avacy registra i dati raccolti dal tuo spazio web nell’archivio consensi.', 'avacy-wp')?></a>.
+                            <?php echo esc_html__('Imposta come Avacy registra i dati raccolti dal tuo spazio web nell’archivio consensi.', 'avacy')?></a>.
                         </p>
                         <p>
                             <?php 
                                 $consent_solution_href = esc_url($base_api_url).'/redirect/consent-solution/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
                             ?>
-                            <?php echo esc_html__('Nella sezione dell\'', 'avacy-wp')?><a href="<?php echo esc_attr($consent_solution_href)?>" target="_blank"><?php echo esc_html__('archivio consensi', 'avacy-wp')?></a>, <?php echo esc_html__('crea un nuovo token per collegare il servizio con Wordpress e inseriscilo nel campo sottostante', 'avacy-wp')?></a>.
+                            <?php echo esc_html__('Nella sezione dell\'', 'avacy')?><a href="<?php echo esc_attr($consent_solution_href)?>" target="_blank"><?php echo esc_html__('archivio consensi', 'avacy')?></a>, <?php echo esc_html__('crea un nuovo token per collegare il servizio con Wordpress e inseriscilo nel campo sottostante', 'avacy')?></a>.
                         </p>
                     </div>
 
                     <section class="AvacySection AvacySection--Account">
                             <div class="AvacySection__InlineForm">
-                                <sl-input name="avacy_api_token" placeholder="<?php echo esc_html__('Token archivio consensi', 'avacy-wp')?>" size="small" value="<?php echo esc_attr(get_option('avacy_api_token')); ?>">
+                                <sl-input name="avacy_api_token" placeholder="<?php echo esc_html__('Token archivio consensi', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_api_token')); ?>">
                                     <label for="avacy_api_token" slot="label">
-                                        <span><?php echo esc_html__('Inserisci il token', 'avacy-wp')?></span>
+                                        <span><?php echo esc_html__('Inserisci il token', 'avacy')?></span>
                                     </label>
                                     <sl-tooltip slot="suffix" content="This is a tooltip" hoist>
                                         <sl-icon name="info-circle"></sl-icon>
@@ -169,11 +169,11 @@
                             <table class="AvacyForms">
                                 <thead>
                                     <tr>
-                                        <th><?php echo esc_html__('Form ID', 'avacy-wp')?></th>
-                                        <th><?php echo esc_html__('Tipologia', 'avacy-wp')?></th>
-                                        <th><?php echo esc_html__('Salva nell\'archivio consensi di Avacy', 'avacy-wp')?></th>
-                                        <th><?php echo esc_html__('Seleziona quali dati salvare su Avacy', 'avacy-wp')?></th>
-                                        <th><?php echo esc_html__('Campo identificativo dell\'utente', 'avacy-wp')?></th>
+                                        <th><?php echo esc_html__('Form ID', 'avacy')?></th>
+                                        <th><?php echo esc_html__('Tipologia', 'avacy')?></th>
+                                        <th><?php echo esc_html__('Salva nell\'archivio consensi di Avacy', 'avacy')?></th>
+                                        <th><?php echo esc_html__('Seleziona quali dati salvare su Avacy', 'avacy')?></th>
+                                        <th><?php echo esc_html__('Campo identificativo dell\'utente', 'avacy')?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -190,9 +190,9 @@
                                         <td><?php echo esc_attr($form_type); ?></td>
                                         <td>
                                             <div>
-                                                <?php $enabled = (get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
+                                                <?php $enabled = esc_attr(get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
                                                 <sl-switch name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled" value="on" <?php echo esc_attr($enabled) ?> size="medium">
-                                                    <label for="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled"><?php echo esc_html__('Salva', 'avacy-wp')?></label>
+                                                    <label for="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled"><?php echo esc_html__('Salva', 'avacy')?></label>
                                                 </sl-switch>
                                             </div>
                                         </td>
@@ -201,13 +201,13 @@
                                                 <sl-icon slot="collapse-icon" name="caret-left-fill"></sl-icon>
                                                 <sl-icon slot="expand-icon" name="caret-down-fill"></sl-icon>
                                                 <?php foreach ($form->getFields() as $field) : ?>
-                                                    <?php $checked = (get_option('avacy_form_field_' . esc_attr($field['type']) . '_' . esc_attr($id) . '_' . esc_attr($field['name'])) === 'on')? 'checked' : '';?>
-                                                    <sl-checkbox size="small" name="avacy_form_field_<?php echo esc_attr($field['type'])?>_<?php echo ($id) ?>_<?php echo esc_attr($field['name'])?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
+                                                    <?php $checked = esc_attr(get_option('avacy_form_field_' . esc_attr($field['type']) . '_' . esc_attr($id) . '_' . esc_attr($field['name'])) === 'on')? 'checked' : '';?>
+                                                    <sl-checkbox size="small" name="avacy_form_field_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>_<?php echo esc_attr($field['name'])?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
                                                 <?php endforeach; ?>
                                             </sl-details>
                                         </td>
                                         <td>
-                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier')?>" size="small" placeholder="Select an option" required>
+                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier'))?>" size="small" placeholder="Select an option" required>
                                                 <?php foreach ($form->getFields() as $key => $field) : ?>
                                                     <sl-option name="avacy_form_option_<?php echo esc_attr($key)?>_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>" value="<?php echo esc_attr($field['name'])?>"><?php echo esc_attr($field['name'])?></sl-option>
                                                 <?php endforeach; ?>
@@ -226,9 +226,9 @@
         <sl-button class="Submit Submit--Global" variant="primary" type="submit" <?php echo !empty(get_option('avacy_webspace_id')) ? 'disabled' : ''?>>
             <?php 
                 if( empty(get_option('avacy_webspace_id'))){
-                    echo esc_html__('Collega', 'avacy-wp');
+                    echo esc_html__('Collega', 'avacy');
                 } else {
-                    echo esc_html__('Salva le modifiche', 'avacy-wp');
+                    echo esc_html__('Salva le modifiche', 'avacy');
                 }
             ?>
         </sl-button>

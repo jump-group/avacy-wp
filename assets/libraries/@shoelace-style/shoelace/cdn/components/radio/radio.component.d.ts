@@ -46,8 +46,3 @@ export default class SlRadio extends ShoelaceElement {
     handleDisabledChange(): void;
     render(): import("lit-html").TemplateResult<1>;
 }
-declare global {
-    interface HTMLElementTagNameMap {
-        'sl-radio': SlRadio;
-    }
-}

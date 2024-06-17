@@ -1,12 +1,12 @@
 import type { DefineComponent } from "vue";
 
-import type { SlAnimatedImage } from "../../components/animated-image/animated-image.component.js";
-import type { SlAvatar } from "../../components/avatar/avatar.component.js";
-import type { SlAnimation } from "../../components/animation/animation.component.js";
 import type { SlAlert } from "../../components/alert/alert.component.js";
+import type { SlAnimatedImage } from "../../components/animated-image/animated-image.component.js";
+import type { SlAnimation } from "../../components/animation/animation.component.js";
+import type { SlAvatar } from "../../components/avatar/avatar.component.js";
+import type { SlBadge } from "../../components/badge/badge.component.js";
 import type { SlBreadcrumb } from "../../components/breadcrumb/breadcrumb.component.js";
 import type { SlBreadcrumbItem } from "../../components/breadcrumb-item/breadcrumb-item.component.js";
-import type { SlBadge } from "../../components/badge/badge.component.js";
 import type { SlButton } from "../../components/button/button.component.js";
 import type { SlButtonGroup } from "../../components/button-group/button-group.component.js";
 import type { SlCard } from "../../components/card/card.component.js";
@@ -27,12 +27,12 @@ import type { SlIcon } from "../../components/icon/icon.component.js";
 import type { SlIconButton } from "../../components/icon-button/icon-button.component.js";
 import type { SlImageComparer } from "../../components/image-comparer/image-comparer.component.js";
 import type { SlInclude } from "../../components/include/include.component.js";
-import type { SlMenu } from "../../components/menu/menu.component.js";
 import type { SlInput } from "../../components/input/input.component.js";
+import type { SlMenu } from "../../components/menu/menu.component.js";
 import type { SlMenuItem } from "../../components/menu-item/menu-item.component.js";
-import type { SlOption } from "../../components/option/option.component.js";
-import type { SlMutationObserver } from "../../components/mutation-observer/mutation-observer.component.js";
 import type { SlMenuLabel } from "../../components/menu-label/menu-label.component.js";
+import type { SlMutationObserver } from "../../components/mutation-observer/mutation-observer.component.js";
+import type { SlOption } from "../../components/option/option.component.js";
 import type { SlPopup } from "../../components/popup/popup.component.js";
 import type { SlProgressBar } from "../../components/progress-bar/progress-bar.component.js";
 import type { SlProgressRing } from "../../components/progress-ring/progress-ring.component.js";
@@ -40,8 +40,8 @@ import type { SlQrCode } from "../../components/qr-code/qr-code.component.js";
 import type { SlRadio } from "../../components/radio/radio.component.js";
 import type { SlRadioButton } from "../../components/radio-button/radio-button.component.js";
 import type { SlRadioGroup } from "../../components/radio-group/radio-group.component.js";
-import type { SlRating } from "../../components/rating/rating.component.js";
 import type { SlRange } from "../../components/range/range.component.js";
+import type { SlRating } from "../../components/rating/rating.component.js";
 import type { SlRelativeTime } from "../../components/relative-time/relative-time.component.js";
 import type { SlResizeObserver } from "../../components/resize-observer/resize-observer.component.js";
 import type { SlSelect } from "../../components/select/select.component.js";
@@ -58,6 +58,30 @@ import type { SlTooltip } from "../../components/tooltip/tooltip.component.js";
 import type { SlTree } from "../../components/tree/tree.component.js";
 import type { SlTreeItem } from "../../components/tree-item/tree-item.component.js";
 import type { SlVisuallyHidden } from "../../components/visually-hidden/visually-hidden.component.js";
+
+type SlAlertProps = {
+  /** Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can
+use the `show()` and `hide()` methods and this attribute will reflect the alert's open state. */
+  open?: SlAlert["open"];
+  /** Enables a close button that allows the user to dismiss the alert. */
+  closable?: SlAlert["closable"];
+  /** The alert's theme variant. */
+  variant?: SlAlert["variant"];
+  /** The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with
+the alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning
+the alert will not close on its own. */
+  duration?: SlAlert["duration"];
+  /**  */
+  base?: SlAlert["base"];
+  /** Emitted when the alert opens. */
+  onSlShow?: (e: CustomEvent<never>) => void;
+  /** Emitted after the alert opens and all animations are complete. */
+  onSlAfterShow?: (e: CustomEvent<never>) => void;
+  /** Emitted when the alert closes. */
+  onSlHide?: (e: CustomEvent<never>) => void;
+  /** Emitted after the alert closes and all animations are complete. */
+  onSlAfterHide?: (e: CustomEvent<never>) => void;
+};
 
 type SlAnimatedImageProps = {
   /** The path to the image to load. */
@@ -76,19 +100,6 @@ type SlAnimatedImageProps = {
   onSlLoad?: (e: CustomEvent<never>) => void;
   /** Emitted when the image fails to load. */
   onSlError?: (e: CustomEvent<never>) => void;
-};
-
-type SlAvatarProps = {
-  /** The image source to use for the avatar. */
-  image?: SlAvatar["image"];
-  /** A label to use to describe the avatar to assistive devices. */
-  label?: SlAvatar["label"];
-  /** Initials to use as a fallback when no image is available (1-2 characters max recommended). */
-  initials?: SlAvatar["initials"];
-  /** Indicates how the browser should load the image. */
-  loading?: SlAvatar["loading"];
-  /** The shape of the avatar. */
-  shape?: SlAvatar["shape"];
 };
 
 type SlAnimationProps = {
@@ -133,28 +144,26 @@ value can be changed without causing the animation to restart. */
   onSlStart?: (e: CustomEvent<never>) => void;
 };
 
-type SlAlertProps = {
-  /** Indicates whether or not the alert is open. You can toggle this attribute to show and hide the alert, or you can
-use the `show()` and `hide()` methods and this attribute will reflect the alert's open state. */
-  open?: SlAlert["open"];
-  /** Enables a close button that allows the user to dismiss the alert. */
-  closable?: SlAlert["closable"];
-  /** The alert's theme variant. */
-  variant?: SlAlert["variant"];
-  /** The length of time, in milliseconds, the alert will show before closing itself. If the user interacts with
-the alert before it closes (e.g. moves the mouse over it), the timer will restart. Defaults to `Infinity`, meaning
-the alert will not close on its own. */
-  duration?: SlAlert["duration"];
-  /**  */
-  base?: SlAlert["base"];
-  /** Emitted when the alert opens. */
-  onSlShow?: (e: CustomEvent<never>) => void;
-  /** Emitted after the alert opens and all animations are complete. */
-  onSlAfterShow?: (e: CustomEvent<never>) => void;
-  /** Emitted when the alert closes. */
-  onSlHide?: (e: CustomEvent<never>) => void;
-  /** Emitted after the alert closes and all animations are complete. */
-  onSlAfterHide?: (e: CustomEvent<never>) => void;
+type SlAvatarProps = {
+  /** The image source to use for the avatar. */
+  image?: SlAvatar["image"];
+  /** A label to use to describe the avatar to assistive devices. */
+  label?: SlAvatar["label"];
+  /** Initials to use as a fallback when no image is available (1-2 characters max recommended). */
+  initials?: SlAvatar["initials"];
+  /** Indicates how the browser should load the image. */
+  loading?: SlAvatar["loading"];
+  /** The shape of the avatar. */
+  shape?: SlAvatar["shape"];
+};
+
+type SlBadgeProps = {
+  /** The badge's theme variant. */
+  variant?: SlBadge["variant"];
+  /** Draws a pill-style badge with rounded edges. */
+  pill?: SlBadge["pill"];
+  /** Makes the badge pulsate to draw attention. */
+  pulse?: SlBadge["pulse"];
 };
 
 type SlBreadcrumbProps = {
@@ -175,15 +184,6 @@ internally. When unset, a button will be rendered instead. */
   target?: SlBreadcrumbItem["target"];
   /** The `rel` attribute to use on the link. Only used when `href` is set. */
   rel?: SlBreadcrumbItem["rel"];
-};
-
-type SlBadgeProps = {
-  /** The badge's theme variant. */
-  variant?: SlBadge["variant"];
-  /** Draws a pill-style badge with rounded edges. */
-  pill?: SlBadge["pill"];
-  /** Makes the badge pulsate to draw attention. */
-  pulse?: SlBadge["pulse"];
 };
 
 type SlButtonProps = {
@@ -730,13 +730,6 @@ code and can result in XSS attacks. */
   onSlError?: (e: CustomEvent<{ status: number }>) => void;
 };
 
-type SlMenuProps = {
-  /**  */
-  defaultSlot?: SlMenu["defaultSlot"];
-  /** Emitted when a menu item is selected. */
-  onSlSelect?: (e: CustomEvent<{ item: SlMenuItem }>) => void;
-};
-
 type SlInputProps = {
   /**  */
   title?: SlInput["title"];
@@ -832,6 +825,13 @@ keyboard on supportive devices. */
   onSlInvalid?: (e: CustomEvent<never>) => void;
 };
 
+type SlMenuProps = {
+  /**  */
+  defaultSlot?: SlMenu["defaultSlot"];
+  /** Emitted when a menu item is selected. */
+  onSlSelect?: (e: CustomEvent<{ item: SlMenuItem }>) => void;
+};
+
 type SlMenuItemProps = {
   /** The type of menu item to render. To use `checked`, this value must be set to `checkbox`. */
   type?: SlMenuItem["type"];
@@ -849,22 +849,7 @@ type SlMenuItemProps = {
   menuItem?: SlMenuItem["menuItem"];
 };
 
-type SlOptionProps = {
-  /** The option's value. When selected, the containing form control will receive this value. The value must be unique
-from other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing
-multiple values. */
-  value?: SlOption["value"];
-  /** Draws the option in a disabled state, preventing selection. */
-  disabled?: SlOption["disabled"];
-  /**  */
-  defaultSlot?: SlOption["defaultSlot"];
-  /**  */
-  current?: SlOption["current"];
-  /**  */
-  selected?: SlOption["selected"];
-  /**  */
-  hasHover?: SlOption["hasHover"];
-};
+type SlMenuLabelProps = {};
 
 type SlMutationObserverProps = {
   /** Watches for changes to attributes. To watch only specific attributes, separate them by a space, e.g.
@@ -885,7 +870,22 @@ type SlMutationObserverProps = {
   onSlMutation?: (e: CustomEvent<{ mutationList: MutationRecord[] }>) => void;
 };
 
-type SlMenuLabelProps = {};
+type SlOptionProps = {
+  /** The option's value. When selected, the containing form control will receive this value. The value must be unique
+from other options in the same group. Values may not contain spaces, as spaces are used as delimiters when listing
+multiple values. */
+  value?: SlOption["value"];
+  /** Draws the option in a disabled state, preventing selection. */
+  disabled?: SlOption["disabled"];
+  /**  */
+  defaultSlot?: SlOption["defaultSlot"];
+  /**  */
+  current?: SlOption["current"];
+  /**  */
+  selected?: SlOption["selected"];
+  /**  */
+  hasHover?: SlOption["hasHover"];
+};
 
 type SlPopupProps = {
   /** The element the popup will be anchored to. If the anchor lives outside of the popup, you can provide the anchor
@@ -1073,32 +1073,6 @@ the same document or shadow root for this to work. */
   onSlInvalid?: (e: CustomEvent<never>) => void;
 };
 
-type SlRatingProps = {
-  /** A label that describes the rating to assistive devices. */
-  label?: SlRating["label"];
-  /** The current rating. */
-  value?: SlRating["value"];
-  /** The highest rating to show. */
-  max?: SlRating["max"];
-  /** The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this
-attribute to `0.5`. */
-  precision?: SlRating["precision"];
-  /** Makes the rating readonly. */
-  readonly?: SlRating["readonly"];
-  /** Disables the rating. */
-  disabled?: SlRating["disabled"];
-  /** A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.
-The function should return a string containing trusted HTML of the symbol to render at the specified value. Works
-well with `<sl-icon>` elements. */
-  getSymbol?: SlRating["getSymbol"];
-  /**  */
-  rating?: SlRating["rating"];
-  /** Emitted when the rating's value changes. */
-  onSlChange?: (e: CustomEvent<never>) => void;
-  /** Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value. */
-  onSlHover?: (e: CustomEvent<{ phase: "start" | "move" | "end"; value: number }>) => void;
-};
-
 type SlRangeProps = {
   /**  */
   title?: SlRange["title"];
@@ -1147,6 +1121,32 @@ function should return a string to display in the tooltip. */
   onSlInput?: (e: CustomEvent<never>) => void;
   /** Emitted when the form control has been checked for validity and its constraints aren't satisfied. */
   onSlInvalid?: (e: CustomEvent<never>) => void;
+};
+
+type SlRatingProps = {
+  /** A label that describes the rating to assistive devices. */
+  label?: SlRating["label"];
+  /** The current rating. */
+  value?: SlRating["value"];
+  /** The highest rating to show. */
+  max?: SlRating["max"];
+  /** The precision at which the rating will increase and decrease. For example, to allow half-star ratings, set this
+attribute to `0.5`. */
+  precision?: SlRating["precision"];
+  /** Makes the rating readonly. */
+  readonly?: SlRating["readonly"];
+  /** Disables the rating. */
+  disabled?: SlRating["disabled"];
+  /** A function that customizes the symbol to be rendered. The first and only argument is the rating's current value.
+The function should return a string containing trusted HTML of the symbol to render at the specified value. Works
+well with `<sl-icon>` elements. */
+  getSymbol?: SlRating["getSymbol"];
+  /**  */
+  rating?: SlRating["rating"];
+  /** Emitted when the rating's value changes. */
+  onSlChange?: (e: CustomEvent<never>) => void;
+  /** Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value. */
+  onSlHover?: (e: CustomEvent<{ phase: "start" | "move" | "end"; value: number }>) => void;
 };
 
 type SlRelativeTimeProps = {
@@ -1346,6 +1346,8 @@ type SlTabProps = {
   disabled?: SlTab["disabled"];
   /**  */
   tab?: SlTab["tab"];
+  /**  */
+  tabIndex?: SlTab["tabIndex"];
   /** Emitted when the tab is closable and the close button is activated. */
   onSlClose?: (e: CustomEvent<never>) => void;
 };
@@ -1561,66 +1563,6 @@ type SlVisuallyHiddenProps = {};
 
 export type CustomElements = {
   /**
-   * A component for displaying animated GIFs and WEBPs that play and pause on interaction.
-   * ---
-   *
-   *
-   * ### **Events:**
-   *  - **sl-load** - Emitted when the image loads successfully.
-   * - **sl-error** - Emitted when the image fails to load.
-   *
-   * ### **Slots:**
-   *  - **play-icon** - Optional play icon to use instead of the default. Works best with `<sl-icon>`.
-   * - **pause-icon** - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.
-   *
-   * ### **CSS Properties:**
-   *  - **--control-box-size** - The size of the icon box. _(default: undefined)_
-   * - **--icon-size** - The size of the play/pause icons. _(default: undefined)_
-   *
-   * ### **CSS Parts:**
-   *  - **control-box** - The container that surrounds the pause/play icons and provides their background.
-   */
-  "sl-animated-image": DefineComponent<SlAnimatedImageProps>;
-
-  /**
-   * Avatars are used to represent a person or object.
-   * ---
-   *
-   *
-   * ### **Slots:**
-   *  - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.
-   *
-   * ### **CSS Properties:**
-   *  - **--size** - The size of the avatar. _(default: undefined)_
-   *
-   * ### **CSS Parts:**
-   *  - **base** - The component's base wrapper.
-   * - **icon** - The container that wraps the avatar's icon.
-   * - **initials** - The container that wraps the avatar's initials.
-   * - **image** - The avatar image. Only shown when the `image` attribute is set.
-   */
-  "sl-avatar": DefineComponent<SlAvatarProps>;
-
-  /**
-   * Animate elements declaratively with nearly 100 baked-in presets, or roll your own with custom keyframes. Powered by the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API).
-   * ---
-   *
-   *
-   * ### **Events:**
-   *  - **sl-cancel** - Emitted when the animation is canceled.
-   * - **sl-finish** - Emitted when the animation finishes.
-   * - **sl-start** - Emitted when the animation starts or restarts.
-   *
-   * ### **Methods:**
-   *  - **cancel()** - Clears all keyframe effects caused by this animation and aborts its playback.
-   * - **finish()** - Sets the playback time to the end of the animation corresponding to the current playback direction.
-   *
-   * ### **Slots:**
-   *  - _default_ - The element to animate. Avoid slotting in more than one element, as subsequent ones will be ignored. To animate multiple elements, either wrap them in a single container or use multiple `<sl-animation>` elements.
-   */
-  "sl-animation": DefineComponent<SlAnimationProps>;
-
-  /**
    * Alerts are used to display important messages inline or as toast notifications.
    * ---
    *
@@ -1650,6 +1592,79 @@ export type CustomElements = {
    * - **close-button__base** - The close button's exported `base` part.
    */
   "sl-alert": DefineComponent<SlAlertProps>;
+
+  /**
+   * A component for displaying animated GIFs and WEBPs that play and pause on interaction.
+   * ---
+   *
+   *
+   * ### **Events:**
+   *  - **sl-load** - Emitted when the image loads successfully.
+   * - **sl-error** - Emitted when the image fails to load.
+   *
+   * ### **Slots:**
+   *  - **play-icon** - Optional play icon to use instead of the default. Works best with `<sl-icon>`.
+   * - **pause-icon** - Optional pause icon to use instead of the default. Works best with `<sl-icon>`.
+   *
+   * ### **CSS Properties:**
+   *  - **--control-box-size** - The size of the icon box. _(default: undefined)_
+   * - **--icon-size** - The size of the play/pause icons. _(default: undefined)_
+   *
+   * ### **CSS Parts:**
+   *  - **control-box** - The container that surrounds the pause/play icons and provides their background.
+   */
+  "sl-animated-image": DefineComponent<SlAnimatedImageProps>;
+
+  /**
+   * Animate elements declaratively with nearly 100 baked-in presets, or roll your own with custom keyframes. Powered by the [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API).
+   * ---
+   *
+   *
+   * ### **Events:**
+   *  - **sl-cancel** - Emitted when the animation is canceled.
+   * - **sl-finish** - Emitted when the animation finishes.
+   * - **sl-start** - Emitted when the animation starts or restarts.
+   *
+   * ### **Methods:**
+   *  - **cancel()** - Clears all keyframe effects caused by this animation and aborts its playback.
+   * - **finish()** - Sets the playback time to the end of the animation corresponding to the current playback direction.
+   *
+   * ### **Slots:**
+   *  - _default_ - The element to animate. Avoid slotting in more than one element, as subsequent ones will be ignored. To animate multiple elements, either wrap them in a single container or use multiple `<sl-animation>` elements.
+   */
+  "sl-animation": DefineComponent<SlAnimationProps>;
+
+  /**
+   * Avatars are used to represent a person or object.
+   * ---
+   *
+   *
+   * ### **Slots:**
+   *  - **icon** - The default icon to use when no image or initials are present. Works best with `<sl-icon>`.
+   *
+   * ### **CSS Properties:**
+   *  - **--size** - The size of the avatar. _(default: undefined)_
+   *
+   * ### **CSS Parts:**
+   *  - **base** - The component's base wrapper.
+   * - **icon** - The container that wraps the avatar's icon.
+   * - **initials** - The container that wraps the avatar's initials.
+   * - **image** - The avatar image. Only shown when the `image` attribute is set.
+   */
+  "sl-avatar": DefineComponent<SlAvatarProps>;
+
+  /**
+   * Badges are used to draw attention and display statuses or counts.
+   * ---
+   *
+   *
+   * ### **Slots:**
+   *  - _default_ - The badge's content.
+   *
+   * ### **CSS Parts:**
+   *  - **base** - The component's base wrapper.
+   */
+  "sl-badge": DefineComponent<SlBadgeProps>;
 
   /**
    * Breadcrumbs provide a group of links so users can easily navigate a website's hierarchy.
@@ -1684,19 +1699,6 @@ export type CustomElements = {
    * - **separator** - The container that wraps the separator.
    */
   "sl-breadcrumb-item": DefineComponent<SlBreadcrumbItemProps>;
-
-  /**
-   * Badges are used to draw attention and display statuses or counts.
-   * ---
-   *
-   *
-   * ### **Slots:**
-   *  - _default_ - The badge's content.
-   *
-   * ### **CSS Parts:**
-   *  - **base** - The component's base wrapper.
-   */
-  "sl-badge": DefineComponent<SlBadgeProps>;
 
   /**
    * Buttons represent actions that are available to the user.
@@ -2199,19 +2201,6 @@ export type CustomElements = {
   "sl-include": DefineComponent<SlIncludeProps>;
 
   /**
-   * Menus provide a list of options for the user to choose from.
-   * ---
-   *
-   *
-   * ### **Events:**
-   *  - **sl-select** - Emitted when a menu item is selected.
-   *
-   * ### **Slots:**
-   *  - _default_ - The menu's content, including menu items, menu labels, and dividers.
-   */
-  "sl-menu": DefineComponent<SlMenuProps>;
-
-  /**
    * Inputs collect data from the user.
    * ---
    *
@@ -2262,6 +2251,19 @@ export type CustomElements = {
   "sl-input": DefineComponent<SlInputProps>;
 
   /**
+   * Menus provide a list of options for the user to choose from.
+   * ---
+   *
+   *
+   * ### **Events:**
+   *  - **sl-select** - Emitted when a menu item is selected.
+   *
+   * ### **Slots:**
+   *  - _default_ - The menu's content, including menu items, menu labels, and dividers.
+   */
+  "sl-menu": DefineComponent<SlMenuProps>;
+
+  /**
    * Menu items provide options for the user to pick from in a menu.
    * ---
    *
@@ -2291,6 +2293,32 @@ export type CustomElements = {
   "sl-menu-item": DefineComponent<SlMenuItemProps>;
 
   /**
+   * Menu labels are used to describe a group of menu items.
+   * ---
+   *
+   *
+   * ### **Slots:**
+   *  - _default_ - The menu label's content.
+   *
+   * ### **CSS Parts:**
+   *  - **base** - The component's base wrapper.
+   */
+  "sl-menu-label": DefineComponent<SlMenuLabelProps>;
+
+  /**
+   * The Mutation Observer component offers a thin, declarative interface to the [`MutationObserver API`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver).
+   * ---
+   *
+   *
+   * ### **Events:**
+   *  - **sl-mutation** - Emitted when a mutation occurs.
+   *
+   * ### **Slots:**
+   *  - _default_ - The content to watch for mutations.
+   */
+  "sl-mutation-observer": DefineComponent<SlMutationObserverProps>;
+
+  /**
    * Options define the selectable items within various form controls such as [select](/components/select).
    * ---
    *
@@ -2311,32 +2339,6 @@ export type CustomElements = {
    * - **suffix** - The container that wraps the suffix.
    */
   "sl-option": DefineComponent<SlOptionProps>;
-
-  /**
-   * The Mutation Observer component offers a thin, declarative interface to the [`MutationObserver API`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver).
-   * ---
-   *
-   *
-   * ### **Events:**
-   *  - **sl-mutation** - Emitted when a mutation occurs.
-   *
-   * ### **Slots:**
-   *  - _default_ - The content to watch for mutations.
-   */
-  "sl-mutation-observer": DefineComponent<SlMutationObserverProps>;
-
-  /**
-   * Menu labels are used to describe a group of menu items.
-   * ---
-   *
-   *
-   * ### **Slots:**
-   *  - _default_ - The menu label's content.
-   *
-   * ### **CSS Parts:**
-   *  - **base** - The component's base wrapper.
-   */
-  "sl-menu-label": DefineComponent<SlMenuLabelProps>;
 
   /**
    * Popup is a utility that lets you declaratively anchor "popup" containers to another element.
@@ -2500,30 +2502,6 @@ export type CustomElements = {
   "sl-radio-group": DefineComponent<SlRadioGroupProps>;
 
   /**
-   * Ratings give users a way to quickly view and provide feedback.
-   * ---
-   *
-   *
-   * ### **Events:**
-   *  - **sl-change** - Emitted when the rating's value changes.
-   * - **sl-hover** - Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value.
-   *
-   * ### **Methods:**
-   *  - **focus(options: _FocusOptions_)** - Sets focus on the rating.
-   * - **blur()** - Removes focus from the rating.
-   *
-   * ### **CSS Properties:**
-   *  - **--symbol-color** - The inactive color for symbols. _(default: undefined)_
-   * - **--symbol-color-active** - The active color for symbols. _(default: undefined)_
-   * - **--symbol-size** - The size of symbols. _(default: undefined)_
-   * - **--symbol-spacing** - The spacing to use around symbols. _(default: undefined)_
-   *
-   * ### **CSS Parts:**
-   *  - **base** - The component's base wrapper.
-   */
-  "sl-rating": DefineComponent<SlRatingProps>;
-
-  /**
    * Ranges allow the user to select a single value within a given range using a slider.
    * ---
    *
@@ -2567,6 +2545,30 @@ export type CustomElements = {
    * - **tooltip** - The range's tooltip.
    */
   "sl-range": DefineComponent<SlRangeProps>;
+
+  /**
+   * Ratings give users a way to quickly view and provide feedback.
+   * ---
+   *
+   *
+   * ### **Events:**
+   *  - **sl-change** - Emitted when the rating's value changes.
+   * - **sl-hover** - Emitted when the user hovers over a value. The `phase` property indicates when hovering starts, moves to a new value, or ends. The `value` property tells what the rating's value would be if the user were to commit to the hovered value.
+   *
+   * ### **Methods:**
+   *  - **focus(options: _FocusOptions_)** - Sets focus on the rating.
+   * - **blur()** - Removes focus from the rating.
+   *
+   * ### **CSS Properties:**
+   *  - **--symbol-color** - The inactive color for symbols. _(default: undefined)_
+   * - **--symbol-color-active** - The active color for symbols. _(default: undefined)_
+   * - **--symbol-size** - The size of symbols. _(default: undefined)_
+   * - **--symbol-spacing** - The spacing to use around symbols. _(default: undefined)_
+   *
+   * ### **CSS Parts:**
+   *  - **base** - The component's base wrapper.
+   */
+  "sl-rating": DefineComponent<SlRatingProps>;
 
   /**
    * Outputs a localized time phrase relative to the current date and time.
@@ -2748,10 +2750,6 @@ export type CustomElements = {
    *
    * ### **Events:**
    *  - **sl-close** - Emitted when the tab is closable and the close button is activated.
-   *
-   * ### **Methods:**
-   *  - **focus(options: _FocusOptions_)** - Sets focus to the tab.
-   * - **blur()** - Removes focus from the tab.
    *
    * ### **Slots:**
    *  - _default_ - The tab's label.
