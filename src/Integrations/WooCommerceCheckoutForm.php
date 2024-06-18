@@ -65,7 +65,7 @@ class WooCommerceCheckoutForm implements Integration
         $identifier = get_option('avacy_WooCommerce_Checkout_Form_' . $id . '_form_user_identifier'); // TODO: get identifier from settings
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
-        $proofs = json_encode($checkoutForm);
+        $proofs = wp_json_encode($checkoutForm);
         $posted_data = wc_get_order($order_id)->get_data()['billing'];
         
         $fields = self::getFields();

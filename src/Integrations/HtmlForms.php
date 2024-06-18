@@ -22,7 +22,7 @@ class HtmlForms implements Integration {
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
 
-        $proofs = json_encode($contact_form['source']);
+        $proofs = wp_json_encode($contact_form['source']);
         $fields = self::getFields($contact_form['id']);
 
         $selectedFields = [];

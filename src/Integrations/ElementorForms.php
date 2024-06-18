@@ -72,7 +72,7 @@ class ElementorForms implements Integration {
         }
 
         $formData['id'] = sanitize_text_field($record->get('form_settings')['id']);
-        $formData['source'] = sanitize_text_field(json_encode($record->get('fields')));
+        $formData['source'] = sanitize_text_field(wp_json_encode($record->get('fields')));
 
         self::sendFormData($formData);
     }
