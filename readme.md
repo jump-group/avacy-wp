@@ -1,7 +1,7 @@
-# Avacy WordPress Plugin
+# Avacy CMP
 
 Contributors: Jumpgroup SRL
-Tags: consent, cookie, cookie banner, tracking, privacy, gdpr, cookie consent, cookie notice, privacy policy
+Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.4
 Stable tag: 1.0.0
