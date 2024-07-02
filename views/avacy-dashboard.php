@@ -22,7 +22,13 @@
             <sl-alert variant="warning" open closable class="alert-closable">
                 <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
                 <strong><?php echo esc_html__('Attenzione!', 'avacy')?></strong><br />
-                <?php echo sprintf(__('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy'), esc_url($registration_url)); ?>
+                <?php 
+                    $info = sprintf(
+                        __('Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo <a href="%s" target="_blank">qui</a>.', 'avacy'),
+                        esc_url($registration_url)
+                    );
+                    echo wp_kses_post($info); 
+                ?>
             </sl-alert>
         <?php endif; ?>
         <?php if( !empty(get_option('avacy_webspace_id'))) : ?>

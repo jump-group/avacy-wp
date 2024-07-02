@@ -3,7 +3,7 @@
 Contributors: Jumpgroup SRL
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
-Tested up to: 6.4
+Tested up to: 6.5
 Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
