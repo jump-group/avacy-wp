@@ -1,13 +1,13 @@
 # Avacy CMP
 
-Contributors: Jumpgroup SRL
+Contributors: jumptech
+Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.5
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-
 
 ## Overview
 
@@ -16,12 +16,12 @@ The WordPress Consent Solution Plugin is a powerful tool that empowers website o
 ## Features
 
 1. Consent Management Platform (CMP)
-User-Friendly Interface: The plugin offers an intuitive dashboard for configuring and customizing the Consent Management Platform to suit your website's needs.
-Customizable Cookie Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
-Consent Logging: Keep track of user consent preferences and ensure compliance with privacy regulations.
+   User-Friendly Interface: The plugin offers an intuitive dashboard for configuring and customizing the Consent Management Platform to suit your website's needs.
+   Customizable Cookie Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
+   Consent Logging: Keep track of user consent preferences and ensure compliance with privacy regulations.
 2. Tracker Preemptive Blocking
-Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy. 
-The plugin preemptively blocks all the scripts that might contain a string in the `src` attribute or in the inner HTML that matches the strings you can configure on [Avacy](https://avacy.eu) for each vendor.
+   Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy.
+   The plugin preemptively blocks all the scripts that might contain a string in the `src` attribute or in the inner HTML that matches the strings you can configure on [Avacy](https://avacy.eu) for each vendor.
 
 Avacy is a SaaS-based CMP that helps websites manage user consents efficiently and in compliance with data protection regulations. The platform offers customizable consent forms and integrates seamlessly with various web properties.
 
@@ -39,25 +39,27 @@ Cookie banners will automatically appear on your site once configured.
 Users can manage their consent preferences through these banners.
 
 ### Tracker Control:
+
 Trackers are preemptively blocked based on a blacklist JSON file hosted on an AWS content delivery network.
 Every time a page in the website is loaded, Avacy checks if scripts injected in the current page have `src` attribute or the `innerHTML` property containing a string matching the patterns in the blacklist and, if so, overrides some attributes and blocks the script.
 Every script blocked this way will be launched only if user grants consent to the corresponding vendor and purposes by opting-in from the first layer or by selecting the vendor and its purposes from the second layer (the preference center).
 
 #### CDN Information
+
 The CDN used by Avacy is CloudFront, pointing to the following S3 bucket:
 
-```bash
+```
 https://avacy-cdn.s3.eu-central-1.amazonaws.com/
 ```
 
-```bash
+```
 https://assets.avacy-cdn.com/
 ```
 
 **Integration Example**
 Each custom vendor list can be reached using the following format:
 
-```bash
+```
 https://assets.avacy-cdn.com/config/{avacy_team_name}/{avacy_webspace_key}/custom-vendor-list.json;
 ```
 
@@ -70,8 +72,8 @@ https://assets.avacy-cdn.com/config/{avacy_team_name}/{avacy_webspace_key}/custo
 **Example URL**
 Assuming the following:
 
-Tenant ID: *tenant123*
-Webspace Key: *webspace456*
+Tenant ID: _tenant123_
+Webspace Key: _webspace456_
 The URL to access the custom vendor list would be:
 
 ```bash
@@ -86,27 +88,32 @@ To connect to and utilize Avacy's services, you need an active Avacy account wit
 Ensure you have these credentials available to correctly generate the URLs needed for integration.
 
 ### Avacy Consent Solution API
+
 The plugin provides an interface that allows connecting to your consent archive on Avacy. To do this, it's necessary to generate a token from the Avacy platform and insert it into the Token field in the API token tab. This way, all the forms present on the page will be visible, and it will be possible to select various options, including:
 
-* the ability to store consents given for that specific form in the consent archive;
-* the fields to store for that form;
-* a field to identify the user who has given the consent to be stored in the archive.
+- the ability to store consents given for that specific form in the consent archive;
+- the fields to store for that form;
+- a field to identify the user who has given the consent to be stored in the archive.
 
 Everytime a user submits his data from a contact form, Avacy will perform a POST request towards Avacy Consent API, using the previously generated token as authenticator.
 
 #### Under What Circumstances is Avacy Used?
+
 Avacy is utilized whenever users provide consent through forms or interactions on your WordPress site. The plugin sends this consent data to Avacy's servers for storage and processing.
 
 #### Avacy Service Link
+
 For more information about Avacy and its features, visit Avacy's [website](https://avacysolution.com/).
 
 #### Avacy Terms of Use and Privacy Policies
+
 Avacy uses 3rd party services as the Avacy REST API and AWS distributions to provide assets as the blacklist JSON file.
 Before integrating Avacy with this plugin, please review the Avacy [Terms of use](https://avacy.eu/terms-and-conditions) and [Privacy Policy](https://api.avacy.eu/jumpgroup/privacypolicy/14/it) to understand how your data is handled and what responsibilities you have as a user of their service.
 
 We welcome your feedback and suggestions to improve the functionality of the plugin.
 
 ## Disclosure of Third-Party Service Usage
+
 Our plugin utilizes third-party services to enhance its functionality. Below, we detail the specific circumstances under which these services are used, along with links to the respective service providers, their terms of use, and privacy policies.
 
 ### Services Utilized
@@ -124,6 +131,7 @@ Script enqueuing involves dynamically adding the main JavaScript core in order t
 CMP configuration fetching is used to dynamically load the latest CMP configuration settings and vendor lists from a remote server. This process ensures that the plugin operates with the most current data, improving security, compatibility, and functionality.
 
 #### Service Provider Information
+
 **Service URL**: [Amazon Web Services](https://aws.amazon.com/)
 **Privacy Policy**: [AWS Privacy Policy](https://d1.awsstatic.com/legal/privacypolicy/AWS%20Privacy%20Notice%20-%202024-01-01_IT.pdf)
 **Terms of Use**: [AWS Terms of Use](https://aws.amazon.com/it/service-terms/)
