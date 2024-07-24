@@ -3,14 +3,14 @@
 Plugin Name:  Avacy: GDPR Consent Solution, Cookie Banner and more
 Plugin URI:   https://avacysolution.com/
 Description:  Avacy's compliance plugin offers <strong>an all-in-one</strong>, <strong>easily set-up</strong> solution for a GDPR compliant website, with features verified by experienced lawyers.
-Version:      1.0.0
+Version:      1.0.2
 Contributors: jumptech
 Author: Jump Group
 Tags: consent, cookie, cookie banner, tracking, privacy, gdpr, cookie consent, cookie notice, privacy policy
 Requires at least: 5.3
 Tested up to: 6.5
 PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */

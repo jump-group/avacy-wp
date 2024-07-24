@@ -5,7 +5,7 @@ Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.5
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,20 +48,14 @@ Every script blocked this way will be launched only if user grants consent to th
 
 The CDN used by Avacy is CloudFront, pointing to the following S3 bucket:
 
-```
-https://avacy-cdn.s3.eu-central-1.amazonaws.com/
-```
+`https://avacy-cdn.s3.eu-central-1.amazonaws.com/`
 
-```
-https://assets.avacy-cdn.com/
-```
+`https://assets.avacy-cdn.com/`
 
 **Integration Example**
 Each custom vendor list can be reached using the following format:
 
-```
-https://assets.avacy-cdn.com/config/{avacy_team_name}/{avacy_webspace_key}/custom-vendor-list.json;
-```
+`https://assets.avacy-cdn.com/config/{avacy_team_name}/{avacy_webspace_key}/custom-vendor-list.json;`
 
 **Explanation**
 
@@ -76,9 +70,7 @@ Tenant ID: _tenant123_
 Webspace Key: _webspace456_
 The URL to access the custom vendor list would be:
 
-```bash
-https://assets.avacy-cdn.com/config/tenant123/webspace456/custom-vendor-list.json
-```
+`https://assets.avacy-cdn.com/config/tenant123/webspace456/custom-vendor-list.json`
 
 **Account Requirements**
 To connect to and utilize Avacy's services, you need an active Avacy account with valid credentials, which include:
