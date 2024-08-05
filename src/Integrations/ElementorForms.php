@@ -102,29 +102,31 @@ class ElementorForms implements Integration {
         if ( ! empty( $posts ) ) {
             foreach ( $posts as $post ) {
                 // get form data.
-                $elementor_data = get_post_meta( $post->ID, '_elementor_data', true );
-                $form_ids       = array();
+                if (class_exists('\ElementorPro\Plugin')) {
+                    $elementor_data = get_post_meta( $post->ID, '_elementor_data', true );
+                    $form_ids       = array();
 
-                if ( $elementor_data ) {
-                    $elementor_data = is_array($elementor_data)? $elementor_data : json_decode( $elementor_data, true );
+                    if ( $elementor_data ) {
+                        $elementor_data = is_array($elementor_data)? $elementor_data : json_decode( $elementor_data, true );
 
-                    self::find_elementor_form_id( $elementor_data, $form_ids );
-                }
-
-                $elementor = \ElementorPro\Plugin::elementor();
-
-                foreach ( $form_ids as $key => $form_id ) {
-                    $document = $elementor->documents->get( $post->ID );
-                    if ( $document ) {
-                        $elementor_form = \ElementorPro\Modules\Forms\Module::find_element_recursive( $document->get_elements_data(), $form_id );
+                        self::find_elementor_form_id( $elementor_data, $form_ids );
                     }
 
-                    if ( ! empty( $elementor_form ) ) {
-                        // Set the form name as in Elementor builder.
-                        $id = sanitize_text_field($elementor_form['id']);
-                        $fields = self::parseFields($elementor_form['settings']['form_fields']);
-
-                        $forms[] = new Form($id, 'Elementor Forms', $fields);
+                    $elementor = \ElementorPro\Plugin::elementor();
+    
+                    foreach ( $form_ids as $key => $form_id ) {
+                        $document = $elementor->documents->get( $post->ID );
+                        if ( $document ) {
+                            $elementor_form = \ElementorPro\Modules\Forms\Module::find_element_recursive( $document->get_elements_data(), $form_id );
+                        }
+    
+                        if ( ! empty( $elementor_form ) ) {
+                            // Set the form name as in Elementor builder.
+                            $id = sanitize_text_field($elementor_form['id']);
+                            $fields = self::parseFields($elementor_form['settings']['form_fields']);
+    
+                            $forms[] = new Form($id, 'Elementor Forms', $fields);
+                        }
                     }
                 }
             }
