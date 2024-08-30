@@ -75,29 +75,27 @@ class ContactForm7 implements Integration
     }
 
     public static function detectAllForms() : array {
-        $forms = [];
-		
-		if( class_exists('WPCF7_ContactForm') ) {
-			$args = array(
-				'post_type' => 'wpcf7_contact_form',
-				'posts_per_page' => -1, // Retrieve all posts
-			);
+		$forms = [];
+		$args = array(
+			'post_type' => 'wpcf7_contact_form',
+			'posts_per_page' => -1, // Retrieve all posts
+		);
 
-			$query = new WP_Query($args);
-			if($query->have_posts()) {
-				while($query->have_posts()) {
-					$query->the_post();
-					$wpCf7Form = WPCF7_ContactForm::get_instance(get_the_ID());
-					$fields = self::parseFormFields($wpCf7Form);
+		// Use get_posts to retrieve the posts
+		$posts = get_posts($args);
 
-					$form = new Form(get_the_ID(), 'Contact Form 7', $fields);
-					$forms[] = $form;
-				}
-			}			
+		// Loop through each post
+		foreach ($posts as $post) {
+			// No need to call the_post(), use $post directly
+			$wpCf7Form = WPCF7_ContactForm::find(['ID' => $post->ID])[0];
+			$fields = self::parseFormFields($wpCf7Form);
+
+			$form = new Form($post->ID, 'Contact Form 7', $fields);
+			$forms[] = $form;
 		}
 
-        return $forms;
-    }
+		return $forms;
+	}
 
     private static function parseFormFields($form) {
         if (!$form) {

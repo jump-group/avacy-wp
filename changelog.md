@@ -11,6 +11,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
 
+### 1.0.5
+
+Fixed a bug made impossible to access CF7 form list.
+
 ### 1.0.4
 
 Fixed bug that crashed the plugin if Contact Form 7 did not exist or was not active.
