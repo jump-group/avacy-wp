@@ -155,9 +155,10 @@ class WooCommerceCheckoutForm implements Integration
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) {
-            return str_replace('avacy_form_field_wc_', '', $field);
-            }, 
-            $fieldNames
-        );
+            $field = sanitize_text_field($field);
+			if(get_option($field) === 'on') {
+                return str_replace('avacy_form_field_wc_', '', $field);
+            }
+        }, $fieldNames);
     }
 }

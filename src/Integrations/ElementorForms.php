@@ -157,10 +157,11 @@ class ElementorForms implements Integration {
     
         $fieldNames = array_keys($formFields);
         return array_map( function($field) use($form_id) {
-            return str_replace('avacy_form_field_elementorforms_' . $form_id . '_', '', sanitize_text_field($field));
-            }, 
-            $fieldNames
-        );
+            $field = sanitize_text_field($field);
+			if(get_option($field) === 'on') {
+                return str_replace('avacy_form_field_elementorforms_' . $form_id . '_', '', $field);
+            }
+        }, $fieldNames);
     }
 
     private static function find_elementor_form_id( $data, &$form_ids ) {
