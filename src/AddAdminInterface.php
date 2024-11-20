@@ -350,7 +350,7 @@ class AddAdminInterface
     wp_enqueue_script( 'avacy-dashboard' );
     wp_enqueue_style( 'avacy-dashboard' );
 
-    require_once(__DIR__ . '/../views/avacy-dashboard.php');
+    require_once(__DIR__ . '/views/avacy-dashboard.php');
   }
 
   public static function registerSettings()
