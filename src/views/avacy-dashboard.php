@@ -185,13 +185,13 @@
                                         $id = $form->getId();
                                     ?>
                 
-                                    <tr>
+                                    <tr data-form-id="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>">
                                         <td><?php echo esc_attr($id); ?></td>
                                         <td><?php echo esc_attr($form_type); ?></td>
                                         <td>
                                             <div>
                                                 <?php $enabled = esc_attr(get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
-                                                <sl-switch name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled" value="on" <?php echo esc_attr($enabled) ?> size="medium">
+                                                <sl-switch name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled" <?php echo esc_attr($enabled) ?> size="medium">
                                                     <label for="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled"><?php echo esc_html__('Save', 'avacy')?></label>
                                                 </sl-switch>
                                             </div>
@@ -207,7 +207,7 @@
                                             </sl-details>
                                         </td>
                                         <td>
-                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier'))?>" size="small" placeholder="Select an option" required>
+                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier'))?>" size="small" placeholder="Select an option">
                                                 <?php foreach ($form->getFields() as $key => $field) : ?>
                                                     <sl-option name="avacy_form_option_<?php echo esc_attr($key)?>_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>" value="<?php echo esc_attr($field['name'])?>"><?php echo esc_attr($field['name'])?></sl-option>
                                                 <?php endforeach; ?>

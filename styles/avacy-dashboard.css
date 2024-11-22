@@ -210,6 +210,16 @@ table.AvacyForms tbody td {
 table.AvacyForms tbody tr {
   border-bottom: 1px solid #f0f0f0;
 }
+table.AvacyForms tbody tr sl-details::part(base) {
+  padding: 0.3rem 0.5rem;
+}
+table.AvacyForms tbody tr.warning sl-checkbox {
+  --sl-input-border-color: red;
+}
+table.AvacyForms tbody tr.warning sl-details::part(base) {
+  border: 1px solid red;
+  background-color: #ffeeef;
+}
 table.AvacyForms thead {
   background: #cfcfcf;
   background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #cfcfcf 100%);
