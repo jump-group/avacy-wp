@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: avacy 1.0.0\n"
 "Report-Msgid-Bugs-To: undefined <EMAIL>\n"
-"POT-Creation-Date: 2024-11-19T12:06:26.895Z\n"
-"PO-Revision-Date: 2024-11-19 13:07+0100\n"
+"POT-Creation-Date: 2024-11-25T15:43:09.368Z\n"
+"PO-Revision-Date: 2024-11-25 16:43+0100\n"
 "Last-Translator: \n"
 "Language-Team: undefined <EMAIL>\n"
 "Language: it\n"
@@ -20,31 +20,31 @@ msgstr ""
 msgid "The changes have been saved successfully."
 msgstr "Le modifiche sono state salvate con successo."
 
-#: AddAdminInterface.php:174
+#: AddAdminInterface.php:175
 msgid "Team not found. Please check the entered data."
 msgstr "Team non trovato. Si prega di verificare i dati inseriti."
 
-#: AddAdminInterface.php:181
+#: AddAdminInterface.php:182
 msgid "Webspace not found. Please check the entered data."
 msgstr "Spazio web non trovato. Si prega di verificare i dati inseriti."
 
-#: AddAdminInterface.php:203
+#: AddAdminInterface.php:204
 msgid "The entered credentials are valid."
 msgstr "Le credenziali inserite sono valide."
 
-#: AddAdminInterface.php:245
+#: AddAdminInterface.php:246
 msgid "The entered token has an incorrect format."
 msgstr "Il token inserito ha un formato errato."
 
-#: AddAdminInterface.php:252
+#: AddAdminInterface.php:253
 msgid "Token not found or expired. Please check the entered data."
 msgstr "Token non trovato o scaduto. Si prega di verificare i dati inseriti."
 
-#: AddAdminInterface.php:264
+#: AddAdminInterface.php:265
 msgid "The token has been saved successfully."
 msgstr "Il token è stato salvato con successo."
 
-#: AddAdminInterface.php:273
+#: AddAdminInterface.php:274
 msgid "The token has been removed successfully."
 msgstr "Il token è stato rimosso con successo."
 
@@ -169,7 +169,7 @@ msgstr "Tipologia"
 
 #: views/avacy-dashboard.php:174
 msgid "Save in the Avacy consent solution"
-msgstr "Salva nell’archivio consensi di Avacy."
+msgstr "Salva nell’archivio consensi di Avacy"
 
 #: views/avacy-dashboard.php:175
 msgid "Select which data to save on Avacy"
@@ -182,6 +182,10 @@ msgstr "Campo di identificazione utente"
 #: views/avacy-dashboard.php:195
 msgid "Save"
 msgstr "Salva"
+
+#: views/avacy-dashboard.php:200
+msgid "Details"
+msgstr "Dettagli"
 
 #: views/avacy-dashboard.php:229
 msgid "Connect"

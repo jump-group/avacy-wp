@@ -197,7 +197,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <sl-details summary="Dettagli">
+                                            <sl-details summary=<?php echo esc_attr(__('Details', 'avacy'))?>>
                                                 <sl-icon slot="collapse-icon" name="caret-left-fill"></sl-icon>
                                                 <sl-icon slot="expand-icon" name="caret-down-fill"></sl-icon>
                                                 <?php foreach ($form->getFields() as $field) : ?>

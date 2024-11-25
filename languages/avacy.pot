@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2024-11-19T12:06:26.895Z\n"
+"POT-Creation-Date: 2024-11-25T15:43:09.368Z\n"
 "PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
 "Last-Translator: undefined <EMAIL>\n"
 "Language-Team: undefined <EMAIL>\n"
@@ -25,31 +25,31 @@ msgstr ""
 msgid "The changes have been saved successfully."
 msgstr ""
 
-#: AddAdminInterface.php:174
+#: AddAdminInterface.php:175
 msgid "Team not found. Please check the entered data."
 msgstr ""
 
-#: AddAdminInterface.php:181
+#: AddAdminInterface.php:182
 msgid "Webspace not found. Please check the entered data."
 msgstr ""
 
-#: AddAdminInterface.php:203
+#: AddAdminInterface.php:204
 msgid "The entered credentials are valid."
 msgstr ""
 
-#: AddAdminInterface.php:245
+#: AddAdminInterface.php:246
 msgid "The entered token has an incorrect format."
 msgstr ""
 
-#: AddAdminInterface.php:252
+#: AddAdminInterface.php:253
 msgid "Token not found or expired. Please check the entered data."
 msgstr ""
 
-#: AddAdminInterface.php:264
+#: AddAdminInterface.php:265
 msgid "The token has been saved successfully."
 msgstr ""
 
-#: AddAdminInterface.php:273
+#: AddAdminInterface.php:274
 msgid "The token has been removed successfully."
 msgstr ""
 
@@ -175,6 +175,10 @@ msgstr ""
 
 #: views/avacy-dashboard.php:195
 msgid "Save"
+msgstr ""
+
+#: views/avacy-dashboard.php:200
+msgid "Details"
 msgstr ""
 
 #: views/avacy-dashboard.php:229
