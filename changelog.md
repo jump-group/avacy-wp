@@ -4,12 +4,30 @@ Contributors: jumptech
 Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
-Tested up to: 6.5
-Stable tag: 1.0.6
+Tested up to: 6.7
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
+
+### 1.1.0
+
+Change default plugin language to English and generate the .pot file.
+Minor bug fixes.
+Tested up to WordPress 6.7.
+
+### 1.0.9
+
+Fix minor release issues
+
+### 1.0.8
+
+Add only selected fields in payload
+
+### 1.0.7
+
+Restored vendors folder from repository.
 
 ### 1.0.6
 

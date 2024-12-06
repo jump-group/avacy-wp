@@ -1,0 +1,11 @@
+{
+  "name": "jumprock_avacy",
+  "version": "1.0.0",
+  "description": "Avacy's compliance plugin offers an all-in-one, easy solution for a GDPR compliant website, with features verified by experienced lawyers.",
+  "main": "index.js",
+  "scripts": {
+    "makepot": "npx @wp-blocks/make-pot ./src languages/ --slug=\"avacy\" --exclude=\"vendors\""
+  },
+  "author": "Jump Group",
+  "license": "GPL-2.0-or-later"
+}

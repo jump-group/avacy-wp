@@ -1,0 +1,199 @@
+# Copyright (C) 2024 avacy
+# This file is distributed under the GPL v2 or later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: avacy 1.0.0\n"
+"Report-Msgid-Bugs-To: undefined <EMAIL>\n"
+"POT-Creation-Date: 2024-11-25T15:43:09.368Z\n"
+"PO-Revision-Date: 2024-11-25 16:43+0100\n"
+"Last-Translator: \n"
+"Language-Team: undefined <EMAIL>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.5\n"
+"domain: \n"
+
+#: AddAdminInterface.php:130
+msgid "The changes have been saved successfully."
+msgstr "Le modifiche sono state salvate con successo."
+
+#: AddAdminInterface.php:175
+msgid "Team not found. Please check the entered data."
+msgstr "Team non trovato. Si prega di verificare i dati inseriti."
+
+#: AddAdminInterface.php:182
+msgid "Webspace not found. Please check the entered data."
+msgstr "Spazio web non trovato. Si prega di verificare i dati inseriti."
+
+#: AddAdminInterface.php:204
+msgid "The entered credentials are valid."
+msgstr "Le credenziali inserite sono valide."
+
+#: AddAdminInterface.php:246
+msgid "The entered token has an incorrect format."
+msgstr "Il token inserito ha un formato errato."
+
+#: AddAdminInterface.php:253
+msgid "Token not found or expired. Please check the entered data."
+msgstr "Token non trovato o scaduto. Si prega di verificare i dati inseriti."
+
+#: AddAdminInterface.php:265
+msgid "The token has been saved successfully."
+msgstr "Il token è stato salvato con successo."
+
+#: AddAdminInterface.php:274
+msgid "The token has been removed successfully."
+msgstr "Il token è stato rimosso con successo."
+
+#: views/avacy-dashboard.php:21
+msgid "Connect to Avacy"
+msgstr "Connettiti ad Avacy"
+
+#: views/avacy-dashboard.php:24
+msgid "Warning!"
+msgstr "Attenzione!"
+
+#: views/avacy-dashboard.php:25
+msgid ""
+"To use the plugin, you need to have an Avacy account. If you are not "
+"registered yet, you can do so <a href=%s target=\"_blank\">here</a>."
+msgstr ""
+"Per utilizzare il plugin, è necessario avere un account Avacy. Se non sei "
+"ancora registrato, puoi farlo <a href=%s target=“_blank”>qui</a>."
+
+#: views/avacy-dashboard.php:29
+msgid "Connected to Avacy"
+msgstr "Connesso a Avacy"
+
+#: views/avacy-dashboard.php:70
+msgid "Enter the name of your team"
+msgstr "Inserisci il nome del tuo team"
+
+#: views/avacy-dashboard.php:72 views/avacy-dashboard.php:90
+msgid "Avacy Team Name"
+msgstr "Nome del team Avacy"
+
+#: views/avacy-dashboard.php:74
+msgid ""
+"Enter the name of the team to which the webspace belongs. You can find it at "
+"the top right of every page on Avacy."
+msgstr ""
+"Inserisci il nome del team a cui appartiene lo spazio web. Puoi trovarlo in "
+"alto a destra su ogni pagina di Avacy."
+
+#: views/avacy-dashboard.php:78
+msgid "Enter the specific key of your webspace"
+msgstr "Inserisci la chiave specifica del tuo spazio web"
+
+#: views/avacy-dashboard.php:80 views/avacy-dashboard.php:91
+msgid "Webspace Key"
+msgstr "Webspace Key"
+
+#: views/avacy-dashboard.php:82
+msgid ""
+"Enter the webspace key that you find at the end of the webspace "
+"configuration or in the webspace settings under \"Avacy integration on your "
+"webspace\"."
+msgstr ""
+"Inserisci la chiave dello spazio web che trovi alla fine della "
+"configurazione dello spazio web o nelle impostazioni dello spazio web sotto "
+"“Integrazione Avacy sul tuo spazio web”."
+
+#: views/avacy-dashboard.php:94
+msgid "Edit"
+msgstr "Modifica"
+
+#: views/avacy-dashboard.php:105
+msgid "Cookie banner"
+msgstr "Cookie banner"
+
+#: views/avacy-dashboard.php:106
+msgid "Preemptive Block"
+msgstr "Blocco Preventivo"
+
+#: views/avacy-dashboard.php:107
+msgid "Consent Solution"
+msgstr "Archivio consensi"
+
+#: views/avacy-dashboard.php:113
+msgid "Show the cookie banner on the website"
+msgstr "Mostra il banner dei cookie sul sito web"
+
+#: views/avacy-dashboard.php:118
+msgid ""
+"To modify the appearance of the cookie banner <a href=%s "
+"target=\"_blank\">click here</a>."
+msgstr ""
+"Per modificare l’aspetto del banner dei cookie <a href=%s "
+"target=“_blank”>clicca qui</a>."
+
+#: views/avacy-dashboard.php:127
+msgid "Preemptively block all scripts."
+msgstr "Blocca preventivamente tutti gli script."
+
+#: views/avacy-dashboard.php:143
+msgid ""
+"Set how Avacy records the data collected from your webspace in the consent "
+"archive."
+msgstr ""
+"Imposta come Avacy registra i dati raccolti dal tuo spazio web nell’archivio "
+"dei consensi."
+
+#: views/avacy-dashboard.php:148
+msgid ""
+"In the <a href=%s target=\"_blank\">consent archive section</a>, create a "
+"new token to link the service with WordPress and enter it in the field below."
+msgstr ""
+"Nella sezione <a href=%s target=“_blank”>archivio dei consensi</a>, crea un "
+"nuovo token per collegare il servizio con WordPress e inseriscilo nel campo "
+"sottostante."
+
+#: views/avacy-dashboard.php:155
+msgid "Consent solution token"
+msgstr "Token Archivio consensi"
+
+#: views/avacy-dashboard.php:157
+msgid "Enter the token"
+msgstr "Inserisci il token"
+
+#: views/avacy-dashboard.php:172
+msgid "Form ID"
+msgstr "Form ID"
+
+#: views/avacy-dashboard.php:173
+msgid "Type"
+msgstr "Tipologia"
+
+#: views/avacy-dashboard.php:174
+msgid "Save in the Avacy consent solution"
+msgstr "Salva nell’archivio consensi di Avacy"
+
+#: views/avacy-dashboard.php:175
+msgid "Select which data to save on Avacy"
+msgstr "Seleziona quali dati salvare su Avacy"
+
+#: views/avacy-dashboard.php:176
+msgid "User identification field"
+msgstr "Campo di identificazione utente"
+
+#: views/avacy-dashboard.php:195
+msgid "Save"
+msgstr "Salva"
+
+#: views/avacy-dashboard.php:200
+msgid "Details"
+msgstr "Dettagli"
+
+#: views/avacy-dashboard.php:229
+msgid "Connect"
+msgstr "Connetti"
+
+#: views/avacy-dashboard.php:231
+msgid "Save changes"
+msgstr "Salva modifiche"
+
+#~ msgid "Consent archive token"
+#~ msgstr "Token dell’archivio dei consensi"

@@ -26,17 +26,16 @@ function init() {
   const EditAccountPanel = document.querySelector(".EditAccountPanel");
   const RenderAccountPanel = document.querySelector(".RenderAccountPanel");
   const GlobalSubmit = document.querySelector(".Submit.Submit--Global");
+  let disableSubmit = false;
 
   loader.classList.add("hidden");
   wrap.classList.remove("hide");
 
   edit_button &&
     edit_button.addEventListener("click", () => {
-      console.log(EditAccountPanel, RenderAccountPanel);
       EditAccountPanel.classList.remove("hidden");
       RenderAccountPanel.classList.add("hidden");
-      // GlobalSubmit remove disabled
-      GlobalSubmit.removeAttribute("disabled");
+      globalSubmitStatus();
     });
 
   submit_button &&
@@ -53,23 +52,101 @@ function init() {
       }
     });
 
+  switches &&
+    switches.forEach((element) => {
+      element.addEventListener("sl-change", () => {
+        let closestTr = element.closest("tr");
+        const select = closestTr.querySelector("sl-select");
+
+        if (element.checked) {
+          // add required attribute
+          select.setAttribute("required", "");
+        } else {
+          // remove required attribute
+          select.removeAttribute("required");
+        }
+      });
+    });
+
   [checkboxes, switches, selects].forEach((elements) => {
     elements &&
       elements.forEach((element) => {
         element.addEventListener("sl-change", (event) => {
-          GlobalSubmit.removeAttribute("disabled");
+          validateRows();
+          globalSubmitStatus();
         });
       });
   });
 
   inputConsentSolutionToken &&
     inputConsentSolutionToken.addEventListener("input", (event) => {
-      GlobalSubmit.removeAttribute("disabled");
+      globalSubmitStatus();
     });
 
   tab_group &&
     tab_group.addEventListener("sl-tab-show", (event) => {
-      console.log("Tab shown", event.detail.name);
       active_tab_input.value = event.detail.name;
     });
+
+  globalSubmitStatus = () => {
+    if (disableSubmit) {
+      GlobalSubmit.setAttribute("disabled", "");
+    } else {
+      GlobalSubmit.removeAttribute("disabled");
+    }
+  };
+
+  validateRows = () => {
+    const tbody = document.querySelector(".AvacyForms tbody");
+
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll("tr");
+
+    if (!rows) return;
+
+    let countNotValidRows = 0;
+
+    rows.forEach((row) => {
+      const checkboxes = row.querySelectorAll("sl-details sl-checkbox");
+      const save_switch = row.querySelector("sl-switch");
+      const select = row.querySelector("sl-select");
+
+      let checked = Array.from(checkboxes).some((checkbox) => checkbox.checked);
+
+      if (!checked && !save_switch.checked) {
+        row.classList.remove("warning");
+        validRows = true;
+
+        select.removeAttribute("required");
+      }
+
+      if (!checked && save_switch.checked) {
+        row.classList.add("warning");
+        validRows = false;
+
+        select.setAttribute("required", "");
+        countNotValidRows++;
+      }
+
+      if (checked && !save_switch.checked) {
+        row.classList.remove("warning");
+        validRows = true;
+
+        select.removeAttribute("required");
+      }
+
+      if (checked && save_switch.checked) {
+        row.classList.remove("warning");
+        validRows = true;
+
+        select.setAttribute("required", "");
+      }
+
+      disableSubmit = !validRows;
+    });
+
+    if (countNotValidRows > 0) {
+      disableSubmit = true;
+    }
+  };
 }

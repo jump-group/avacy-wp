@@ -98,15 +98,7 @@ class AddAdminInterface
     $activeTab = isset($_POST['avacy_active_tab']) ? sanitize_text_field($_POST['avacy_active_tab']) : '';
     $notices = [];
 
-    $warning_error = [
-      'avacy_account',
-      'account_not_found',
-      __('Attenzione! Per utilizzare il plugin è necessario avere un account Avacy. Se non sei ancora registrato, puoi farlo qui.', 'avacy'),
-      'warning'
-    ];
-
     if (empty($tenant) || empty($webspaceKey)) {
-      add_settings_error($warning_error);
       set_transient('settings_errors', get_settings_errors(), 30);
       wp_safe_redirect($redirect_to);
       exit;
@@ -128,14 +120,14 @@ class AddAdminInterface
       $can_update = false;
     }
 
-    if (!empty($can_update) && isset($_POST['avacy_active_tab'])) {
+    if (!empty($can_update) && isset($_POST['avacy_active_tab']) && empty($checkSaasAccount)) {
       update_option('avacy_show_banner', esc_attr($showBanner));
       update_option('avacy_enable_preemptive_block', esc_attr($enablePreemptiveBlock));
   
       $notices[] = [
         'avacy_settings',
         'settings_saved',
-        __('Le modifiche sono state salvate correttamente.', 'avacy'),
+        __('The changes have been saved successfully.', 'avacy'),
         'success'
       ];
     }
@@ -168,6 +160,7 @@ class AddAdminInterface
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
 
+
     $setting = '';
     $code = '';
     $message = '';
@@ -179,14 +172,14 @@ class AddAdminInterface
         case 'team_not_found':
           $setting = 'avacy_team';
           $code = 'team_not_found';
-          $message = __('Team non trovato. Controlla i dati inseriti.', 'avacy');
+          $message = __('Team not found. Please check the entered data.', 'avacy');
           $type = 'danger';
           break;
         
         case 'webspace_not_found':
           $setting = 'avacy_webspace';
           $code = 'webspace_not_found';
-          $message = __('Webspace non trovato. Controlla i dati inseriti.', 'avacy');
+          $message = __('Webspace not found. Please check the entered data.', 'avacy');
           $type = 'danger';
           break;
       }
@@ -208,7 +201,7 @@ class AddAdminInterface
       
       $setting = 'avacy_tenant';
       $code = 'tenant_found';
-      $message = __('Le credenziali inserite sono valide.', 'avacy');
+      $message = __('The entered credentials are valid.', 'avacy');
       $type = 'success';
 
     }
@@ -250,14 +243,14 @@ class AddAdminInterface
           case 'invalid_token':
             $setting = 'avacy_api_token';
             $code = 'invalid_token';
-            $message = __('Il token inserito ha un formato non corretto.', 'avacy');
+            $message = __('The entered token has an incorrect format.', 'avacy');
             $type = 'warning';
             break;
 
           case 'token_not_found_or_expired':
             $setting = 'avacy_api_token';
             $code = 'token_not_found_or_expired';
-            $message = __('Token non trovato o scaduto. Controlla i dati inseriti.', 'avacy');
+            $message = __('Token not found or expired. Please check the entered data.', 'avacy');
             $type = 'danger';
             break;
         }
@@ -269,7 +262,7 @@ class AddAdminInterface
         
         $setting = 'avacy_api_token';
         $code = 'valid_token';
-        $message = __('Il token è stato salvato correttamente.', 'avacy');
+        $message = __('The token has been saved successfully.', 'avacy');
         $type = 'success';
       }
     } else {
@@ -278,7 +271,7 @@ class AddAdminInterface
   
         $setting = 'avacy_api';
         $code = 'remove_token';
-        $message = __('Il token è stato rimosso correttamente', 'avacy');
+        $message = __('The token has been removed successfully.', 'avacy');
         $type = 'success';
         $status_code = 200;
       } else {
@@ -350,7 +343,7 @@ class AddAdminInterface
     wp_enqueue_script( 'avacy-dashboard' );
     wp_enqueue_style( 'avacy-dashboard' );
 
-    require_once(__DIR__ . '/../views/avacy-dashboard.php');
+    require_once(__DIR__ . '/views/avacy-dashboard.php');
   }
 
   public static function registerSettings()
