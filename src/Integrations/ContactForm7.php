@@ -77,14 +77,16 @@ class ContactForm7 implements Integration
     public static function detectAllForms() : array {
 		$forms = [];
 
-        $wpCf7Forms = WPCF7_ContactForm::find();
-
-        // Loop through each post
-        foreach ($wpCf7Forms as $wpCf7Form) {
-            $fields = self::parseFormFields($wpCf7Form);
-			$form = new Form($wpCf7Form->id, 'Contact Form 7', $fields);
-			$forms[] = $form;
-		}
+        if(class_exists('WPCF7_ContactForm')) {
+            $wpCf7Forms = WPCF7_ContactForm::find();
+            
+            // Loop through each post
+            foreach ($wpCf7Forms as $wpCf7Form) {
+                $fields = self::parseFormFields($wpCf7Form);
+                $form = new Form($wpCf7Form->id, 'Contact Form 7', $fields);
+                $forms[] = $form;
+            }
+        }
 
 		return $forms;
 	}
