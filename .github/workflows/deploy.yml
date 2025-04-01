@@ -1,0 +1,78 @@
+name: Deploy to WordPress SVN
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy Plugin to WordPress SVN
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Subversion (SVN)
+        run: sudo apt-get install -y subversion
+
+      - name: Get Latest Version
+        run: |
+          PLUGIN_SLUG="avacy"
+          SVN_REPO="https://plugins.svn.wordpress.org/$PLUGIN_SLUG/"
+          LOCAL_SVN="wp/"
+          
+          # Checkout only the tags directory
+          svn checkout --depth=immediates "$SVN_REPO/tags" "$LOCAL_SVN/tags"
+          
+          # Find the highest version number
+          LATEST_VERSION=$(ls -v "$LOCAL_SVN/tags" | grep -E "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$" | tail -n 1 || echo "0.0.0")
+          echo "Latest version: $LATEST_VERSION"
+
+          # Increment patch version
+          IFS='.' read -r major minor patch <<< "$LATEST_VERSION"
+          NEW_VERSION="$major.$minor.$((patch+1))"
+
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Prepare SVN Repository
+        run: |
+          PLUGIN_SLUG="avacy"
+          SVN_REPO="https://plugins.svn.wordpress.org/$PLUGIN_SLUG/"
+          LOCAL_SVN="wp/"
+          SVN_USERNAME=${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD=${{ secrets.SVN_PASSWORD }}
+          
+          # Checkout the SVN repository
+          svn checkout "$SVN_REPO" "$LOCAL_SVN" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
+          
+          # Remove old trunk files
+          rm -rf "$LOCAL_SVN/trunk/*"
+          
+          # Copy new plugin files to trunk
+          cp -r * "$LOCAL_SVN/trunk/"
+          
+          # Update Plugin Version in readme.txt
+          sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" readme.txt
+          
+          # Add new files to SVN
+          cd "$LOCAL_SVN"
+          svn add --force trunk/*
+          
+          # Commit changes
+          svn commit -m "Deploy version $NEW_VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --non-interactive
+
+      - name: Tag new release
+        run: |
+          PLUGIN_SLUG="avacy"
+          LOCAL_SVN="wp/"
+          SVN_USERNAME=${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD=${{ secrets.SVN_PASSWORD }}
+          
+          # Create a new tag in SVN
+          svn cp "$LOCAL_SVN/trunk" "$LOCAL_SVN/tags/$NEW_VERSION" \
+            -m "Tagging version $NEW_VERSION" \
+            --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --non-interactive
+
+      - name: Cleanup
+        run: rm -rf ./svn-*
