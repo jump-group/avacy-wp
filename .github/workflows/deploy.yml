@@ -1,0 +1,59 @@
+name: Deploy to WordPress SVN
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy Plugin to WordPress SVN
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Subversion (SVN)
+        run: sudo apt-get install -y subversion
+
+      - name: Prepare SVN Repository
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        run: |
+          PLUGIN_SLUG="avacy"
+          SVN_REPO="https://plugins.svn.wordpress.org/$PLUGIN_SLUG/"
+          LOCAL_SVN="wp/"
+          
+          # Checkout the SVN repository
+          svn checkout "$SVN_REPO" "$LOCAL_SVN" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache
+          
+          # Remove old trunk files
+          rm -rf "$LOCAL_SVN/trunk/*"
+          
+          # Copy new plugin files to trunk
+          cp -r * "$LOCAL_SVN/trunk/"
+          
+          # Add new files to SVN
+          cd "$LOCAL_SVN"
+          svn add --force trunk/*
+          
+          # Commit changes
+          svn commit -m "Deploy new version" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --non-interactive
+
+      - name: Tag new release
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        run: |
+          PLUGIN_SLUG="avacy"
+          LOCAL_SVN="wp/"
+          VERSION=$(grep "Stable tag" readme.txt | awk '{print $NF}')
+          
+          # Create a new tag in SVN
+          svn cp "$LOCAL_SVN/trunk" "$LOCAL_SVN/tags/$VERSION" \
+            -m "Tagging version $VERSION" \
+            --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --non-interactive
+
+      - name: Cleanup
+        run: rm -rf ./svn-*
