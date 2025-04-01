@@ -19,6 +19,14 @@ jobs:
       - name: Debug Version
         run: echo "Deploying version $PLUGIN_VERSION"
 
+      - name: Validate SemVer Tag
+        run: |
+          if [[ ! "$PLUGIN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid tag format: $PLUGIN_VERSION"
+            exit 1
+          fi
+          echo "✅ Valid SemVer tag: $PLUGIN_VERSION"
+
       # - name: Update Version in Files (Temporary)
       #   run: |
       #     sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" readme.txt
