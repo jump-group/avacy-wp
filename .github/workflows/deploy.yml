@@ -20,10 +20,24 @@ jobs:
       - name: Debug Version
         run: echo "Detected version is $PLUGIN_VERSION"
 
-      - name: WordPress Plugin Deploy
-        uses: 10up/action-wordpress-plugin-deploy@2.3.0
-        env:
-          SLUG: avacy
-          VERSION: $PLUGIN_VERSION
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+      - name: Increment Version
+        id: increment_version
+        run: |
+          IFS='.' read -r -a parts <<< "$CURRENT_VERSION"
+          parts[2]=$((parts[2] + 1))  # Increment last digit (patch version)
+          NEW_VERSION="${parts[0]}.${parts[1]}.${parts[2]}"
+          echo "New version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # - name: Update Version in Files (Temporary)
+      #   run: |
+      #     sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" readme.txt
+      #     sed -i "s/^Version: .*/Version: $NEW_VERSION/" plugin.php
+
+      # - name: WordPress Plugin Deploy
+      #   uses: 10up/action-wordpress-plugin-deploy@2.3.0
+      #   env:
+      #     SLUG: avacy
+      #     VERSION: ${{ env.NEW_VERSION }}
+      #     SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+      #     SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
