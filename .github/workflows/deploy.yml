@@ -13,9 +13,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Get Plugin Version
+        id: get_version
+        run: echo "PLUGIN_VERSION=$(grep -i 'Stable tag:' readme.md | awk '{print $NF}')" >> $GITHUB_ENV
+
+      - name: Debug Version
+        run: echo "Detected version is $PLUGIN_VERSION"
+
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@2.3.0
         env:
           SLUG: avacy
+          VERSION: $PLUGIN_VERSION
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
