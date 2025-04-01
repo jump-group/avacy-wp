@@ -49,11 +49,11 @@ jobs:
           # Remove old trunk files
           rm -rf "$LOCAL_SVN/trunk/*"
           
-          # Copy new plugin files to trunk
-          cp -r * "$LOCAL_SVN/trunk/"
+          # Copy new plugin files to trunk, excluding the SVN directory and readme.txt
+          rsync -av --exclude='.git' --exclude='.github' --exclude='trunk' ./ "$LOCAL_SVN/trunk/"
           
           # Update Plugin Version in readme.txt
-          sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" readme.txt
+          sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" "$LOCAL_SVN/trunk/readme.txt"
           
           # Add new files to SVN
           cd "$LOCAL_SVN"
