@@ -23,7 +23,7 @@ jobs:
       - name: Increment Version
         id: increment_version
         run: |
-          IFS='.' read -r -a parts <<< "$CURRENT_VERSION"
+          IFS='.' read -r -a parts <<< "$PLUGIN_VERSION"
           parts[2]=$((parts[2] + 1))  # Increment last digit (patch version)
           NEW_VERSION="${parts[0]}.${parts[1]}.${parts[2]}"
           echo "New version: $NEW_VERSION"
