@@ -60,6 +60,9 @@ jobs:
           svn add --force trunk/*
           
           # Commit changes
+          echo "USERNAME=$SVN_USERNAME" >> $GITHUB_ENV
+          echo "PASS=$SVN_PASSWORD" >> $GITHUB_ENV
+
           svn commit -m "Deploy version $NEW_VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --no-auth-cache --non-interactive
 
       - name: Tag new release
