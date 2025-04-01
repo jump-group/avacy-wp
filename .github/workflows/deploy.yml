@@ -13,6 +13,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Debug Secrets
+        run: |
+          if [[ -z "${{ secrets.SVN_USERNAME }}" ]]; then
+            echo "SVN_USERNAME is NOT set!"
+            exit 1
+          else
+            echo "SVN_USERNAME is set."
+          fi
+
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@2.3.0
         with:
