@@ -20,7 +20,7 @@ jobs:
         run: |
           PLUGIN_SLUG="avacy"
           SVN_REPO="https://plugins.svn.wordpress.org/$PLUGIN_SLUG/"
-          LOCAL_SVN="wp/"
+          LOCAL_SVN="wp"
           
           # Checkout only the tags directory
           svn checkout --depth=immediates "$SVN_REPO/tags" "$LOCAL_SVN/tags"
@@ -39,7 +39,7 @@ jobs:
         run: |
           PLUGIN_SLUG="avacy"
           SVN_REPO="https://plugins.svn.wordpress.org/$PLUGIN_SLUG/"
-          LOCAL_SVN="wp/"
+          LOCAL_SVN="wp"
           SVN_USERNAME=${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD=${{ secrets.SVN_PASSWORD }}
           
@@ -65,7 +65,7 @@ jobs:
       - name: Tag new release
         run: |
           PLUGIN_SLUG="avacy"
-          LOCAL_SVN="wp/"
+          LOCAL_SVN="wp"
           SVN_USERNAME=${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD=${{ secrets.SVN_PASSWORD }}
           
