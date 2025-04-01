@@ -2,8 +2,8 @@ name: Deploy to WordPress SVN
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
   deploy:
@@ -13,21 +13,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Get Plugin Version
-        id: get_version
-        run: echo "PLUGIN_VERSION=$(grep -i 'Stable tag:' readme.md | awk '{print $NF}')" >> $GITHUB_ENV
+      - name: Get Version from Tag
+        run: echo "PLUGIN_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Debug Version
-        run: echo "Detected version is $PLUGIN_VERSION"
-
-      - name: Increment Version
-        id: increment_version
-        run: |
-          IFS='.' read -r -a parts <<< "$PLUGIN_VERSION"
-          parts[2]=$((parts[2] + 1))  # Increment last digit (patch version)
-          NEW_VERSION="${parts[0]}.${parts[1]}.${parts[2]}"
-          echo "New version: $NEW_VERSION"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        run: echo "Deploying version $PLUGIN_VERSION"
 
       # - name: Update Version in Files (Temporary)
       #   run: |
