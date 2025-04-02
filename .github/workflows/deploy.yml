@@ -27,15 +27,15 @@ jobs:
           fi
           echo "✅ Valid SemVer tag: $PLUGIN_VERSION"
 
-      # - name: Update Version in Files (Temporary)
-      #   run: |
-      #     sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" readme.txt
-      #     sed -i "s/^Version: .*/Version: $NEW_VERSION/" plugin.php
+      - name: Update Version in Files (Temporary)
+        run: |
+          sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" readme.txt
+          sed -i "s/^Version: .*/Version: $PLUGIN_VERSION/" plugin.php
 
-      # - name: WordPress Plugin Deploy
-      #   uses: 10up/action-wordpress-plugin-deploy@2.3.0
-      #   env:
-      #     SLUG: avacy
-      #     VERSION: ${{ env.NEW_VERSION }}
-      #     SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-      #     SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+      - name: WordPress Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@2.3.0
+        env:
+          SLUG: avacy
+          VERSION: ${{ env.PLUGIN_VERSION }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
