@@ -29,7 +29,7 @@ jobs:
 
       - name: Update Version in Files (Temporary)
         run: |
-          sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" readme.txt
+          sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" readme.md
           sed -i "s/^Version: .*/Version: $PLUGIN_VERSION/" plugin.php
 
       - name: WordPress Plugin Deploy
