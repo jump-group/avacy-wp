@@ -27,24 +27,6 @@ jobs:
           fi
           echo "✅ Valid SemVer tag: $PLUGIN_VERSION"
 
-      - name: Install PHP dependencies (Composer)
-        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-
-      - name: Install PHP dependencies (Composer)
-        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-
-      - name: Copy vendor into plugin folder
-        run: cp -R vendor vendor/
-
-      - name: Show .distignore
-        run: cat .distignore
-
-      - name: List files before deploy
-        run: ls -R
-
-      - name: List vendor contents (debug)
-        run: pwd && ls -la vendor
-
       # - name: Update Version in Files (Temporary)
       #   run: |
       #     sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" readme.md
