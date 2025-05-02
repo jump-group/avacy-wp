@@ -29,6 +29,9 @@ jobs:
 
       - name: Install PHP dependencies (Composer)
         run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+      
+      - name: Echo a string in a file before deploy
+        run: echo "test" > test.txt
 
       # - name: Update Version in Files (Temporary)
       #   run: |
@@ -43,3 +46,6 @@ jobs:
           VERSION: ${{ env.PLUGIN_VERSION }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      - name: Echo a string in a file before deploy
+        run: echo "test 2" > test2.txt
