@@ -31,8 +31,10 @@ class PreemptiveBlock {
                 $blackList[$vendor['name']]['id'] = $vendor['id'];
                 $blackList[$vendor['name']]['sources'] = [];
     
-                foreach($vendor['blockUrls'] as $url) {
-                    $blackList[$vendor['name']]['sources'][] = $url;
+                if(isset($vendor['blockUrls']) && !empty($vendor['blockUrls'])) {
+                    foreach($vendor['blockUrls'] as $url) {
+                        $blackList[$vendor['name']]['sources'][] = $url;
+                    }
                 }
             }
         }
