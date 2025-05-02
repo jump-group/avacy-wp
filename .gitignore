@@ -1,6 +1,6 @@
 
 wp/*
-.vendor/
+vendor/
 build/*
 .env
 .DS_Store
