@@ -4,3 +4,4 @@ vendor/
 build/*
 .env
 .DS_Store
+avacy-svn/*
