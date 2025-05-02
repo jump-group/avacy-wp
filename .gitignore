@@ -1,10 +1,6 @@
 
 wp/*
-/vendor/*
-!/vendor/composer/
-/vendor/composer/*
-!/vendor/composer/**
-!/vendor/autoload.php
+.vendor/
 build/*
 .env
 .DS_Store
