@@ -21,7 +21,7 @@ jobs:
 
       - name: Validate SemVer Tag
         run: |
-          if [[ ! "$PLUGIN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ! "$PLUGIN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(--[a-zA-Z0-9._-]+)?$ ]]; then
             echo "❌ Invalid tag format: $PLUGIN_VERSION"
             exit 1
           fi
