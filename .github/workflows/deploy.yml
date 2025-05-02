@@ -47,5 +47,5 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
-      - name: Echo a string in a file before deploy
+      - name: Echo a string in a file after deploy
         run: echo "test 2" > test2.txt
