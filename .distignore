@@ -1,0 +1,8 @@
+wp/*
+build/*
+.env
+.DS_Store
+avacy-svn/
+
+.distignore
+.gitignore
