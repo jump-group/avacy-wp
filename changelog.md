@@ -11,6 +11,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
 
+### 1.1.6
+
+Do not loop through keywords list if list is empty
+
 ### 1.1.5
 
 Fix fatal error when CF7 is not installed or enabled
