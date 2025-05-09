@@ -54,41 +54,37 @@ class PreemptiveBlock {
     }
 
     public static function output_callback( $buffer ) {
-        // Modify $buffer (HTML content) here
-
+        // Suppress warnings from malformed HTML
+        libxml_use_internal_errors(true);
+    
+        // Escape ampersands not part of entities
+        $buffer = preg_replace('/&(?![a-zA-Z0-9#]+;)/', '&amp;', $buffer);
+    
         $dom = new DOMDocument();
         $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-        if( !empty($buffer) ) {
     
+        if (!empty($buffer)) {
             $scripts = $dom->getElementsByTagName('script');
             foreach($scripts as $script) {
-                // if src is in the list of scripts to block
                 $src = $script->getAttribute('src');
-
-                if ( ( $src !== '' && ($emt = self::src_contains($src, self::$blackList)) ) || 
-                     ( $emt = self::inner_html_contains($script, self::$blackList) ) ) {
-
-                    // change script type to text/plain
+    
+                if (($src !== '' && ($emt = self::src_contains($src, self::$blackList))) ||
+                    ($emt = self::inner_html_contains($script, self::$blackList))) {
+    
                     $script->setAttribute('type', 'as-oil');
                     $script->setAttribute('data-src', $src);
-    
-                    // add avacy attributes
                     $script->setAttribute('data-managed', 'as-oil');
                     $script->setAttribute('data-type', 'text/javascript');
-    
-                    // add vendor
                     $script->setAttribute($emt['attribute'], $emt['id']);
-    
-                    // add purposes
                     $script->setAttribute('data-purposes', implode(',', $emt['purposes']));
                 }
             }
-
         }
-
-        $buffer = $dom->saveHTML();
-        return $buffer;
+    
+        // Clear libxml errors
+        libxml_clear_errors();
+    
+        return $dom->saveHTML();
     }
 
     public static function output_end() {

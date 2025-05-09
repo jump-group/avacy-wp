@@ -106,14 +106,31 @@ class HtmlForms implements Integration {
 
     private static function parseFields($fields) {
         $parsedFields = [];
-
+    
+        if (empty($fields) || !is_string($fields)) {
+            return $parsedFields;
+        }
+    
+        // Gestione errori libxml
+        libxml_use_internal_errors(true);
+    
+        // Escape degli & non validi
+        $fields = preg_replace('/&(?![a-zA-Z0-9#]+;)/', '&amp;', $fields);
+    
         $dom = new DOMDocument();
-        $dom->loadHTML($fields);
+        try {
+            $dom->loadHTML($fields, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        } catch (\Exception $e) {
+            // Log or handle the error if needed
+            libxml_clear_errors();
+            return $parsedFields;
+        }
+    
         $inputs = $dom->getElementsByTagName('input');
-
+    
         foreach($inputs as $input) {
             $attrs = $input->attributes;
-
+    
             foreach($attrs as $attrName => $attrValue) {
                 if($attrName === 'name') {
                     $parsedFields[] = [
@@ -122,10 +139,11 @@ class HtmlForms implements Integration {
                         'label' => 'htmlforms'
                     ];
                 }
-
             }
         }
-
+    
+        libxml_clear_errors();
+    
         return $parsedFields;
     }
 
