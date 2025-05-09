@@ -33,24 +33,6 @@ jobs:
       #     sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" avacy.php
       #     sed -i "s/^Version: .*/Version: $PLUGIN_VERSION/" avacy.php
 
-      # Prepara la cartella di build
-      - name: Prepare build directory
-        run: |
-          mkdir build
-          rsync -av --exclude=build --exclude=.git --exclude=.github --exclude=node_modules ./ build/
-
-      # Installa le dipendenze PHP nella build
-      - name: Install PHP dependencies in build
-        run: |
-          composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --working-dir=build
-          ls -la build/vendor
-
-      # Debug: mostra cosa c'è nella build
-      - name: Debug build directory
-        run: |
-          echo "File nella build:"
-          find build -type f | grep vendor || echo "Vendor mancante"
-
       # Deploy su WordPress SVN
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@2.3.0
@@ -59,4 +41,3 @@ jobs:
           VERSION: ${{ env.PLUGIN_VERSION }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          BUILD_DIR: build
