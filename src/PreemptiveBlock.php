@@ -57,13 +57,13 @@ class PreemptiveBlock {
         // Suppress warnings from malformed HTML
         libxml_use_internal_errors(true);
     
-        // Escape ampersands not part of entities
-        $buffer = preg_replace('/&(?![a-zA-Z0-9#]+;)/', '&amp;', $buffer);
-    
-        $dom = new DOMDocument();
-        $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-    
         if (!empty($buffer)) {
+             // Escape ampersands not part of entities
+            $buffer = preg_replace('/&(?![a-zA-Z0-9#]+;)/', '&amp;', $buffer);
+        
+            $dom = new DOMDocument();
+            $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
             $scripts = $dom->getElementsByTagName('script');
             foreach($scripts as $script) {
                 $src = $script->getAttribute('src');
@@ -79,6 +79,8 @@ class PreemptiveBlock {
                     $script->setAttribute('data-purposes', implode(',', $emt['purposes']));
                 }
             }
+        }else {
+            return $buffer;
         }
     
         // Clear libxml errors
