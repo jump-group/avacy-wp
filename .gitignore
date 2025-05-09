@@ -1,7 +1,10 @@
 
 wp/*
-vendor/
 build/*
 .env
 .DS_Store
 svn/
+
+/vendor/*
+!/vendor/composer/
+!/vendor/autoload.php
