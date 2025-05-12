@@ -162,4 +162,13 @@ class HtmlForms implements Integration {
         }, $fieldNames);
     }
 
+    public static function getHTMLForm($formId, $params = []) : string
+    {
+        $form = $params['submission'] ?? null;
+        if ($form) {
+            return json_encode($form->prop('form'));
+        }
+        return '';
+    }
+
 }

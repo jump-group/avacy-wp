@@ -161,4 +161,9 @@ class WooCommerceCheckoutForm implements Integration
             }
         }, $fieldNames);
     }
+
+    public static function getHTMLForm($formId, $params = []) : string
+    {
+        return '';
+    }
 }

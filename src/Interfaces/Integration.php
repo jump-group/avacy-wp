@@ -13,4 +13,5 @@ interface Integration
     static function convertToFormSubmission($contact_form) : FormSubmission;
     static function sendFormData($contact_form) : void;
     static function detectAllForms() : array;
+    static function getHTMLForm($form_id, $params = []) : string;
 }

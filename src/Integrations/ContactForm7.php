@@ -36,7 +36,7 @@ class ContactForm7 implements Integration
         $identifier = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
-        $proofs = wp_json_encode($contact_form->form);
+        $proof = self::getHTMLForm($id, ['submission' => $submission]);
 
         // TODO: get legal notices from settings
         $legalNotices = [
@@ -60,7 +60,7 @@ class ContactForm7 implements Integration
             $selectedFields,
             $identifier,
             $ipAddress,
-            $proofs,
+            $proof,
             $legalNotices,
             $preferences
         );
@@ -122,5 +122,19 @@ class ContactForm7 implements Integration
                 return str_replace('avacy_form_field_wpcf7_' . $id . '_', '', $field);
             }
         }, $fieldNames);
+    }
+
+    /**
+     * This function retrieves the HTML form for the Contact Form 7 from the id
+     */
+    public static function getHTMLForm($formId, $params = []) : string
+    {
+        $form = WPCF7_ContactForm::get_instance($formId);
+        if ($form) {
+            $form = $form->prop('form');
+            return $form;
+        }
+
+        return '';
     }
 }
