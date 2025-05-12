@@ -33,11 +33,38 @@ jobs:
       #     sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" avacy.php
       #     sed -i "s/^Version: .*/Version: $PLUGIN_VERSION/" avacy.php
 
-      # Deploy su WordPress SVN
-      - name: WordPress Plugin Deploy
-        uses: 10up/action-wordpress-plugin-deploy@2.3.0
-        env:
-          SLUG: avacy
-          VERSION: ${{ env.PLUGIN_VERSION }}
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+      # use svn to checkout the plugin directory
+      - name: Checkout SVN
+        run: svn co https://plugins.svn.wordpress.org/avacy/ /tmp/avacy
+          
+      - name: Empty trunk folder
+        run: |
+          cd /tmp/avacy
+          rm -rf trunk/*
+
+      - name: Copy Files to SVN
+        run: |
+          cd ../../
+          cp -r assets/* trunk/assets/
+          cp -r languages/* trunk/languages/
+          cp -r src/* trunk/src/
+          cp -r styles/* trunk/styles/
+          cp -r vendor/* trunk/vendor/
+          cp -r avacy.php trunk/
+          cp -r changelog.md trunk/
+          cp -r readme.md trunk/
+
+      - name: list trunk folder
+        run: |
+          cd /tmp/avacy
+          ls -la trunk/
+
+      # - name: Add and Commit to SVN
+      #   run: |
+      #     svn add --force trunk/*
+      #     svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
+          
+      # - name: Tag the Release
+      #   run: |
+      #     svn cp trunk tags/$PLUGIN_VERSION
+      #     svn commit -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
