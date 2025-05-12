@@ -47,15 +47,14 @@ jobs:
 
       - name: Copy Files to SVN
         run: |
-          cd ../../
-          cp -r assets/* trunk/assets/
-          cp -r languages/* trunk/languages/
-          cp -r src/* trunk/src/
-          cp -r styles/* trunk/styles/
-          cp -r vendor/* trunk/vendor/
-          cp -r avacy.php trunk/
-          cp -r changelog.md trunk/
-          cp -r readme.md trunk/
+          cp -r assets/* /tmp/avacy/trunk/assets/
+          cp -r languages/* /tmp/avacy/trunk/languages/
+          cp -r src/* /tmp/avacy/trunk/src/
+          cp -r styles/* /tmp/avacy/trunk/styles/
+          cp -r vendor/* /tmp/avacy/trunk/vendor/
+          cp -r avacy.php /tmp/avacy/trunk/
+          cp -r changelog.md /tmp/avacy/trunk/
+          cp -r readme.md /tmp/avacy/trunk/
 
       - name: list trunk folder
         run: |
