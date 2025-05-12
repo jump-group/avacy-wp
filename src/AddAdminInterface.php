@@ -153,7 +153,7 @@ class AddAdminInterface
     $option_tenant = get_option('avacy_tenant');
     $option_webspace_key = get_option('avacy_webspace_key');
     
-    $endpoint = 'https://api.avacy.eu/wp/validate/' . $tenant . '/' . $webspaceKey;
+    $endpoint = 'http://localhost:8000/wp/validate/' . $tenant . '/' . $webspaceKey;
 
     $response = wp_remote_get($endpoint);
     $status_code = wp_remote_retrieve_response_code($response);
@@ -229,7 +229,7 @@ class AddAdminInterface
       $option_tenant = get_option('avacy_tenant');
       $option_webspace_key = get_option('avacy_webspace_key');
 
-      $endpoint = 'https://api.avacy.eu/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+      $endpoint = 'http://localhost:8000/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
 
       $response = wp_remote_get($endpoint);
 
