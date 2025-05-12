@@ -38,43 +38,41 @@ jobs:
 
       # use svn to checkout the plugin directory
       - name: Checkout SVN
-        run: svn co https://plugins.svn.wordpress.org/avacy/trunk /tmp/avacy
-          
-      - name: Empty trunk folder
+        run: svn checkout https://plugins.svn.wordpress.org/avacy/trunk /tmp/avacy
+
+      - name: Empty SVN folder
         run: |
           cd /tmp/avacy
-          rm -rf trunk/*
+          rm -rf *
 
       - name: Copy Files to SVN
         run: |
-          mkdir -p /tmp/avacy/trunk/assets
-          mkdir -p /tmp/avacy/trunk/languages
-          mkdir -p /tmp/avacy/trunk/src
-          mkdir -p /tmp/avacy/trunk/styles
-          mkdir -p /tmp/avacy/trunk/vendor
+          mkdir -p /tmp/avacy/assets
+          mkdir -p /tmp/avacy/languages
+          mkdir -p /tmp/avacy/src
+          mkdir -p /tmp/avacy/styles
+          mkdir -p /tmp/avacy/vendor
 
-          cp -r assets/* /tmp/avacy/trunk/assets/
-          cp -r languages/* /tmp/avacy/trunk/languages/
-          cp -r src/* /tmp/avacy/trunk/src/
-          cp -r styles/* /tmp/avacy/trunk/styles/
-          cp -r vendor/* /tmp/avacy/trunk/vendor/
-          cp -r avacy.php /tmp/avacy/trunk/
-          cp -r changelog.md /tmp/avacy/trunk/
-          cp -r readme.md /tmp/avacy/trunk/
+          cp -r ${{ github.workspace }}/assets/* /tmp/avacy/assets/ || true
+          cp -r ${{ github.workspace }}/languages/* /tmp/avacy/languages/ || true
+          cp -r ${{ github.workspace }}/src/* /tmp/avacy/src/ || true
+          cp -r ${{ github.workspace }}/styles/* /tmp/avacy/styles/ || true
+          cp -r ${{ github.workspace }}/vendor/* /tmp/avacy/vendor/ || true
+          cp ${{ github.workspace }}/avacy.php /tmp/avacy/
+          cp ${{ github.workspace }}/changelog.md /tmp/avacy/
+          cp ${{ github.workspace }}/readme.md /tmp/avacy/
 
-      - name: list trunk folder
+      - name: List SVN folder
         run: |
-          cd /tmp/avacy
-          ls -la trunk/
+          ls -la /tmp/avacy
 
       - name: Add and Commit to SVN
         run: |
           cd /tmp/avacy
-          svn add --force trunk/*
+          svn add --force * --auto-props --parents --depth infinity -q
           svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
 
       - name: Tag the Release
         run: |
           cd /tmp/avacy
-          svn cp trunk tags/$PLUGIN_VERSION
-          svn commit -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
+          svn cp https://plugins.svn.wordpress.org/avacy/trunk https://plugins.svn.wordpress.org/avacy/tags/$PLUGIN_VERSION -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
