@@ -73,7 +73,8 @@ jobs:
           svn add --force trunk/*
           svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
 
-      # - name: Tag the Release
-      #   run: |
-      #     svn cp trunk tags/$PLUGIN_VERSION
-      #     svn commit -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
+      - name: Tag the Release
+        run: |
+          cd /tmp/avacy
+          svn cp trunk tags/$PLUGIN_VERSION
+          svn commit -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
