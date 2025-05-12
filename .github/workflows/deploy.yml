@@ -47,6 +47,12 @@ jobs:
 
       - name: Copy Files to SVN
         run: |
+          mkdir -p /tmp/avacy/trunk/assets
+          mkdir -p /tmp/avacy/trunk/languages
+          mkdir -p /tmp/avacy/trunk/src
+          mkdir -p /tmp/avacy/trunk/styles
+          mkdir -p /tmp/avacy/trunk/vendor
+
           cp -r assets/* /tmp/avacy/trunk/assets/
           cp -r languages/* /tmp/avacy/trunk/languages/
           cp -r src/* /tmp/avacy/trunk/src/
