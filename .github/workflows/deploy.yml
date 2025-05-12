@@ -38,7 +38,7 @@ jobs:
 
       # use svn to checkout the plugin directory
       - name: Checkout SVN
-        run: svn co https://plugins.svn.wordpress.org/avacy/ /tmp/avacy
+        run: svn co https://plugins.svn.wordpress.org/avacy/trunk /tmp/avacy
           
       - name: Empty trunk folder
         run: |
