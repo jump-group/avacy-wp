@@ -67,11 +67,12 @@ jobs:
           cd /tmp/avacy
           ls -la trunk/
 
-      # - name: Add and Commit to SVN
-      #   run: |
-      #     svn add --force trunk/*
-      #     svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
-          
+      - name: Add and Commit to SVN
+        run: |
+          cd /tmp/avacy
+          svn add --force trunk/*
+          svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
+
       # - name: Tag the Release
       #   run: |
       #     svn cp trunk tags/$PLUGIN_VERSION
