@@ -10,6 +10,9 @@ jobs:
     name: Deploy Plugin to WordPress SVN
     runs-on: ubuntu-latest
     steps:
+      - name: Install SVN
+        run: sudo apt-get install subversion
+
       - name: Checkout Code
         uses: actions/checkout@v2
 
