@@ -162,12 +162,8 @@ class HtmlForms implements FormInterface {
         }, $fieldNames);
     }
 
-    public static function getHTMLForm($formId, $params = []) : string
+    public static function getHTMLForm($id) : string
     {
-        $form = $params['submission'] ?? null;
-        if ($form) {
-            return json_encode($form->prop('form'));
-        }
         return '';
     }
 
