@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Jumpgroup\Avacy\Form;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 use WP_Query;
 
-class ElementorForms implements Integration {
+class ElementorForms implements FormInterface {
     
     public static function listen() : void {
         add_action('elementor_pro/forms/new_record', [__CLASS__, 'elementorFormSubmitted'], 10, 2);

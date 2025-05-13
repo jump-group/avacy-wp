@@ -8,11 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 use DOMDocument;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\FormSubmission;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use WP_Query;
 
-class HtmlForms implements Integration {
+class HtmlForms implements FormInterface {
     public static function listen() : void {
         add_action('hf_form_success', [__CLASS__, 'formSubmitted'], 10, 2);
     }

@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Jumpgroup\Avacy\Form;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 use WP_Query;
 
-class WooCommerceCheckoutForm implements Integration
+class WooCommerceCheckoutForm implements FormInterface
 {
 
     private const WC_CHECKOUT_DEFAULT_FIELDS = [

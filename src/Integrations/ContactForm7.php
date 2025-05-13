@@ -7,13 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Jumpgroup\Avacy\Form;
 use WPCF7_Submission;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 use WP_Query;
 use WPCF7_ContactForm;
 
-class ContactForm7 implements Integration
+class ContactForm7 implements FormInterface
 {
 
     public static function listen() : void
