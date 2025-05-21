@@ -51,7 +51,7 @@ class SendFormsToConsentSolution
     );
 
     // API endpoint URL
-    $url = 'http://localhost:8000/' . $tenant . '/v2/webspaces/' . $webspaceId . '/consents';
+    $url = 'http://localhost:8000/' . $tenant . '/v4/webspaces/' . $webspaceId . '/consents';
 
     // Set the arguments for the POST request
     $args = array(
