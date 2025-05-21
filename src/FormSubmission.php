@@ -47,7 +47,7 @@ class FormSubmission
             'identifier' => $this->identifier,
             'source' => $this->source,
             'consent_features' => $this->consentFeatures,
-            'proofs' => $this->proof,
+            'html_form' => $this->proof,
         ];
     }
 
