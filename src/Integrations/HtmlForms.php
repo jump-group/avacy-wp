@@ -22,7 +22,7 @@ class HtmlForms implements FormInterface {
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
 
-        $proofs = wp_json_encode($contact_form['source']);
+        $proof = self::getHTMLForm($contact_form['slug']);
         $fields = self::getFields($contact_form['id']);
 
         $selectedFields = [];
@@ -30,35 +30,30 @@ class HtmlForms implements FormInterface {
             $selectedFields[$field] = sanitize_text_field($contact_form['submission'][$field]);
         }
 
-        // TODO: get legal notices from settings
-        $legalNotices = [
-            ["name" => "privacy_policy"],
-            ["name" => "cookie_policy"]
+        $consentData = wp_json_encode($selectedFields);
+
+        $consentFeatures = [
+            'privacy_policy',
+            'cookie_policy'
         ];
 
-        // TODO: get preferences from settings
-        $preferences = [
-            [
-                "name" => "newsletter",
-                "accepted" => true
-            ],
-            [
-                "name" => "updates",
-                "accepted" => true
-            ]
-        ];
-
-        return new FormSubmission(
-            $selectedFields,
-            $identifier,
+        $sub = new FormSubmission(
             $ipAddress,
-            $proofs,
-            $legalNotices,
-            $preferences
+            'form',
+            'accepted',
+            $consentData,
+            // $versions,
+            $identifier,
+            'plugin',
+            $consentFeatures,
+            $proof
         );
+
+        return $sub;
     }
 
     public static function formSubmitted($submission, $form) : void {
+
         // eventually we want to do something with the form...
         $submissionInput = [];
         $submissionData = $submission->data;
@@ -69,6 +64,7 @@ class HtmlForms implements FormInterface {
         $formData['submission'] = $submissionInput;
         $formData['id'] = $submission->form_id;
         $formData['source'] = htmlentities($form->markup);
+        $formData['slug'] = htmlentities($form->slug);
 
         self::sendFormData($formData);
     }
@@ -164,7 +160,16 @@ class HtmlForms implements FormInterface {
 
     public static function getHTMLForm($id) : string
     {
-        return '';
+        $shortcode = '[hf_form slug="' . $id . '"]';
+        $form = self::renderShortcode($shortcode);
+        return $form;
+    }
+
+    public static function renderShortcode($shortcode) : string
+    {
+        ob_start();
+        echo do_shortcode($shortcode);
+        return ob_get_clean();
     }
 
 }
