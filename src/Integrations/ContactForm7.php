@@ -7,13 +7,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Jumpgroup\Avacy\Form;
 use WPCF7_Submission;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 use WP_Query;
 use WPCF7_ContactForm;
 
-class ContactForm7 implements Integration
+class ContactForm7 implements FormInterface
 {
 
     public static function listen() : void
@@ -33,36 +33,27 @@ class ContactForm7 implements Integration
             $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
         }
 
-        $identifier = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
+        $identifierKey = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
-        $proofs = wp_json_encode($contact_form->form);
-
-        // TODO: get legal notices from settings
-        $legalNotices = [
-            ["name" => "privacy_policy"],
-            ["name" => "cookie_policy"]
-        ];
-
-        // TODO: get preferences from settings
-        $preferences = [
-            [
-                "name" => "newsletter",
-                "accepted" => true
-            ],
-            [
-                "name" => "updates",
-                "accepted" => true
-            ]
+        $proof = self::getHTMLForm($id);
+        $consentData = wp_json_encode($selectedFields);
+        $identifier = $consentData[$identifierKey] ?? null;
+        $consentFeatures = [
+            'privacy_policy',
+            'cookie_policy'
         ];
 
         $sub = new FormSubmission(
-            $selectedFields,
-            $identifier,
             $ipAddress,
-            $proofs,
-            $legalNotices,
-            $preferences
+            'form',
+            'accepted',
+            $consentData,
+            // $versions,
+            $identifier,
+            'plugin',
+            $consentFeatures,
+            $proof
         );
 
         return $sub;
@@ -122,5 +113,19 @@ class ContactForm7 implements Integration
                 return str_replace('avacy_form_field_wpcf7_' . $id . '_', '', $field);
             }
         }, $fieldNames);
+    }
+
+    /**
+     * This function retrieves the HTML form for the Contact Form 7 from the id
+     */
+    public static function getHTMLForm($id): string {
+        $shortcode = '[contact-form-7 id="' . $id . '"]';
+        return self::renderShortcode($shortcode);
+    }
+
+    protected static function renderShortcode(string $shortcode): string {
+        ob_start();
+        echo do_shortcode($shortcode);
+        return ob_get_clean();
     }
 }

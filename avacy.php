@@ -36,6 +36,9 @@ if (!defined('WPINC')) {
   die;
 }
 
+global $api_base_url;
+$api_base_url = 'https://api.avacystaging.eu';
+
 class Init
 {
 

@@ -29,6 +29,8 @@ class SendFormsToConsentSolution
 
   public static function send(FormSubmission $form)
   {
+    global $api_base_url;
+
     $payload = $form->getPayload();
     $apiToken = get_option('avacy_api_token');
     $tenant = get_option('avacy_tenant');
@@ -51,7 +53,7 @@ class SendFormsToConsentSolution
     );
 
     // API endpoint URL
-    $url = 'https://api.avacy.eu/' . $tenant . '/v2/webspaces/' . $webspaceId . '/consents';
+    $url = $api_base_url . '/' . $tenant . '/v4/webspaces/' . $webspaceId . '/consents';
 
     // Set the arguments for the POST request
     $args = array(

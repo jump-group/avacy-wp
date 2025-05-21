@@ -150,10 +150,12 @@ class AddAdminInterface
   }
 
   private static function checkSaasAccount($tenant, $webspaceKey) {
+    global $api_base_url;
+
     $option_tenant = get_option('avacy_tenant');
     $option_webspace_key = get_option('avacy_webspace_key');
     
-    $endpoint = 'https://api.avacy.eu/wp/validate/' . $tenant . '/' . $webspaceKey;
+    $endpoint = $api_base_url . '/wp/validate/' . $tenant . '/' . $webspaceKey;
 
     $response = wp_remote_get($endpoint);
     $status_code = wp_remote_retrieve_response_code($response);
@@ -218,6 +220,7 @@ class AddAdminInterface
   }
 
   public static function checkConsentSolutionToken($apiToken) {
+    global $api_base_url;
     $option_api_token = get_option('avacy_api_token');
 
     $setting = '';
@@ -229,7 +232,7 @@ class AddAdminInterface
       $option_tenant = get_option('avacy_tenant');
       $option_webspace_key = get_option('avacy_webspace_key');
 
-      $endpoint = 'https://api.avacy.eu/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+      $endpoint = $api_base_url . '/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
 
       $response = wp_remote_get($endpoint);
 

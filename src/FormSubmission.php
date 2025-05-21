@@ -7,38 +7,47 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class FormSubmission
 {
-    private array $fields;
-    private string $identifier;
-    private string $ipAddress;
-    private string $proofs;
-    private array $legalNotices;
-    private array $preferences;
+    private $ipAddress;
+    private $consentType;
+    private $optin;
+    private $consentData;
+    private $identifier;
+    private $source;
+    private $consentFeatures;
+    private $proof;
 
     public function __construct(
-        $fields,
-        $identifier,
         $ipAddress,
-        $proofs,
-        $legalNotices,
-        $preferences
+        $consentType,
+        $optin,
+        $consentData,
+        // $versions,
+        $identifier,
+        $source,
+        $consentFeatures,
+        $proof
     ) {
-        $this->fields = $this->sanitizeFields($fields);
-        $this->identifier = sanitize_text_field($identifier);
-        $this->ipAddress = sanitize_text_field($ipAddress);
-        $this->proofs = sanitize_text_field($proofs);
-        $this->legalNotices = $this->sanitizeLegalNotices($legalNotices);
-        $this->preferences = $this->sanitizePreferences($preferences);
+        $this->ipAddress = $ipAddress ?: '0.0.0.0';
+        $this->consentType = $consentType;
+        $this->optin = $optin;
+        $this->consentData = $consentData;
+        $this->identifier = $identifier;
+        $this->source = $source;
+        $this->consentFeatures = $consentFeatures;
+        $this->proof = $proof;
     }
 
     public function getPayload(): array
     {
         return [
-            'subject' => $this->fields,
-            'identifier' => $this->identifier,
             'ip_address' => $this->ipAddress,
-            'proofs' => $this->proofs,
-            'legal_notices' => $this->legalNotices,
-            'preferences' => $this->preferences
+            'consent_type' => $this->consentType,
+            'optin' => $this->optin,
+            'consent_data' => json_decode($this->consentData, true),
+            'identifier' => $this->identifier,
+            'source' => $this->source,
+            'consent_features' => $this->consentFeatures,
+            'html_form' => $this->proof,
         ];
     }
 
