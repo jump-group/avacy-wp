@@ -3,8 +3,10 @@
         exit; // Exit if accessed directly.
     }
     use Jumpgroup\Avacy\AddAdminInterface;
+
+    global $api_base_url;
     // esacape the base api url
-    $base_api_url = esc_attr('http://localhost:8000/wp');
+    $base_api_url = esc_attr($api_base_url . '/wp');
     $registration_url = esc_attr('https://avacy.eu/registration');
     $documention_url = esc_attr('https://docs.avacysolution.com');
 
