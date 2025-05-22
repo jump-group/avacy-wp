@@ -18,7 +18,8 @@ class HtmlForms implements FormInterface {
     }
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
-        $identifier = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
+        $identifierKey = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
+        $identifier = $contact_form['submission'][$identifierKey];
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
 
@@ -27,7 +28,12 @@ class HtmlForms implements FormInterface {
 
         $selectedFields = [];
         foreach($fields as $field) {
-            $selectedFields[$field] = sanitize_text_field($contact_form['submission'][$field]);
+            if(!empty($field)) {
+                $selectedFields[] = [
+                    'label' => $field,
+                    'value' => sanitize_text_field($contact_form['submission'][$field])
+                ];
+            }
         }
 
         $consentData = wp_json_encode($selectedFields);
@@ -42,7 +48,6 @@ class HtmlForms implements FormInterface {
             'form',
             'accepted',
             $consentData,
-            // $versions,
             $identifier,
             'plugin',
             $consentFeatures,
