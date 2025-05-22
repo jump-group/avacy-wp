@@ -19,6 +19,7 @@ class WpForms implements FormInterface {
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $id = absint($contact_form['id']);
         $identifierKey = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
+        $identifier = '';
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         
@@ -31,12 +32,18 @@ class WpForms implements FormInterface {
             foreach($submittedFields as $inputValue) {
                 $slug = strtolower(str_replace(' ', '_', $inputValue['name']));
                 if($field === $slug) {
-                    $selectedFields[$field] = sanitize_text_field($inputValue['value']);
+                    $selectedFields[] = [
+                        'label' => $field,
+                        'value' => sanitize_text_field($inputValue['value'])
+                    ];
+                }
+
+                if($identifierKey === $slug) {
+                    $identifier = $inputValue['value'];
                 }
             }
         }
 
-        $identifier = $selectedFields[$identifierKey] ?? null;
         $consentData = wp_json_encode($selectedFields);
         $consentFeatures = [
             'privacy_policy',
@@ -44,13 +51,11 @@ class WpForms implements FormInterface {
         ];
 
         $proofs = self::getHTMLForm($id);
-
         $sub = new FormSubmission(
             $ipAddress,
             'form',
             'accepted',
             $consentData,
-            // $versions,
             $identifier,
             'plugin',
             $consentFeatures,
