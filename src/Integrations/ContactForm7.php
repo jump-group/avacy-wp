@@ -30,7 +30,12 @@ class ContactForm7 implements FormInterface
         $fields = self::getFields($id);
         $selectedFields = [];
         foreach($fields as $field) {
-            $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
+            if(!empty($field)) {
+                $selectedFields[] = [
+                    'label' => $field,
+                    'value' => sanitize_text_field($posted_data[$field])
+                ];
+            }
         }
 
         $identifierKey = get_option('avacy_contact_form_7_'. $id .'_form_user_identifier'); // TODO: get identifier from settings
@@ -38,7 +43,7 @@ class ContactForm7 implements FormInterface
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         $proof = self::getHTMLForm($id);
         $consentData = wp_json_encode($selectedFields);
-        $identifier = $consentData[$identifierKey] ?? null;
+        $identifier = $posted_data[$identifierKey] ?? null;
         $consentFeatures = [
             'privacy_policy',
             'cookie_policy'
@@ -49,7 +54,6 @@ class ContactForm7 implements FormInterface
             'form',
             'accepted',
             $consentData,
-            // $versions,
             $identifier,
             'plugin',
             $consentFeatures,
