@@ -21,7 +21,6 @@ class FormSubmission
         $consentType,
         $optin,
         $consentData,
-        // $versions,
         $identifier,
         $source,
         $consentFeatures,
