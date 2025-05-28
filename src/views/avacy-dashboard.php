@@ -69,14 +69,14 @@
         <br>
         <section class="AvacySection AvacySection--Account">
             <div class="EditAccountPanel <?php echo !empty(get_option('avacy_webspace_id')) ? 'hidden' : ''?>">
-                <sl-input name="avacy_tenant" placeholder="<?php echo esc_html__('Enter the name of your team', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_tenant')); ?>" required>
+                <!-- <sl-input name="avacy_tenant" placeholder="<?php echo esc_html__('Enter the name of your team', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_tenant')); ?>" required>
                     <label for="avacy_tenant" slot="label">
                         <span><?php echo esc_html__('Avacy Team Name', 'avacy')?></span>
                     </label>
                     <sl-tooltip slot="suffix" content="<?php echo esc_html__('Enter the name of the team to which the webspace belongs. You can find it at the top right of every page on Avacy.', 'avacy') ?>" hoist>
                         <sl-icon name="info-circle"></sl-icon>
                     </sl-tooltip>
-                </sl-input>
+                </sl-input> -->
                 <sl-input name="avacy_webspace_key" placeholder="<?php echo esc_html__('Enter the specific key of your webspace', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_webspace_key')); ?>" required>
                     <label for="avacy_webspace_key" slot="label">
                         <span><?php echo esc_html__('Webspace Key', 'avacy')?></span>
@@ -89,7 +89,7 @@
                 <input type="hidden" name="avacy_webspace_key" value="<?php echo esc_attr(get_option('avacy_webspace_key')); ?>">
             </div>
             <div class="RenderAccountPanel <?php echo empty(get_option('avacy_webspace_id')) ? 'hidden' : ''?>">
-                <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Avacy Team Name', 'avacy')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_tenant')); ?></span></div>
+                <!-- <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Avacy Team Name', 'avacy')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_tenant')); ?></span></div> -->
                 <div class="AccountDetail"><span class="AccountDetail__Key"><?php echo esc_html__('Webspace Key', 'avacy')?>:</span><span class="AccountDetail__Value"><?php echo esc_attr(get_option('avacy_webspace_key')); ?></span></div>
                 <sl-button class="Edit" variant="text">
                     <sl-icon slot="prefix" name="pencil"></sl-icon>
