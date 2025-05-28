@@ -205,7 +205,7 @@ class AddAdminInterface
           break;
       }
     } else {
-      if ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) {
+      if ( ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) || (isset($_POST['avacy_webspace_key']) && $option_account_token === $_POST['avacy_webspace_key'])) {
         return [];
       }
 
