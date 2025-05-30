@@ -34,6 +34,10 @@ class SendFormsToConsentSolution
     $payload = $form->getPayload();
     $apiToken = get_option('avacy_api_token');
     $tenant = get_option('avacy_tenant');
+    if( empty($tenant) && strpos(get_option('avacy_webspace_key'), '|') !== false ) {
+      $tenant = explode('|', get_option('avacy_webspace_key'))[0];
+    }
+
     $webspaceId = get_option('avacy_webspace_id');
 
     // Sanitize and escape the API token, tenant, and webspace ID
