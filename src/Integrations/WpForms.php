@@ -6,11 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Jumpgroup\Avacy\Form;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 
-class WpForms implements Integration {
+class WpForms implements FormInterface {
     
     public static function listen() : void {
         add_action('wpforms_process_complete', [__CLASS__, 'wpfFormSubmitted'], 10, 4);
@@ -18,14 +18,13 @@ class WpForms implements Integration {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $id = absint($contact_form['id']);
-        $identifier = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
+        $identifierKey = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
+        $identifier = '';
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         
         $fields = self::getFields($id);
         $selectedFields = [];
-
-        $formContent = wpforms()->form->get( $id, array( 'content_only' => true ) );
 
         $submittedFields = $contact_form['fields'];
         foreach($fields as $field) {
@@ -33,39 +32,37 @@ class WpForms implements Integration {
             foreach($submittedFields as $inputValue) {
                 $slug = strtolower(str_replace(' ', '_', $inputValue['name']));
                 if($field === $slug) {
-                    $selectedFields[$field] = sanitize_text_field($inputValue['value']);
+                    $selectedFields[] = [
+                        'label' => $field,
+                        'value' => sanitize_text_field($inputValue['value'])
+                    ];
+                }
+
+                if($identifierKey === $slug) {
+                    $identifier = $inputValue['value'];
                 }
             }
         }
 
-        $proofs = wp_json_encode($formContent);
-
-        // TODO: get legal notices from settings
-        $legalNotices = [
-            ["name" => "privacy_policy"],
-            ["name" => "cookie_policy"]
+        $consentData = wp_json_encode($selectedFields);
+        $consentFeatures = [
+            'privacy_policy',
+            'cookie_policy'
         ];
 
-        // TODO: get preferences from settings
-        $preferences = [
-            [
-                "name" => "newsletter",
-                "accepted" => true
-            ],
-            [
-                "name" => "updates",
-                "accepted" => true
-            ]
-        ];
-
-        return new FormSubmission(
-            $selectedFields,
-            $identifier,
+        $proofs = self::getHTMLForm($id);
+        $sub = new FormSubmission(
             $ipAddress,
-            $proofs,
-            $legalNotices,
-            $preferences
+            'form',
+            'accepted',
+            $consentData,
+            $identifier,
+            'plugin',
+            $consentFeatures,
+            $proofs
         );
+
+        return $sub;
     }
 
     public static function wpfFormSubmitted($fields, $entry, $form_data, $entry_id) {
@@ -130,5 +127,19 @@ class WpForms implements Integration {
                 return str_replace('avacy_form_field_wpforms_' . $id . '_', '', $field);
             }
         }, $fieldNames);
+    }
+
+    public static function getHTMLForm($id) : string
+    {
+        $shortcode = '[wpforms id="' . $id . '"]';
+        $form = self::renderShortcode($shortcode);
+        return $form;
+    }
+
+    public static function renderShortcode($shortcode) : string
+    {
+        ob_start();
+        echo do_shortcode($shortcode);
+        return ob_get_clean();
     }
 }

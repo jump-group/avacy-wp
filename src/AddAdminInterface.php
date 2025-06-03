@@ -40,6 +40,12 @@ class AddAdminInterface
     }
 
     if (empty($checkSaasAccount) || ( !empty($checkSaasAccount) && $checkSaasAccount['status'] === 200) ) {
+      // if tenant and webspace key are not empty, concat them with a pipe
+      if (strpos($webspaceKey, '|') === false) {
+        $webspaceKey = $tenant . '|' . $webspaceKey;
+        update_option('avacy_webspace_key', $webspaceKey);
+      }
+
       if(empty($apiToken)){
         return;
       }
@@ -89,9 +95,25 @@ class AddAdminInterface
     if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'avacy-plugin-settings-group-options' ) ) {
       die( 'Security check' ); 
     } 
+
+    $isKeyInOldFormat = strpos($_POST['avacy_webspace_key'], '|') === false;
+    if( $isKeyInOldFormat) {
+      $webspaceKey = $_POST['avacy_webspace_key'];
+      $saveAccountToken = $_POST['avacy_webspace_key'];
+    } else {
+      $accountToken = explode('|', $_POST['avacy_webspace_key']);
+      $webspaceKey = $accountToken[1];
+      $saveAccountToken = $_POST['avacy_webspace_key'];
+    }
+    
+    if( $isKeyInOldFormat ) {
+      $tenant = $_POST['avacy_tenant'];
+    } else {
+      $accountToken = explode('|', $_POST['avacy_webspace_key']);
+      $tenant = $accountToken[0];
+    }
+    
     $redirect_to = isset($_POST['redirectToUrl']) ? esc_url(sanitize_text_field($_POST['redirectToUrl'])) : '';
-    $tenant = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
-    $webspaceKey = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
     $apiToken = isset($_POST['avacy_api_token']) ? sanitize_text_field($_POST['avacy_api_token']) : '';
     $showBanner = isset($_POST['avacy_show_banner']) ? sanitize_text_field($_POST['avacy_show_banner']) : '';
     $enablePreemptiveBlock = isset($_POST['avacy_enable_preemptive_block']) ? sanitize_text_field($_POST['avacy_enable_preemptive_block']) : '';
@@ -106,7 +128,7 @@ class AddAdminInterface
 
     $can_update = true;
 
-    $checkSaasAccount = self::checkSaasAccount($tenant, $webspaceKey);
+    $checkSaasAccount = self::checkSaasAccount($tenant, $_POST['avacy_webspace_key']);
     if (!empty($checkSaasAccount)) {
       $notices[] = $checkSaasAccount['notice'];
     } else if (!empty($checkSaasAccount) && $checkSaasAccount['status'] !== 200) {
@@ -120,7 +142,9 @@ class AddAdminInterface
       $can_update = false;
     }
 
-    if (!empty($can_update) && isset($_POST['avacy_active_tab']) && empty($checkSaasAccount)) {
+    $avacyActiveTab = $_POST['avacy_active_tab'] ?? 'cookie-banner';
+    if (!empty($can_update) && isset($avacyActiveTab) && empty($checkSaasAccount)) {
+      update_option('avacy_webspace_key', esc_attr($saveAccountToken));
       update_option('avacy_show_banner', esc_attr($showBanner));
       update_option('avacy_enable_preemptive_block', esc_attr($enablePreemptiveBlock));
   
@@ -150,16 +174,29 @@ class AddAdminInterface
   }
 
   private static function checkSaasAccount($tenant, $webspaceKey) {
-    $option_tenant = get_option('avacy_tenant');
-    $option_webspace_key = get_option('avacy_webspace_key');
-    
-    $endpoint = 'https://api.avacy.eu/wp/validate/' . $tenant . '/' . $webspaceKey;
+    global $api_base_url;
 
+    $option_account_token = get_option('avacy_webspace_key');
+    
+    if( empty($option_account_token) ) {   
+      $option_account_token = $webspaceKey;
+    } 
+
+    if (strpos($option_account_token, '|') === false) {
+      $option_tenant = get_option('avacy_tenant');
+      $option_webspace_key = $option_account_token;
+      $save_account_token = $option_webspace_key;
+    } else {
+      $option_tenant = explode('|', $option_account_token)[0] ?? '';
+      $option_webspace_key = explode('|', $option_account_token)[1] ?? '';
+      $save_account_token = $option_account_token;
+    }
+    
+    $endpoint = $api_base_url . '/wp/validate/' . $option_tenant . '/' . $option_webspace_key;    
     $response = wp_remote_get($endpoint);
     $status_code = wp_remote_retrieve_response_code($response);
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
-
 
     $setting = '';
     $code = '';
@@ -184,7 +221,7 @@ class AddAdminInterface
           break;
       }
     } else {
-      if ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) {
+      if ( ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) || (isset($_POST['avacy_webspace_key']) && $option_account_token === $_POST['avacy_webspace_key'])) {
         return [];
       }
 
@@ -193,7 +230,7 @@ class AddAdminInterface
         update_option('avacy_tenant', esc_attr($tenant));
       }
       if (!empty($webspaceKey)) {
-        update_option('avacy_webspace_key', esc_attr($webspaceKey));
+        update_option('avacy_webspace_key', esc_attr($save_account_token));
       }
       if (!empty($webspaceId)) {
         update_option('avacy_webspace_id', esc_attr($webspaceId));
@@ -218,6 +255,7 @@ class AddAdminInterface
   }
 
   public static function checkConsentSolutionToken($apiToken) {
+    global $api_base_url;
     $option_api_token = get_option('avacy_api_token');
 
     $setting = '';
@@ -229,7 +267,15 @@ class AddAdminInterface
       $option_tenant = get_option('avacy_tenant');
       $option_webspace_key = get_option('avacy_webspace_key');
 
-      $endpoint = 'https://api.avacy.eu/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+      if( strpos($option_webspace_key, '|') === false ) {
+        $option_webspace_key = $option_webspace_key;
+      } else {
+        $option_tenant = explode('|', $option_webspace_key)[0] ?? '';
+        $option_webspace_key = explode('|', $option_webspace_key)[1] ?? '';
+      }
+
+      $endpoint = $api_base_url . '/wp/validate/' . $option_tenant . '/' . $option_webspace_key . '/' . $apiToken;
+      // $endpoint = $api_base_url . '/wp/validate/' . $apiToken;
 
       $response = wp_remote_get($endpoint);
 

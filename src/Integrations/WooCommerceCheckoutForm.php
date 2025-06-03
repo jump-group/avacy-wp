@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Jumpgroup\Avacy\Form;
-use Jumpgroup\Avacy\Interfaces\Integration;
+use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
 use Jumpgroup\Avacy\FormSubmission;
 use WP_Query;
 
-class WooCommerceCheckoutForm implements Integration
+class WooCommerceCheckoutForm implements FormInterface
 {
 
     private const WC_CHECKOUT_DEFAULT_FIELDS = [
@@ -60,48 +60,47 @@ class WooCommerceCheckoutForm implements Integration
 
     public static function convertToFormSubmission($order_id) : FormSubmission
     {
-        $checkoutForm = self::getWcCheckoutTemplate();
 
-        $identifier = get_option('avacy_WooCommerce_Checkout_Form_' . $id . '_form_user_identifier'); // TODO: get identifier from settings
+        $identifierKey = get_option('avacy_WooCommerce_Checkout_Form_' . $id . '_form_user_identifier'); // TODO: get identifier from settings
+        $identifier = '';
+
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
-        $proofs = wp_json_encode($checkoutForm);
         $posted_data = wc_get_order($order_id)->get_data()['billing'];
+        $proofs = self::getHTMLForm(1);
         
         $fields = self::getFields();
         $selectedFields = [];
 
         foreach($fields as $field) {
             if(isset($posted_data[$field])) 
-                $selectedFields[$field] = sanitize_text_field($posted_data[$field]);
+                $selectedFields[$field] = [
+                    'label' => $field,
+                    'value' => sanitize_text_field($posted_data[$field])
+                ];
         }
 
-        // TODO: get legal notices from settings
-        $legalNotices = [
-            ["name" => "privacy_policy"],
-            ["name" => "cookie_policy"]
+        $selectedFields[] = 
+        $identifier = $posted_data[$identifier] ?? null;
+        $consentFeatures = [
+            'privacy_policy',
+            'cookie_policy'
         ];
 
-        // TODO: get preferences from settings
-        $preferences = [
-            [
-                "name" => "newsletter",
-                "accepted" => true
-            ],
-            [
-                "name" => "updates",
-                "accepted" => true
-            ]
-        ];
+        $consentData = wp_json_encode($selectedFields);
 
-        return new FormSubmission(
-            $selectedFields,
-            $identifier,
+        $sub = new FormSubmission(
             $ipAddress,
-            $proofs,
-            $legalNotices,
-            $preferences
+            'form',
+            'accepted',
+            $consentData,
+            $identifier,
+            'plugin',
+            $consentFeatures,
+            $proofs
         );
+
+        return $sub;
     }
 
     public static function sendFormData($order_id) : void
@@ -131,7 +130,7 @@ class WooCommerceCheckoutForm implements Integration
         return $forms;
     }
 
-    private static function getWcCheckoutTemplate() {
+    public static function getHTMLForm($id) : string {
         ob_start();
 
         wc_get_template(
@@ -144,7 +143,7 @@ class WooCommerceCheckoutForm implements Integration
         $checkoutForm = ob_get_contents();
         ob_end_clean();
 
-        return $checkoutForm;
+        return json_encode($checkoutForm);
     }
 
     private static function getFields() {
