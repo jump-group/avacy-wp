@@ -40,6 +40,12 @@ class AddAdminInterface
     }
 
     if (empty($checkSaasAccount) || ( !empty($checkSaasAccount) && $checkSaasAccount['status'] === 200) ) {
+      // if tenant and webspace key are not empty, concat them with a pipe
+      if (strpos($webspaceKey, '|') === false) {
+        $webspaceKey = $tenant . '|' . $webspaceKey;
+        update_option('avacy_webspace_key', $webspaceKey);
+      }
+
       if(empty($apiToken)){
         return;
       }
