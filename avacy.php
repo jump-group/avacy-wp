@@ -37,7 +37,7 @@ if (!defined('WPINC')) {
 }
 
 global $api_base_url;
-$api_base_url = 'https://api.avacystaging.eu';
+$api_base_url = 'https://api.avacy.eu';
 
 class Init
 {
