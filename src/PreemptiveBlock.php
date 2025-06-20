@@ -14,7 +14,24 @@ class PreemptiveBlock {
     public static function init() {
         // do a get request
         $blackList = [];
-        $url = 'https://assets.avacy-cdn.com/config/' . get_option('avacy_tenant') . '/' . get_option('avacy_webspace_key') . '/custom-vendor-list.json';
+
+        $webSpaceKey = get_option('avacy_webspace_key');
+        $tenant = '';
+        if(!empty($webSpaceKey)) {
+            if (strpos($webSpaceKey, '|') === false) {
+                $tenant = get_option('avacy_tenant');
+            } else {
+                $parts = explode('|', $webSpaceKey);
+                $tenant = $parts[0];
+                $webSpaceKey = $parts[1];
+            }
+        }
+
+        if(empty($tenant) || empty($webSpaceKey)) {
+            return;
+        }
+
+        $url = 'https://assets.avacy-cdn.com/config/' . $tenant . '/' . $webSpaceKey . '/custom-vendor-list.json';
         // $url = 'https://avacy-cdn.s3.eu-central-1.amazonaws.com/config/test-production/90990663-c953-493f-9311-97aeef0833dc/custom-vendor-list.json';
         $customVendorListRequest = wp_remote_get($url);
 
@@ -58,8 +75,6 @@ class PreemptiveBlock {
         libxml_use_internal_errors(true);
     
         if (!empty($buffer)) {
-             // Escape ampersands not part of entities
-            $buffer = preg_replace('/&(?![a-zA-Z0-9#]+;)/', '&amp;', $buffer);
         
             $dom = new DOMDocument();
             $dom->loadHTML($buffer, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
