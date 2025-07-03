@@ -19,48 +19,43 @@ class ElementorForms implements FormInterface {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $form_id = sanitize_text_field($contact_form['id']);
-        $identifier = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier'); // TODO: get identifier from settings
+        $identifierKey = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier');
+        $identifier = $contact_form[$identifierKey];
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         $submittedData = $contact_form;
 
         $fields = self::getFields($form_id);
         $selectedFields = [];
-
         foreach($fields as $field) {
-            if(isset($submittedData[$field])) {
-                $selectedFields[$field] = sanitize_text_field($submittedData[$field]);
+            if(!empty($field)) {
+                $selectedFields[] = [
+                    'label' => $field,
+                    'value' => $contact_form[$field]
+                ];
             }
         }
 
-        $proofs = sanitize_text_field($contact_form['source']);
+        $proof = sanitize_text_field($contact_form['source']);
+        $consentData = wp_json_encode($selectedFields);
 
-        // TODO: get legal notices from settings
-        $legalNotices = [
-            ["name" => "privacy_policy"],
-            ["name" => "cookie_policy"]
+        $consentFeatures = [
+            'privacy_policy',
+            'cookie_policy'
         ];
 
-        // TODO: get preferences from settings
-        $preferences = [
-            [
-                "name" => "newsletter",
-                "accepted" => true
-            ],
-            [
-                "name" => "updates",
-                "accepted" => true
-            ]
-        ];
-
-        return new FormSubmission(
-            $selectedFields,
-            $identifier,
+        $sub = new FormSubmission(
             $ipAddress,
-            $proofs,
-            $legalNotices,
-            $preferences
+            'form',
+            'accepted',
+            $consentData,
+            $identifier,
+            'plugin',
+            $consentFeatures,
+            $proof
         );
+
+        return $sub;
     }
 
     public static function elementorFormSubmitted($record, $handler) {
