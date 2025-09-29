@@ -144,7 +144,6 @@ class AddAdminInterface
 
     $avacyActiveTab = $_POST['avacy_active_tab'] ?? 'cookie-banner';
     if (!empty($can_update) && isset($avacyActiveTab) && empty($checkSaasAccount)) {
-      update_option('avacy_webspace_key', esc_attr($saveAccountToken));
       update_option('avacy_show_banner', esc_attr($showBanner));
       update_option('avacy_enable_preemptive_block', esc_attr($enablePreemptiveBlock));
   
@@ -154,6 +153,12 @@ class AddAdminInterface
         __('The changes have been saved successfully.', 'avacy'),
         'success'
       ];
+    }
+
+    // if current avacy_webspace_key and avacy_tenant are not the same as the new ones, update them
+    if (get_option('avacy_tenant') !== $tenant || get_option('avacy_webspace_key') !== $webspaceKey) {
+      update_option('avacy_tenant', esc_attr($tenant));
+      update_option('avacy_webspace_key', esc_attr($saveAccountToken));
     }
 
     // For each notice, add a settings error
