@@ -115,8 +115,15 @@
                         <sl-checkbox name="avacy_show_banner" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Show the cookie banner on the website', 'avacy') ?></sl-checkbox>
                         <div class="AvacyDescription">
                             <p>
-                                <?php 
-                                    $cookie_banner_href = $base_api_url.'/redirect/cookie-banner/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
+                                <?php
+                                    $isKeyInOldFormat = strpos(get_option('avacy_webspace_key'), '|') === false;
+                                    if( $isKeyInOldFormat) {
+                                        $webspaceKey = get_option('avacy_webspace_key');
+                                    } else {
+                                        $accountToken = explode('|', get_option('avacy_webspace_key'));
+                                        $webspaceKey = $accountToken[1];
+                                    }
+                                    $cookie_banner_href = $base_api_url.'/redirect/cookie-banner/'.get_option('avacy_tenant').'/'.$webspaceKey;
                                     echo wp_kses_post(sprintf(__('To modify the appearance of the cookie banner <a href=%s target="_blank">click here</a>.', 'avacy'),esc_url($cookie_banner_href)));
                                 ?>
                             </p>
@@ -145,8 +152,17 @@
                             <?php echo esc_html__('Set how Avacy records the data collected from your webspace in the consent archive.', 'avacy')?></a>
                         </p>
                         <p>
-                            <?php 
-                                $consent_solution_href = esc_url($base_api_url).'/redirect/consent-solution/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key'); 
+                            <?php
+                                $webspaceKey = get_option('avacy_webspace_key');
+                                if(strpos($webspaceKey, '|') !== false) {
+                                    $keyParts = explode('|', $webspaceKey);
+                                    $tenant = $keyParts[0];
+                                    $webspaceKey = $keyParts[1];
+                                } else {
+                                    $tenant = get_option('avacy_tenant');
+                                }
+                                $consent_solution_href = esc_url($base_api_url).'/redirect/consent-solution/'.$tenant.'/'.$webspaceKey;
+                            
                                 echo wp_kses_post(sprintf(__('In the <a href=%s target="_blank">consent archive section</a>, create a new token to link the service with WordPress and enter it in the field below.', 'avacy'), esc_url($consent_solution_href))); 
                             ?>
                         </p>
