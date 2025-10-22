@@ -35,7 +35,7 @@ class PreemptiveBlock {
         // $url = 'https://avacy-cdn.s3.eu-central-1.amazonaws.com/config/test-production/90990663-c953-493f-9311-97aeef0833dc/custom-vendor-list.json';
         $customVendorListRequest = wp_remote_get($url);
 
-        if($customVendorListRequest['response']['code'] === 200) {
+        if(!is_wp_error($customVendorListRequest) && $customVendorListRequest['response']['code'] === 200) {
             $vendors = json_decode($customVendorListRequest['body'], true)['vendors'];
             
             // dd('asd', $customVendorListRequest, $customVendorListRequest['body'], json_decode($customVendorListRequest['body'], true));
