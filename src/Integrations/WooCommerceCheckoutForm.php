@@ -60,28 +60,29 @@ class WooCommerceCheckoutForm implements FormInterface
 
     public static function convertToFormSubmission($order_id) : FormSubmission
     {
-
-        $identifierKey = get_option('avacy_WooCommerce_Checkout_Form_' . $id . '_form_user_identifier'); // TODO: get identifier from settings
-        $identifier = '';
-
-        $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
+        $identifierKey = get_option('avacy_WooCommerce_Checkout_Form_form_user_identifier');
+        
+        $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         $posted_data = wc_get_order($order_id)->get_data()['billing'];
-        $proofs = self::getHTMLForm(1);
+        $proofs = self::getHTMLForm($order_id);
         
-        $fields = self::getFields();
+        $fields = self::getFields();        
         $selectedFields = [];
 
         foreach($fields as $field) {
-            if(isset($posted_data[$field])) 
-                $selectedFields[$field] = [
+            // remove first char in $field
+            $field = ltrim($field, '_');    
+
+            if($field && isset($posted_data[$field])) {
+                $selectedFields[] = [
                     'label' => $field,
                     'value' => sanitize_text_field($posted_data[$field])
                 ];
+            }
         }
 
-        $selectedFields[] = 
-        $identifier = $posted_data[$identifier] ?? null;
+        $identifier = $posted_data[$identifierKey] ?? ($posted_data['email'] ?? null);
         $consentFeatures = [
             'privacy_policy',
             'cookie_policy'
