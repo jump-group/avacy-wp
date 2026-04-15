@@ -5,11 +5,20 @@ Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.7
-Stable tag: 1.2.4
+Stable tag: 1.2.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
+
+### 1.2.6
+
+Check if custom vendor list is correctly downloaded before processing blacklist
+
+### 1.2.5
+
+Fixed some links to the cookie banner section in Avacy SaaS;
+Fixed webspace key updating process
 
 ### 1.2.4
 
