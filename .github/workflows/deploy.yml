@@ -1,78 +1,98 @@
-# name: Deploy to WordPress SVN
+name: Deploy to WordPress.org SVN
 
-# on:
-#   push:
-#     tags:
-#       - '*'
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
 
-# jobs:
-#   deploy:
-#     name: Deploy Plugin to WordPress SVN
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Install SVN
-#         run: sudo apt-get install subversion
+jobs:
+  deploy:
+    name: Deploy Plugin to WordPress.org SVN
+    runs-on: ubuntu-latest
 
-#       - name: Checkout Code
-#         uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-#       - name: Get Version from Tag
-#         run: echo "PLUGIN_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Deploying version: ${VERSION}"
 
-#       - name: Debug Version
-#         run: echo "Deploying version $PLUGIN_VERSION"
+      - name: Checkout SVN trunk
+        run: |
+          svn checkout \
+            https://plugins.svn.wordpress.org/avacy/trunk \
+            /tmp/svn-trunk \
+            --non-interactive
 
-#       - name: Validate SemVer Tag
-#         run: |
-#           if [[ ! "$PLUGIN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(--[a-zA-Z0-9._-]+)?$ ]]; then
-#             echo "❌ Invalid tag format: $PLUGIN_VERSION"
-#             exit 1
-#           fi
-#           echo "✅ Valid SemVer tag: $PLUGIN_VERSION"
+      - name: Clear SVN trunk (preserve .svn metadata)
+        run: |
+          cd /tmp/svn-trunk
+          find . -maxdepth 1 -not -name '.svn' -not -name '.' -exec rm -rf {} +
 
-#       # - name: Update Version in Files (Temporary)
-#       #   run: |
-#       #     sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" readme.md
-#       #     sed -i "s/^Stable tag: .*/Stable tag: $PLUGIN_VERSION/" avacy.php
-#       #     sed -i "s/^Version: .*/Version: $PLUGIN_VERSION/" avacy.php
+      - name: Copy plugin distribution files to SVN trunk
+        run: |
+          # Only copy files needed for the plugin runtime.
+          # Dev tooling (.wp-env.json, blueprints/, tests/, scripts/,
+          # playwright.config.ts, DEVELOPMENT.md, node_modules/, etc.)
+          # is excluded — those live in the repo but not on WP.org.
 
-#       # use svn to checkout the plugin directory
-#       - name: Checkout SVN
-#         run: svn checkout https://plugins.svn.wordpress.org/avacy/trunk /tmp/avacy
+          cp avacy.php        /tmp/svn-trunk/
+          cp readme.md        /tmp/svn-trunk/
+          cp changelog.md     /tmp/svn-trunk/
+          cp composer.json    /tmp/svn-trunk/
+          cp composer.lock    /tmp/svn-trunk/
+          cp package.json     /tmp/svn-trunk/
+          cp rector.php       /tmp/svn-trunk/
 
-#       - name: Empty SVN folder
-#         run: |
-#           cd /tmp/avacy
-#           rm -rf *
+          cp -r src/           /tmp/svn-trunk/src/
+          cp -r vendor/        /tmp/svn-trunk/vendor/
+          cp -r assets/        /tmp/svn-trunk/assets/
+          cp -r styles/        /tmp/svn-trunk/styles/
+          cp -r languages/     /tmp/svn-trunk/languages/
 
-#       - name: Copy Files to SVN
-#         run: |
-#           mkdir -p /tmp/avacy/assets
-#           mkdir -p /tmp/avacy/languages
-#           mkdir -p /tmp/avacy/src
-#           mkdir -p /tmp/avacy/styles
-#           mkdir -p /tmp/avacy/vendor
+      - name: Verify root structure (avacy.php must be at SVN root)
+        run: |
+          if [ ! -f /tmp/svn-trunk/avacy.php ]; then
+            echo "::error::avacy.php not found at SVN trunk root — plugin won't load!"
+            exit 1
+          fi
+          echo "Root structure OK:"
+          ls -la /tmp/svn-trunk/
 
-#           cp -r ${{ github.workspace }}/assets/* /tmp/avacy/assets/ || true
-#           cp -r ${{ github.workspace }}/languages/* /tmp/avacy/languages/ || true
-#           cp -r ${{ github.workspace }}/src/* /tmp/avacy/src/ || true
-#           cp -r ${{ github.workspace }}/styles/* /tmp/avacy/styles/ || true
-#           cp -r ${{ github.workspace }}/vendor/* /tmp/avacy/vendor/ || true
-#           cp ${{ github.workspace }}/avacy.php /tmp/avacy/
-#           cp ${{ github.workspace }}/changelog.md /tmp/avacy/
-#           cp ${{ github.workspace }}/readme.md /tmp/avacy/
+      - name: Stage SVN changes (add new, remove deleted)
+        run: |
+          cd /tmp/svn-trunk
+          # Add unversioned files
+          svn add --force --parents . --depth infinity -q 2>/dev/null || true
+          # Remove files that were deleted from the repo
+          svn status | grep '^\!' | awk '{print $2}' | xargs -r svn delete -q
+          echo "SVN status:"
+          svn status | head -80
 
-#       - name: List SVN folder
-#         run: |
-#           ls -la /tmp/avacy
+      - name: Commit to SVN trunk
+        run: |
+          cd /tmp/svn-trunk
+          # If there are no changes, skip the commit
+          if svn status | grep -qE '^[AMDRC]'; then
+            svn commit \
+              -m "Deploy version ${{ steps.version.outputs.version }}" \
+              --username "${{ secrets.SVN_USERNAME }}" \
+              --password "${{ secrets.SVN_PASSWORD }}" \
+              --non-interactive --no-auth-cache
+          else
+            echo "No changes to commit to SVN trunk."
+          fi
 
-#       - name: Add and Commit to SVN
-#         run: |
-#           cd /tmp/avacy
-#           svn add --force * --auto-props --parents --depth infinity -q
-#           svn commit -m "Deploying version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
-
-#       - name: Tag the Release
-#         run: |
-#           cd /tmp/avacy
-#           svn cp https://plugins.svn.wordpress.org/avacy/trunk https://plugins.svn.wordpress.org/avacy/tags/$PLUGIN_VERSION -m "Tagging version $PLUGIN_VERSION" --username ${{ secrets.SVN_USERNAME }} --password ${{ secrets.SVN_PASSWORD }} --no-auth-cache
+      - name: Create SVN tag from trunk
+        run: |
+          svn cp \
+            https://plugins.svn.wordpress.org/avacy/trunk \
+            https://plugins.svn.wordpress.org/avacy/tags/${{ steps.version.outputs.version }} \
+            -m "Tag version ${{ steps.version.outputs.version }}" \
+            --username "${{ secrets.SVN_USERNAME }}" \
+            --password "${{ secrets.SVN_PASSWORD }}" \
+            --non-interactive --no-auth-cache
