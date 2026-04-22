@@ -5,7 +5,10 @@
   "steps": [
     {
       "step": "installPlugin",
-      "pluginData": { "resource": "wordpress.org/plugins", "slug": "avacy" }
+      "pluginData": {
+        "resource": "url",
+        "url": "https://downloads.wordpress.org/plugin/avacy.1.3.0-beta.zip"
+      }
     },
     {
       "step": "installPlugin",

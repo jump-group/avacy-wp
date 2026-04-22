@@ -24,7 +24,7 @@ on first request when `login: true`).
 | --- | --- |
 | `baseline.json` | Plugin Avacy only, admin logged-in |
 | `with-wp-consent-api.json` | Avacy + [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) + [Google Site Kit](https://wordpress.org/plugins/google-site-kit/), `googlecmp` webspace (Google CMP Bronze Tier test tenant) — plugin Avacy mounted locally |
-| `with-wp-consent-api-public.json` | Same as above, but installs the Avacy plugin from WP.org via `installPlugin`. Shareable on `playground.wordpress.net` |
+| `with-wp-consent-api-public.json` | Same as above, but installs the current Avacy **beta** ZIP from WP.org (`avacy.1.3.0-beta.zip`). Shareable on `playground.wordpress.net` |
 | `with-html-forms.json` | Avacy + [HTML Forms](https://wordpress.org/plugins/html-forms/), default test webspace |
 
 ## Default webspace
@@ -46,6 +46,12 @@ https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.co
 WP.org, so they work as standalone URLs on playground.wordpress.net. The other
 blueprints assume the plugin is mounted from the local working copy via
 `yarn wp:playground` and will not work when shared as a raw URL.
+
+`with-wp-consent-api-public.json` installs the `1.3.0-beta` ZIP (updated on every
+`development` push by the branch-based SVN workflow), so Playground and pilot
+customers always preview the latest beta without the plugin being promoted to
+WP.org's `Stable tag`. Stable users on `1.2.6` are unaffected. When a new minor
+cycle starts (e.g. `1.4.0-beta`), bump the URL in this blueprint accordingly.
 
 Example public URL for the WP Consent API scenario:
 
