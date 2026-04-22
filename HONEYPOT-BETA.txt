@@ -7,3 +7,4 @@ the beta deploy workflow has leaked beta-only content to the stable
 channel and the SVN trunk must be rolled back.
 
 Marker: AVACY-BETA-HONEYPOT-1
+Re-sync: 1
