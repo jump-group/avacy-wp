@@ -35,11 +35,18 @@ banner from the Avacy CDN, so visual and network-level tests work against real a
 
 ## Share a blueprint as a public URL
 
-Once merged to `development`, each blueprint is available at a stable URL on
-[playground.wordpress.net](https://playground.wordpress.net/):
+The monorepo `jump-group/avacy` is closed-source, so `raw.githubusercontent.com`
+URLs pointing at it return 404 for unauthenticated clients (including Playground).
+Blueprints must be consumed via the **public mirror** `jump-group/avacy-wp`,
+which is synced automatically from `services/wp-plugin/` on every push to
+`master` (→ `main` on the mirror) and `development` (→ `development` on the
+mirror).
+
+On the public mirror the plugin lives at the repository root, so the blueprint
+path is `blueprints/<name>.json` (no `services/wp-plugin/` prefix):
 
 ```
-https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/jump-group/avacy/development/services/wp-plugin/blueprints/<name>.json
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/jump-group/avacy-wp/development/blueprints/<name>.json
 ```
 
 **Note:** blueprints ending in `-public.json` install Avacy via `installPlugin` from
@@ -56,5 +63,5 @@ cycle starts (e.g. `1.4.0-beta`), bump the URL in this blueprint accordingly.
 Example public URL for the WP Consent API scenario:
 
 ```
-https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/jump-group/avacy/development/services/wp-plugin/blueprints/with-wp-consent-api-public.json
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/jump-group/avacy-wp/development/blueprints/with-wp-consent-api-public.json
 ```
