@@ -91,27 +91,49 @@ jobs:
       # -----------------------------------------------------------------
       # BETA deploy: only /tags/X.Y.Z-beta/ is touched. Trunk is untouched.
       # -----------------------------------------------------------------
-      - name: Deploy beta (replace /tags/<version>-beta/)
+      - name: Deploy beta (sync /tags/<version>-beta/)
         if: steps.meta.outputs.release_type == 'beta'
         env:
           SVN_USER: ${{ secrets.SVN_USERNAME }}
           SVN_PASS: ${{ secrets.SVN_PASSWORD }}
           SVN_URL:  https://plugins.svn.wordpress.org/avacy/tags/${{ steps.meta.outputs.svn_version }}
         run: |
-          # If the beta tag already exists, delete it so we can re-import.
-          if svn info "$SVN_URL" --non-interactive --no-auth-cache \
+          # First deploy of this beta: the tag does not exist, import directly.
+          # Subsequent deploys: check out the existing tag, sync files with the
+          # fresh build, commit the delta. This avoids the delete+import race
+          # that can trigger `svn: E160024: Conflict at '/avacy/tags/...'`.
+          if ! svn info "$SVN_URL" --non-interactive --no-auth-cache \
               --username "$SVN_USER" --password "$SVN_PASS" >/dev/null 2>&1; then
-            echo "Removing previous beta tag: $SVN_URL"
-            svn delete "$SVN_URL" \
-              -m "Remove previous beta for ${{ steps.meta.outputs.version }}" \
+            echo "Beta tag does not exist yet — importing: $SVN_URL"
+            svn import /tmp/plugin-build "$SVN_URL" \
+              -m "Deploy beta ${{ steps.meta.outputs.svn_version }}" \
               --username "$SVN_USER" --password "$SVN_PASS" \
               --non-interactive --no-auth-cache
+            exit 0
           fi
 
-          svn import /tmp/plugin-build "$SVN_URL" \
-            -m "Deploy beta ${{ steps.meta.outputs.svn_version }}" \
+          echo "Beta tag exists — syncing contents: $SVN_URL"
+          svn checkout "$SVN_URL" /tmp/svn-beta \
             --username "$SVN_USER" --password "$SVN_PASS" \
             --non-interactive --no-auth-cache
+
+          # Replace working-copy contents with the fresh build.
+          find /tmp/svn-beta -maxdepth 1 -not -name '.svn' -not -name '.' -exec rm -rf {} +
+          cp -a /tmp/plugin-build/. /tmp/svn-beta/
+
+          cd /tmp/svn-beta
+          svn add --force --parents . --depth infinity -q 2>/dev/null || true
+          # Delete files removed from the build (svn status '!' marker).
+          svn status | awk '/^!/ {print $2}' | xargs -r svn delete -q
+
+          if svn status | grep -qE '^[AMDRC]'; then
+            svn commit \
+              -m "Deploy beta ${{ steps.meta.outputs.svn_version }}" \
+              --username "$SVN_USER" --password "$SVN_PASS" \
+              --non-interactive --no-auth-cache
+          else
+            echo "No changes to commit to beta tag."
+          fi
 
       # -----------------------------------------------------------------
       # STABLE deploy: sync trunk, then create /tags/X.Y.Z/.
