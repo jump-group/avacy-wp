@@ -1,0 +1,11 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.2", "wp": "latest" },
+  "login": true,
+  "steps": [
+    {
+      "step": "wp-cli",
+      "command": "wp plugin activate avacy"
+    }
+  ]
+}

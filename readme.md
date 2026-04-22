@@ -5,7 +5,7 @@ Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.7
-Stable tag: 1.2.6
+Stable tag: 1.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,26 @@ The WordPress Consent Solution Plugin is a powerful tool that empowers website o
    The plugin preemptively blocks all the scripts that might contain a string in the `src` attribute or in the inner HTML that matches the strings you can configure on [Avacy](https://avacy.eu) for each vendor.
 
 Avacy is a SaaS-based CMP that helps websites manage user consents efficiently and in compliance with data protection regulations. The platform offers customizable consent forms and integrates seamlessly with various web properties.
+
+## Compatible with WP Consent API
+
+Avacy integrates out-of-the-box with the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin. When WP Consent API is active, Avacy:
+
+- registers itself as a compliant CMP (no admin action required);
+- forces the `optin` consent type so other WP Consent API-aware plugins behave correctly by default;
+- bridges the Avacy banner consent event to `wp_set_consent`, mapping Google Consent Mode flags to WP Consent API categories.
+
+The mapping applied when the user interacts with the banner is:
+
+| WP Consent API category | Granted when the user accepts… |
+| --- | --- |
+| `functional` | always `allow` |
+| `preferences` | `personalization_storage` |
+| `statistics` | `analytics_storage` |
+| `statistics-anonymous` | `analytics_storage` |
+| `marketing` | any of `ad_storage`, `ad_user_data`, `ad_personalization` |
+
+The integration is dormant when WP Consent API is not installed, so it is safe to enable Avacy on any site.
 
 ## Installation
 

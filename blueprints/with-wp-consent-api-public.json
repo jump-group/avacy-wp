@@ -1,0 +1,27 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.2", "wp": "latest" },
+  "login": true,
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": { "resource": "wordpress.org/plugins", "slug": "avacy" }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": { "resource": "wordpress.org/plugins", "slug": "wp-consent-api" }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": { "resource": "wordpress.org/plugins", "slug": "google-site-kit" }
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_webspace_key": "googlecmp|4a8eedc9-47f7-4b91-95ce-9988ed24c8ca",
+        "avacy_show_banner": "on",
+        "avacy_enable_preemptive_block": "on"
+      }
+    }
+  ]
+}

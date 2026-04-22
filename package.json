@@ -8,7 +8,9 @@
     "start": "wp-env start",
     "stop": "wp-env stop",
     "clean": "wp-env clean all",
-    "destroy": "wp-env destroy"
+    "destroy": "wp-env destroy",
+    "playground": "bash ./scripts/playground.sh",
+    "test": "npx -y playwright test"
   },
   "author": "Jump Group",
   "license": "GPL-2.0-or-later",

@@ -10,7 +10,7 @@
     "wp-content/uploads": "./.wp-env/uploads"
   },
   "lifecycleScripts": {
-    "afterStart": "wp-env run cli wp plugin activate avacy"
+    "afterStart": "wp-env run cli wp plugin activate avacy && bash .wp-env-seed/seed.sh"
   },
   "config": {
     "WP_DEBUG": true,
