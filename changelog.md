@@ -5,11 +5,15 @@ Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 4.9
 Tested up to: 6.7
-Stable tag: 1.2.6
+Stable tag: 1.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
+
+### 1.3.0
+
+Integrate WP Consent API: when the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, Avacy auto-registers as a compliant CMP, forces `optin` consent type and bridges the banner `avacy_consent` event to `wp_set_consent` via a small JS adapter. Google Consent Mode flags are mapped to WP Consent API categories (personalization_storage → preferences, analytics_storage → statistics + statistics-anonymous, ad_* → marketing, functional always allow). No admin UI: the integration stays dormant when the WP Consent API plugin is not installed.
 
 ### 1.2.6
 

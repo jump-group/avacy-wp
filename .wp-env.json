@@ -1,0 +1,20 @@
+{
+  "core": "WordPress/WordPress#6.7",
+  "phpVersion": "8.2",
+  "plugins": [
+    "https://downloads.wordpress.org/plugin/wp-consent-api.zip",
+    "https://downloads.wordpress.org/plugin/google-site-kit.zip"
+  ],
+  "mappings": {
+    "wp-content/plugins/avacy": ".",
+    "wp-content/uploads": "./.wp-env/uploads"
+  },
+  "lifecycleScripts": {
+    "afterStart": "wp-env run cli wp plugin activate avacy && bash .wp-env-seed/seed.sh"
+  },
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "WP_DEBUG_DISPLAY": false
+  }
+}

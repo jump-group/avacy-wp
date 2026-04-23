@@ -1,13 +1,25 @@
 name: Deploy to WordPress.org SVN
 
+# Branch-based release flow:
+#   push to main        → stable release (updates trunk + creates /tags/X.Y.Z/)
+#   push to development → beta release   (only creates/replaces /tags/X.Y.Z-beta/,
+#                                         does NOT touch trunk so Stable tag
+#                                         on WP.org does not change)
+#
+# Version is read from the `Version:` header of avacy.php and MUST match
+# the `Stable tag:` header of readme.md. The beta tag is a single moving
+# directory (`-beta` suffix) that is deleted and re-imported on every push.
+
 on:
   push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+*'
+    branches:
+      - main
+      - development
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy Plugin to WordPress.org SVN
+    name: Deploy plugin to WordPress.org SVN
     runs-on: ubuntu-latest
 
     steps:
@@ -17,72 +29,156 @@ jobs:
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion
 
-      - name: Extract version from tag
-        id: version
+      - name: Determine release type and version
+        id: meta
         run: |
-          VERSION="${GITHUB_REF#refs/tags/}"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Deploying version: ${VERSION}"
+          VERSION=$(grep -E "^Version:" avacy.php | awk '{print $2}')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not extract version from avacy.php"
+            exit 1
+          fi
 
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            RELEASE_TYPE="stable"
+            SVN_VERSION="${VERSION}"
+          else
+            RELEASE_TYPE="beta"
+            SVN_VERSION="${VERSION}-beta"
+          fi
+
+          {
+            echo "version=${VERSION}"
+            echo "svn_version=${SVN_VERSION}"
+            echo "release_type=${RELEASE_TYPE}"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release type: ${RELEASE_TYPE} — SVN version: ${SVN_VERSION}"
+
+      - name: Prepare plugin build
+        run: |
+          mkdir -p /tmp/plugin-build
+          # Only files needed at runtime on WP.org. Dev-only files
+          # (tests/, blueprints/, scripts/, DEVELOPMENT.md, etc.) are
+          # intentionally excluded.
+          cp avacy.php        /tmp/plugin-build/
+          cp readme.md        /tmp/plugin-build/
+          cp changelog.md     /tmp/plugin-build/
+          cp composer.json    /tmp/plugin-build/
+          cp composer.lock    /tmp/plugin-build/
+          cp package.json     /tmp/plugin-build/
+          cp rector.php       /tmp/plugin-build/
+
+          cp -r src/           /tmp/plugin-build/src/
+          cp -r vendor/        /tmp/plugin-build/vendor/
+          cp -r assets/        /tmp/plugin-build/assets/
+          cp -r styles/        /tmp/plugin-build/styles/
+          cp -r languages/     /tmp/plugin-build/languages/
+
+          # Honeypot files used to verify beta deploys end-to-end.
+          # Kept out of stable builds via a separate guard below.
+          for f in HONEYPOT*.txt HONEYPOT*.md; do
+            [ -f "$f" ] && cp "$f" /tmp/plugin-build/ || true
+          done
+
+      - name: Refuse stable deploy if honeypot files are present
+        if: steps.meta.outputs.release_type == 'stable'
+        run: |
+          if ls /tmp/plugin-build/HONEYPOT* >/dev/null 2>&1; then
+            echo "::error::HONEYPOT files must not ship in a stable release."
+            exit 1
+          fi
+
+      # -----------------------------------------------------------------
+      # BETA deploy: only /tags/X.Y.Z-beta/ is touched. Trunk is untouched.
+      # -----------------------------------------------------------------
+      - name: Deploy beta (sync /tags/<version>-beta/)
+        if: steps.meta.outputs.release_type == 'beta'
+        env:
+          SVN_USER: ${{ secrets.SVN_USERNAME }}
+          SVN_PASS: ${{ secrets.SVN_PASSWORD }}
+          SVN_URL:  https://plugins.svn.wordpress.org/avacy/tags/${{ steps.meta.outputs.svn_version }}
+        run: |
+          # First deploy of this beta: the tag does not exist, import directly.
+          # Subsequent deploys: check out the existing tag, sync files with the
+          # fresh build, commit the delta. This avoids the delete+import race
+          # that can trigger `svn: E160024: Conflict at '/avacy/tags/...'`.
+          if ! svn info "$SVN_URL" --non-interactive --no-auth-cache \
+              --username "$SVN_USER" --password "$SVN_PASS" >/dev/null 2>&1; then
+            echo "Beta tag does not exist yet — importing: $SVN_URL"
+            svn import /tmp/plugin-build "$SVN_URL" \
+              -m "Deploy beta ${{ steps.meta.outputs.svn_version }}" \
+              --username "$SVN_USER" --password "$SVN_PASS" \
+              --non-interactive --no-auth-cache
+            exit 0
+          fi
+
+          echo "Beta tag exists — syncing contents: $SVN_URL"
+          svn checkout "$SVN_URL" /tmp/svn-beta \
+            --username "$SVN_USER" --password "$SVN_PASS" \
+            --non-interactive --no-auth-cache
+
+          # Replace working-copy contents with the fresh build.
+          find /tmp/svn-beta -maxdepth 1 -not -name '.svn' -not -name '.' -exec rm -rf {} +
+          cp -a /tmp/plugin-build/. /tmp/svn-beta/
+
+          cd /tmp/svn-beta
+          svn add --force --parents . --depth infinity -q 2>/dev/null || true
+          # Delete files removed from the build (svn status '!' marker).
+          svn status | awk '/^!/ {print $2}' | xargs -r svn delete -q
+
+          if svn status | grep -qE '^[AMDRC]'; then
+            svn commit \
+              -m "Deploy beta ${{ steps.meta.outputs.svn_version }}" \
+              --username "$SVN_USER" --password "$SVN_PASS" \
+              --non-interactive --no-auth-cache
+          else
+            echo "No changes to commit to beta tag."
+          fi
+
+      # -----------------------------------------------------------------
+      # STABLE deploy: sync trunk, then create /tags/X.Y.Z/.
+      # This is the path that promotes the version to "latest" on WP.org
+      # (Stable tag in trunk/readme.md is what wordpress.org serves).
+      # -----------------------------------------------------------------
       - name: Checkout SVN trunk
+        if: steps.meta.outputs.release_type == 'stable'
         run: |
           svn checkout \
             https://plugins.svn.wordpress.org/avacy/trunk \
             /tmp/svn-trunk \
             --non-interactive
 
-      - name: Clear SVN trunk (preserve .svn metadata)
+      - name: Sync trunk with build
+        if: steps.meta.outputs.release_type == 'stable'
         run: |
           cd /tmp/svn-trunk
           find . -maxdepth 1 -not -name '.svn' -not -name '.' -exec rm -rf {} +
+          cp -a /tmp/plugin-build/. /tmp/svn-trunk/
 
-      - name: Copy plugin distribution files to SVN trunk
-        run: |
-          # Only copy files needed for the plugin runtime.
-          # Dev tooling (.wp-env.json, blueprints/, tests/, scripts/,
-          # playwright.config.ts, DEVELOPMENT.md, node_modules/, etc.)
-          # is excluded — those live in the repo but not on WP.org.
-
-          cp avacy.php        /tmp/svn-trunk/
-          cp readme.md        /tmp/svn-trunk/
-          cp changelog.md     /tmp/svn-trunk/
-          cp composer.json    /tmp/svn-trunk/
-          cp composer.lock    /tmp/svn-trunk/
-          cp package.json     /tmp/svn-trunk/
-          cp rector.php       /tmp/svn-trunk/
-
-          cp -r src/           /tmp/svn-trunk/src/
-          cp -r vendor/        /tmp/svn-trunk/vendor/
-          cp -r assets/        /tmp/svn-trunk/assets/
-          cp -r styles/        /tmp/svn-trunk/styles/
-          cp -r languages/     /tmp/svn-trunk/languages/
-
-      - name: Verify root structure (avacy.php must be at SVN root)
+      - name: Verify trunk root
+        if: steps.meta.outputs.release_type == 'stable'
         run: |
           if [ ! -f /tmp/svn-trunk/avacy.php ]; then
             echo "::error::avacy.php not found at SVN trunk root — plugin won't load!"
             exit 1
           fi
-          echo "Root structure OK:"
           ls -la /tmp/svn-trunk/
 
-      - name: Stage SVN changes (add new, remove deleted)
+      - name: Stage SVN changes
+        if: steps.meta.outputs.release_type == 'stable'
         run: |
           cd /tmp/svn-trunk
-          # Add unversioned files
           svn add --force --parents . --depth infinity -q 2>/dev/null || true
-          # Remove files that were deleted from the repo
           svn status | grep '^\!' | awk '{print $2}' | xargs -r svn delete -q
-          echo "SVN status:"
           svn status | head -80
 
-      - name: Commit to SVN trunk
+      - name: Commit trunk
+        if: steps.meta.outputs.release_type == 'stable'
         run: |
           cd /tmp/svn-trunk
-          # If there are no changes, skip the commit
           if svn status | grep -qE '^[AMDRC]'; then
             svn commit \
-              -m "Deploy version ${{ steps.version.outputs.version }}" \
+              -m "Deploy ${{ steps.meta.outputs.version }}" \
               --username "${{ secrets.SVN_USERNAME }}" \
               --password "${{ secrets.SVN_PASSWORD }}" \
               --non-interactive --no-auth-cache
@@ -90,12 +186,21 @@ jobs:
             echo "No changes to commit to SVN trunk."
           fi
 
-      - name: Create SVN tag from trunk
+      - name: Create SVN tag from trunk (if missing)
+        if: steps.meta.outputs.release_type == 'stable'
+        env:
+          TAG_URL: https://plugins.svn.wordpress.org/avacy/tags/${{ steps.meta.outputs.version }}
         run: |
+          if svn info "$TAG_URL" --non-interactive --no-auth-cache \
+              --username "${{ secrets.SVN_USERNAME }}" --password "${{ secrets.SVN_PASSWORD }}" >/dev/null 2>&1; then
+            echo "Tag $TAG_URL already exists — skipping."
+            exit 0
+          fi
+
           svn cp \
             https://plugins.svn.wordpress.org/avacy/trunk \
-            https://plugins.svn.wordpress.org/avacy/tags/${{ steps.version.outputs.version }} \
-            -m "Tag version ${{ steps.version.outputs.version }}" \
+            "$TAG_URL" \
+            -m "Tag ${{ steps.meta.outputs.version }}" \
             --username "${{ secrets.SVN_USERNAME }}" \
             --password "${{ secrets.SVN_PASSWORD }}" \
             --non-interactive --no-auth-cache

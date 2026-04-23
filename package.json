@@ -1,14 +1,20 @@
 {
-  "name": "jumprock_avacy",
-  "version": "1.0.0",
+  "name": "@avacy/wp-plugin",
+  "version": "1.2.6",
   "description": "Avacy's compliance plugin offers an all-in-one, easy solution for a GDPR compliant website, with features verified by experienced lawyers.",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "makepot": "npx @wp-blocks/make-pot ./src languages/ --slug=\"avacy\" --exclude=\"vendors\""
+    "makepot": "npx @wp-blocks/make-pot ./src languages/ --slug=\"avacy\" --exclude=\"vendors\"",
+    "start": "wp-env start",
+    "stop": "wp-env stop",
+    "clean": "wp-env clean all",
+    "destroy": "wp-env destroy",
+    "playground": "bash ./scripts/playground.sh",
+    "test": "npx -y playwright test"
   },
   "author": "Jump Group",
   "license": "GPL-2.0-or-later",
-  "dependencies": {
-    "@wp-now/wp-now": "^0.1.74"
+  "devDependencies": {
+    "@wordpress/env": "^10.0.0"
   }
 }
