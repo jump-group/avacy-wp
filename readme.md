@@ -3,9 +3,9 @@
 Contributors: jumptech
 Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
-Requires at least: 4.9
-Tested up to: 6.7
-Stable tag: 1.3.0
+Requires at least: 5.3
+Tested up to: 7.0
+Stable tag: 1.3.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
