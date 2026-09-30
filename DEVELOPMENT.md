@@ -116,6 +116,9 @@ pairs a blueprint with a spec file via `testMatch`. Run a single blueprint with
 scripts appear, absorbing the Playground bootstrap delay so individual tests can
 start immediately.
 
+CI: `.github/workflows/test-wp-plugin.yml` runs the same suite on every PR touching
+`services/wp-plugin` (needs network: wordpress.org and the test webspaces on the CDN).
+
 **Add a new scenario:**
 
 1. Drop a new `<name>.json` in `blueprints/`
