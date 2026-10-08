@@ -3,6 +3,8 @@
         exit; // Exit if accessed directly.
     }
     use Jumpgroup\Avacy\AddAdminInterface;
+    use Jumpgroup\Avacy\PreemptiveBlock;
+    use Jumpgroup\Avacy\BannerVersionGate;
 
     global $api_base_url;
     // esacape the base api url
@@ -127,6 +129,16 @@
                                     echo wp_kses_post(sprintf(__('To modify the appearance of the cookie banner <a href=%s target="_blank">click here</a>.', 'avacy'),esc_url($cookie_banner_href)));
                                 ?>
                             </p>
+                            <?php
+                                // Lo stesso valore che decide quale banner viene caricato,
+                                 // riscritto a ogni apertura di questa pagina. Vuoto solo se il
+                                 // SaaS non ha mai risposto.
+                                $bannerVersion = BannerVersionGate::current();
+                            ?>
+                            <p>
+                                <?php echo esc_html__('Current banner version:', 'avacy'); ?>
+                                <strong><?php echo esc_html($bannerVersion !== '' ? $bannerVersion : '—'); ?></strong>
+                            </p>
                         </div>
                     </div>
                 </sl-tab-panel>
@@ -136,14 +148,56 @@
                         <sl-checkbox name="avacy_enable_preemptive_block" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Preemptively block all scripts.', 'avacy')?></sl-checkbox>
                         <div class="AvacyDescription">
                             <p>
-                                <?php 
-                                    $vendors_href = esc_url($base_api_url).'/redirect/vendors/'.get_option('avacy_tenant').'/'.get_option('avacy_webspace_key');
+                                <?php
+                                    // `avacy_webspace_key` porta `tenant|uuid` da quando le due
+                                    // informazioni si salvano insieme: senza lo split il link
+                                    // finirebbe su .../tenant/tenant|uuid. Stesso trattamento che
+                                    // riceve nella scheda Consent Archive.
+                                    $vendorsKey = get_option('avacy_webspace_key');
+                                    if (strpos($vendorsKey, '|') !== false) {
+                                        [$vendorsTenant, $vendorsKey] = explode('|', $vendorsKey);
+                                    } else {
+                                        $vendorsTenant = get_option('avacy_tenant');
+                                    }
+                                    $vendors_href = esc_url($base_api_url).'/redirect/vendors/'.$vendorsTenant.'/'.$vendorsKey;
                                 ?>
                                 <?php /* echo esc_html__('Ricorda di inserire su Avacy l\'URL degli script che vuoi bloccare per tutti', 'avacy')?> <a href="<?php echo esc_attr($vendors_href)?>" target="_blank"><?php echo esc_html__('i tuoi fornitori', 'avacy') */?><!--</a>-->
                                 <br>
                                 <?php /* echo esc_html__('Per maggiori informazioni', 'avacy')?> <a href="<?php echo esc_attr($documention_url)?>" target="_blank"><?php echo esc_html__('consulta la nostra guida', 'avacy') */?><!--</a>-->
                             </p>
                         </div>
+                        <?php
+                            // Regole e pulsante solo col blocco acceso (10d). La casella si
+                            // legge al salvataggio, quindi il riquadro compare dal caricamento
+                            // dopo, non al clic sulla spunta.
+                            if (!empty(get_option('avacy_enable_preemptive_block'))):
+                                $rulesCount = PreemptiveBlock::getBlackListCount();
+                                $lastRefresh = PreemptiveBlock::getLastRefreshTimestamp();
+                                // link vestito da bottone: è admin-post.php, non un submit dentro il form (10d)
+                                $refreshUrl = wp_nonce_url(admin_url('admin-post.php?action=avacy_refresh_vendor_list'), 'avacy_refresh_vendor_list');
+                        ?>
+                        <div class="AvacyDescription">
+                            <p>
+                                <?php if ($lastRefresh > 0): ?>
+                                    <?php
+                                        /* translators: %s: human-readable time difference, e.g. "2 hours". */
+                                        echo esc_html(sprintf(__('Updated %s ago', 'avacy'), human_time_diff($lastRefresh, time())));
+                                    ?>
+                                <?php else: ?>
+                                    <?php echo esc_html__('Not updated yet', 'avacy'); ?>
+                                <?php endif; ?>
+                            </p>
+                            <?php if ($lastRefresh > 0 && $rulesCount === 0): ?>
+                                <?php /* Zero regole e' un esito valido, non un errore: il conteggio
+                                   si dice solo qui, dove indica dove guardare. */ ?>
+                                <p>
+                                    <?php echo esc_html__('No vendors to block.', 'avacy'); ?>
+                                    <a href="<?php echo esc_url($vendors_href); ?>" target="_blank"><?php echo esc_html__('Check your vendors on Avacy', 'avacy'); ?></a>
+                                </p>
+                            <?php endif; ?>
+                            <sl-button href="<?php echo esc_url($refreshUrl); ?>" size="small"><?php echo esc_html__('Refresh the vendor list', 'avacy'); ?></sl-button>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </sl-tab-panel>
                 <sl-tab-panel name="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>>

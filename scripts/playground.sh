@@ -25,4 +25,5 @@ echo ""
 exec npx --yes wp-playground-cli server \
   --blueprint="${BLUEPRINT_FILE}" \
   --port="${PORT}" \
-  --mount="${PLUGIN_DIR}:/wordpress/wp-content/plugins/avacy"
+  --mount="${PLUGIN_DIR}:/wordpress/wp-content/plugins/avacy" \
+  --mount="${PLUGIN_DIR}/tests/fixtures/mu-plugins:/wordpress/wp-content/mu-plugins"

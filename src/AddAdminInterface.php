@@ -13,6 +13,59 @@ use Jumpgroup\Avacy\Integrations\WpForms;
 
 class AddAdminInterface
 {
+  /**
+   * I soli verdetti che autorizzano a cancellare quello che l'utente ha salvato.
+   * Tutto il resto - un silenzio, un 503, un 404 che non porta un codice noto -
+   * non e' un verdetto sulle credenziali, e lascia le opzioni dove sono.
+   */
+  const SAAS_DENIALS = ['team_not_found', 'webspace_not_found'];
+  const TOKEN_DENIALS = ['invalid_token', 'token_not_found_or_expired'];
+
+  private static function isDenial($result, array $denials) {
+    return !empty($result)
+      && (int) ($result['status'] ?? 0) === 404
+      && in_array($result['error'] ?? '', $denials, true);
+  }
+
+  /** Il codice d'errore come lo scrive il SaaS, o null se la risposta non ne porta uno. */
+  private static function errorCodeOf($data) {
+    if (!is_array($data)) {
+      return null;
+    }
+
+    if (isset($data['error']) && is_string($data['error'])) {
+      return $data['error'];
+    }
+
+    if (isset($data['message']['error']) && is_string($data['message']['error'])) {
+      return $data['message']['error'];
+    }
+
+    return null;
+  }
+
+  /**
+   * Dal punto di vista di chi guarda la pagina, un silenzio e un guasto del
+   * SaaS sono lo stesso fatto: non lo sappiamo, e non abbiamo toccato niente.
+   */
+  private static function unreachableNotice() {
+    return [
+      'avacy_saas',
+      'saas_unreachable',
+      __('Avacy could not be reached, so nothing was removed. Please try again later.', 'avacy'),
+      'warning'
+    ];
+  }
+
+  /** La chiamata non e' partita o non e' tornata: non sappiamo niente. */
+  private static function unreachable() {
+    return [
+      'status' => 0,
+      'error' => null,
+      'notice' => self::unreachableNotice(),
+    ];
+  }
+
   public static function init()
   {
     add_action( 'admin_post_avacy_admin_save', [static::class, 'AvacyAdminSave'] );
@@ -33,13 +86,18 @@ class AddAdminInterface
     $webspaceId = get_option('avacy_webspace_id');
     $apiToken = get_option('avacy_api_token');
     $checkSaasAccount = self::checkSaasAccount($tenant, $webspaceKey);
-    
 
     if(empty($webspaceId) ){
       return;
     }
 
-    if (empty($checkSaasAccount) || ( !empty($checkSaasAccount) && $checkSaasAccount['status'] === 200) ) {
+    $notices = [];
+    // Il redirect in coda ricarica questa stessa pagina, e l'hook riparte da
+    // capo: si puo' fare solo dopo aver cambiato qualcosa che al giro dopo
+    // ferma il giro. Un avviso da solo non lo cambia.
+    $credentialsCleared = false;
+
+    if (empty($checkSaasAccount) || $checkSaasAccount['status'] === 200) {
       // if tenant and webspace key are not empty, concat them with a pipe
       if (strpos($webspaceKey, '|') === false) {
         $webspaceKey = $tenant . '|' . $webspaceKey;
@@ -50,66 +108,74 @@ class AddAdminInterface
         return;
       }
       $checkConsentSolutionToken = self::checkConsentSolutionToken($apiToken);
-      if (empty($checkConsentSolutionToken) || ( !empty($checkConsentSolutionToken) && $checkConsentSolutionToken['status'] === 200) ) {
+      if (empty($checkConsentSolutionToken) || $checkConsentSolutionToken['status'] === 200) {
         return;
       }
 
-      // dd('ciao', $checkConsentSolutionToken, $apiToken, $checkSaasAccount);
-      if ($checkConsentSolutionToken['status'] !== 200) {
-        $notices[] = $checkConsentSolutionToken['notice'];
+      $notices[] = $checkConsentSolutionToken['notice'];
+
+      if (self::isDenial($checkConsentSolutionToken, self::TOKEN_DENIALS)) {
         update_option('avacy_api_token', '');
         set_transient('avacy_active_tab', 'consent-archive', 30);
-        // dd('ciao');
+        $credentialsCleared = true;
       }
-    } 
-
-    
-    if (!empty($checkSaasAccount) && $checkSaasAccount['status'] !== 200) {
+    } elseif (self::isDenial($checkSaasAccount, self::SAAS_DENIALS)) {
       $notices[] = $checkSaasAccount['notice'];
       update_option('avacy_tenant', '');
       update_option('avacy_webspace_key', '');
       update_option('avacy_webspace_id', '');
       update_option('avacy_api_token', '');
+      $credentialsCleared = true;
+    } else {
+      // Il SaaS non ha detto che queste credenziali sono sbagliate: non lo ha
+      // detto affatto. Si avvisa e si tiene tutto.
+      $notices[] = $checkSaasAccount['notice'];
     }
 
-    if (!empty($notices)) {
-      foreach ($notices as $notice) {
-        if (!empty($notice)) {
-          add_settings_error(
-            $notice[0],
-            $notice[1],
-            $notice[2],
-            $notice[3]
-          );
-        }
+    foreach ($notices as $notice) {
+      if (!empty($notice)) {
+        add_settings_error($notice[0], $notice[1], $notice[2], $notice[3]);
       }
     }
 
     set_transient('settings_errors', get_settings_errors(), 30);
-    $form_errors = get_transient("settings_errors");
+
+    if (!$credentialsCleared) {
+      return;
+    }
+
     wp_safe_redirect($redirect_to);
     exit;
   }
   
   public static function AvacyAdminSave() {
+    if (!current_user_can('manage_options')) {
+      wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'avacy'));
+    }
+
     if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'avacy-plugin-settings-group-options' ) ) {
       die( 'Security check' ); 
     } 
 
-    $isKeyInOldFormat = strpos($_POST['avacy_webspace_key'], '|') === false;
+    // Ripuliti appena letti, come i campi qui sotto: lo stesso valore finisce
+    // in explode(), nella chiamata al SaaS e nel database.
+    $webspaceKeyField = isset($_POST['avacy_webspace_key']) ? sanitize_text_field($_POST['avacy_webspace_key']) : '';
+    $tenantField = isset($_POST['avacy_tenant']) ? sanitize_text_field($_POST['avacy_tenant']) : '';
+
+    $isKeyInOldFormat = strpos($webspaceKeyField, '|') === false;
     if( $isKeyInOldFormat) {
-      $webspaceKey = $_POST['avacy_webspace_key'];
-      $saveAccountToken = $_POST['avacy_webspace_key'];
+      $webspaceKey = $webspaceKeyField;
+      $saveAccountToken = $webspaceKeyField;
     } else {
-      $accountToken = explode('|', $_POST['avacy_webspace_key']);
+      $accountToken = explode('|', $webspaceKeyField);
       $webspaceKey = $accountToken[1];
-      $saveAccountToken = $_POST['avacy_webspace_key'];
+      $saveAccountToken = $webspaceKeyField;
     }
     
     if( $isKeyInOldFormat ) {
-      $tenant = $_POST['avacy_tenant'];
+      $tenant = $tenantField;
     } else {
-      $accountToken = explode('|', $_POST['avacy_webspace_key']);
+      $accountToken = explode('|', $webspaceKeyField);
       $tenant = $accountToken[0];
     }
     
@@ -126,27 +192,29 @@ class AddAdminInterface
       exit;
     }
 
-    $can_update = true;
-
-    $checkSaasAccount = self::checkSaasAccount($tenant, $_POST['avacy_webspace_key']);
+    $checkSaasAccount = self::checkSaasAccount($tenant, $webspaceKeyField);
     if (!empty($checkSaasAccount)) {
       $notices[] = $checkSaasAccount['notice'];
-    } else if (!empty($checkSaasAccount) && $checkSaasAccount['status'] !== 200) {
-      $can_update = false;
     }
 
     $checkConsentSolutionToken = self::checkConsentSolutionToken($apiToken);
     if (!empty($checkConsentSolutionToken)) {
       $notices[] = $checkConsentSolutionToken['notice'];
-    } else if (!empty($checkConsentSolutionToken) && $checkConsentSolutionToken['status'] !== 200) {
-      $can_update = false;
     }
 
-    $avacyActiveTab = $_POST['avacy_active_tab'] ?? 'cookie-banner';
-    if (!empty($can_update) && isset($avacyActiveTab) && empty($checkSaasAccount)) {
+    // Una risposta non vuota e' un rilievo del SaaS: si avvisa e non si scrive.
+    if (empty($checkSaasAccount)) {
       update_option('avacy_show_banner', esc_attr($showBanner));
       update_option('avacy_enable_preemptive_block', esc_attr($enablePreemptiveBlock));
-  
+
+      // Finche' non e' mai riuscita non c'e' una copia locale, e qui aspettare
+      // la rete e' accettabile (10b). Si guarda la riuscita, non il tentativo:
+      // cosi' un Salva dopo aver corretto le credenziali riprova sempre.
+      // A blocco spento refreshRules() esce da se'.
+      if (empty(get_option(PreemptiveBlock::OPTION_LAST_SUCCESS))) {
+        PreemptiveBlock::refreshRules();
+      }
+
       $notices[] = [
         'avacy_settings',
         'settings_saved',
@@ -199,9 +267,15 @@ class AddAdminInterface
     
     $endpoint = $api_base_url . '/wp/validate/' . $option_tenant . '/' . $option_webspace_key;    
     $response = wp_remote_get($endpoint);
-    $status_code = wp_remote_retrieve_response_code($response);
+
+    if (is_wp_error($response)) {
+      return self::unreachable();
+    }
+
+    $status_code = (int) wp_remote_retrieve_response_code($response);
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
+    $error_code = self::errorCodeOf($data);
 
     $setting = '';
     $code = '';
@@ -209,8 +283,7 @@ class AddAdminInterface
     $type = '';
 
     if ($status_code !== 200) {
-      $error_code = $data['message']['error'] ?? 'team_not_found';
-      switch ($error_code) {
+      switch ($error_code ?: ($status_code === 404 ? 'team_not_found' : '')) {
         case 'team_not_found':
           $setting = 'avacy_team';
           $code = 'team_not_found';
@@ -224,9 +297,34 @@ class AddAdminInterface
           $message = __('Webspace not found. Please check the entered data.', 'avacy');
           $type = 'danger';
           break;
+
+        default:
+          // Non e' un verdetto sulle credenziali: un 503, un 502 di un proxy,
+          // un codice che non sappiamo leggere. Mandare l'utente a ricontrollare
+          // dati che sono giusti e' il modo peggiore di dirgli che la rete e' giu'.
+          [$setting, $code, $message, $type] = self::unreachableNotice();
+          break;
       }
     } else {
-      if ( ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) || (isset($_POST['avacy_webspace_key']) && $option_account_token === $_POST['avacy_webspace_key'])) {
+      // La risposta porta anche la versione del banner (14), e questa e' l'unica
+      // chiamata che la porta: il gate si aggiorna qui, senza una richiesta in
+      // piu'. Prima del `return []` sotto, che e' il caso normale.
+      // Solo se il campo c'e' davvero. Una 200 che non porta il JSON atteso — un
+      // firewall, un proxy di mezzo — altrimenti riscriverebbe «v2» su un
+      // webspace che sappiamo essere v3, e quel sito passerebbe a OIL. Il
+      // default verso v2 vale quando non si sa niente, non per cancellare
+      // quello che si sapeva.
+      if (is_array($data) && array_key_exists('banner_config_version', $data)) {
+        BannerVersionGate::store($data['banner_config_version']);
+      }
+
+      // Stessa risposta, stessa regola: si raccoglie solo se c'e'. Finche' il
+      // SaaS non lo manda, il plugin resta sul dominio che ha gia'.
+      if (is_array($data) && array_key_exists('cdn_url', $data)) {
+        Hosts::storeCdn($data['cdn_url']);
+      }
+
+      if ( ($tenant === $option_tenant && $webspaceKey === $option_webspace_key) || (isset($_POST['avacy_webspace_key']) && $option_account_token === sanitize_text_field($_POST['avacy_webspace_key']))) {
         return [];
       }
 
@@ -250,6 +348,7 @@ class AddAdminInterface
 
     return [
       'status' => $status_code,
+      'error' => $error_code,
       'notice' => [
         $setting,
         $code,
@@ -284,13 +383,17 @@ class AddAdminInterface
 
       $response = wp_remote_get($endpoint);
 
-      $status_code = wp_remote_retrieve_response_code($response);
+      if (is_wp_error($response)) {
+        return self::unreachable();
+      }
+
+      $status_code = (int) wp_remote_retrieve_response_code($response);
       $body = wp_remote_retrieve_body($response);
       $data = json_decode($body, true);
+      $error_code = self::errorCodeOf($data);
   
       if ($status_code !== 200) {
-        $error_code = $data['message']['error'] ?? 'token_not_found_or_expired';
-        switch ($error_code) {
+        switch ($error_code ?: ($status_code === 404 ? 'token_not_found_or_expired' : '')) {
           case 'invalid_token':
             $setting = 'avacy_api_token';
             $code = 'invalid_token';
@@ -303,6 +406,10 @@ class AddAdminInterface
             $code = 'token_not_found_or_expired';
             $message = __('Token not found or expired. Please check the entered data.', 'avacy');
             $type = 'danger';
+            break;
+
+          default:
+            [$setting, $code, $message, $type] = self::unreachableNotice();
             break;
         }
       } else {
@@ -332,6 +439,7 @@ class AddAdminInterface
 
     return [
       'status' => $status_code,
+      'error' => $error_code ?? null,
       'notice' => [
         $setting,
         $code,

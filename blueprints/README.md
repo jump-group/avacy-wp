@@ -26,6 +26,7 @@ on first request when `login: true`).
 | `with-wp-consent-api.json` | Avacy + [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) + [Google Site Kit](https://wordpress.org/plugins/google-site-kit/), `googlecmp` webspace (Google CMP Bronze Tier test tenant) — plugin Avacy mounted locally |
 | `with-wp-consent-api-public.json` | Same as above, but installs the current Avacy **beta** ZIP from WP.org (`avacy.1.3.0-beta.zip`). Shareable on `playground.wordpress.net` |
 | `with-html-forms.json` | Avacy + [HTML Forms](https://wordpress.org/plugins/html-forms/), default test webspace |
+| `with-preemptive-block.json` | Avacy col blocco preventivo acceso, webspace finto. Le chiamate di rete sono intercettate dalla mu-plugin `tests/fixtures/mu-plugins/avacy-test-harness.php` (inerte altrove), che le rende controllabili via REST — usato solo da `tests/preemptive-block.spec.ts` |
 
 ## Default webspace
 

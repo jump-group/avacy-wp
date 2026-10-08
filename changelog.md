@@ -5,11 +5,21 @@ Author: Jump Group
 Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
 Requires at least: 5.3
 Tested up to: 7.0
-Stable tag: 1.3.1
+Stable tag: 1.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Changelog
+
+### 1.4.0
+
+Support for the new Avacy cookie banner, and a faster preemptive block.
+
+* The plugin now loads the banner version your webspace is set to. Nothing changes until Avacy switches your webspace over — **update the plugin before that happens.**
+* Preemptive blocking speaks both banners: a blocked script carries the markup each version understands, so it survives the switch.
+* The vendor list is a local copy refreshed every six hours, instead of a download on every page view. Pages load faster, and an Avacy outage no longer reaches your visitors.
+* The settings page shows the banner version in use, when the blocking rules were last updated, and a button to update them now.
+* Your credentials are no longer cleared when Avacy is briefly unreachable: only an explicit answer from Avacy can invalidate them.
 
 ### 1.3.1
 
