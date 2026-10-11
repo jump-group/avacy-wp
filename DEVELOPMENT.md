@@ -192,6 +192,10 @@ not on tags:
 
 ### Steps to promote a beta to stable
 
+0. Make sure the repository variable `WP_ORG_STABLE_DEPLOY` on `jump-group/avacy-wp` is `true`.
+   While it is anything else, a push to `main` skips the deploy job: the plugin code reaches
+   the public repo but no stable version reaches WordPress.org.
+   `gh variable set WP_ORG_STABLE_DEPLOY --body true --repo jump-group/avacy-wp`
 1. **Merge `development` → `master`** in the monorepo
 2. `sync-wp-plugin-public.yml` mirrors the plugin to `avacy-wp` `main`
 3. `deploy.yml` on the public repo:
@@ -213,7 +217,13 @@ No manual tagging on the public repo is needed anymore.
 ### SVN credentials
 
 Stored as secrets on the **public repo** `jump-group/avacy-wp`:
-- `SVN_USERNAME` / `SVN_PASSWORD` (set 2025-04-01)
+- `SVN_USERNAME`: the WordPress.org username
+- `SVN_PASSWORD`: the **SVN password** generated in the WordPress.org profile
+  (Account & Security → SVN credentials), not the account password
+
+An `svn: E215004: Authentication failed` in the log means the SVN password has to be
+regenerated and the secret updated:
+`gh secret set SVN_PASSWORD --repo jump-group/avacy-wp`
 
 ### Troubleshooting
 

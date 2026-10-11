@@ -20,6 +20,9 @@ on:
 jobs:
   deploy:
     name: Deploy plugin to WordPress.org SVN
+    # Stable releases reach every site that auto-updates: they run only while the
+    # repository variable WP_ORG_STABLE_DEPLOY is 'true'. Betas always run.
+    if: github.ref_name != 'main' || vars.WP_ORG_STABLE_DEPLOY == 'true'
     runs-on: ubuntu-latest
 
     steps:
