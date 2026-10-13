@@ -498,3 +498,81 @@ test.describe('chi porta cosa, e dove (10b / 14)', () => {
     await expect(page.locator('sl-button:has-text("Refresh the vendor list")')).toHaveCount(0);
   });
 });
+
+test.describe('PreemptiveBlock — cambio di chiave al Salva (issue 612)', () => {
+  const OTHER_KEY = 'test-harness|22222222-2222-2222-2222-222222222222';
+
+  test.beforeEach(async ({ request }) => {
+    await resetHarness(request);
+  });
+
+  /** Il Salva della pagina Avacy, con la chiave data: stesso POST che manda il form. */
+  async function saveKey(page: Page, key: string, preemptiveBlock = 'on') {
+    await page.goto('/wp-admin/admin.php?page=avacy-plugin-settings');
+    await page.waitForSelector('.wrap:not(.hide)');
+    const nonce = await page.locator('input[name="_wpnonce"]').first().inputValue();
+    const res = await page.request.post('/wp-admin/admin-post.php', {
+      form: {
+        action: 'avacy_admin_save',
+        _wpnonce: nonce,
+        avacy_webspace_key: key,
+        avacy_tenant: 'test-harness',
+        avacy_enable_preemptive_block: preemptiveBlock,
+        redirectToUrl: '/wp-admin/admin.php?page=avacy-plugin-settings',
+      },
+    });
+    expect(res.ok()).toBe(true);
+  }
+
+  const vendorCalls = async (request: APIRequestContext) =>
+    ((await getState(request)).requestLog as string[]).filter((u) => u.includes('custom-vendor-list.json'));
+
+  test('con una chiave diversa le regole sono subito quelle del nuovo webspace', async ({ page, request }) => {
+    await triggerRefresh(request);
+    expect((await getState(request)).blackListIds).toEqual(['d999']);
+
+    await saveKey(page, OTHER_KEY);
+
+    const state = await getState(request);
+    expect(state.webspaceKey).toBe(OTHER_KEY);
+    expect(state.blackListIds).toEqual(['d222']);
+  });
+
+  test('con una chiave diversa e il download in errore le regole vecchie si svuotano', async ({ page, request }) => {
+    await triggerRefresh(request);
+    expect((await getState(request)).blackListCount).toBe(1);
+
+    await setState(request, { avacy_test_scenario: 'network_fail' });
+    await saveKey(page, OTHER_KEY);
+
+    const state = await getState(request);
+    expect(state.webspaceKey).toBe(OTHER_KEY);
+    expect(state.blackListCount).toBe(0);
+    // niente data di riuscita: il bootstrap riprova
+    expect(state.lastRefresh).toBe(0);
+  });
+
+  test('salvando la stessa chiave non si riscarica niente', async ({ page, request }) => {
+    await triggerRefresh(request);
+    const before = (await vendorCalls(request)).length;
+
+    await saveKey(page, 'test-harness|11111111-1111-1111-1111-111111111111');
+
+    expect(await vendorCalls(request)).toHaveLength(before);
+    expect((await getState(request)).blackListIds).toEqual(['d999']);
+  });
+
+  test('a blocco spento il cambio di chiave svuota le regole e non chiama la CDN', async ({ page, request }) => {
+    await triggerRefresh(request);
+    expect((await getState(request)).blackListCount).toBe(1);
+    await setState(request, { avacy_enable_preemptive_block: '' });
+    const before = (await vendorCalls(request)).length;
+
+    await saveKey(page, OTHER_KEY, '');
+
+    const state = await getState(request);
+    expect(state.webspaceKey).toBe(OTHER_KEY);
+    expect(state.blackListCount).toBe(0);
+    expect(await vendorCalls(request)).toHaveLength(before);
+  });
+});

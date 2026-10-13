@@ -52,6 +52,22 @@ add_filter( 'pre_http_request', function ( $preempt, $args, $url ) {
 			return new WP_Error( 'avacy_test_fail', 'simulated vendor-list failure' );
 		}
 
+		// il secondo webspace ha un fornitore suo: serve a vedere di quale
+		// webspace sono le regole in copia locale
+		if ( strpos( $url, '22222222-2222-2222-2222-222222222222' ) !== false ) {
+			return [
+				'response' => [ 'code' => 200, 'message' => 'OK' ],
+				'body' => wp_json_encode( [ 'vendors' => [ [
+					'name' => 'Other Vendor',
+					'id' => 'd222',
+					'purposes' => [ 1 ],
+					'blockUrls' => [ 'other.example.com/o.js' ],
+				] ] ] ),
+				'headers' => [],
+				'cookies' => [],
+			];
+		}
+
 		// `vendor_v3_shape`: le finalita' come oggetti {framework, id}, che e'
 		// la forma del file su un webspace v3.
 		if ( $scenario === 'vendor_v3_shape' ) {
@@ -176,6 +192,7 @@ add_action( 'init', function () {
 			'lastRequestUrl' => get_option( 'avacy_test_last_request_url', '' ),
 			'requestLog' => get_option( 'avacy_test_request_log', [] ),
 			'blackListCount' => \Jumpgroup\Avacy\PreemptiveBlock::getBlackListCount(),
+			'blackListIds' => array_keys( get_option( 'avacy_preemptive_blacklist', [] ) ),
 			'lastRefresh' => \Jumpgroup\Avacy\PreemptiveBlock::getLastRefreshTimestamp(),
 			'bannerVersion' => get_option( \Jumpgroup\Avacy\BannerVersionGate::OPTION_VERSION, '' ),
 			// il periodico esiste solo col blocco acceso: qui si vede se e' pianificato

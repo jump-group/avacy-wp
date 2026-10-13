@@ -43,6 +43,11 @@ class PreemptiveBlock {
      * staccare il cron rimasto da quando era acceso.
      */
     public static function registerRefreshHooks() {
+        // Fuori dal controllo qui sotto: la chiave puo' cambiare, da qualunque
+        // percorso, anche a blocco spento, e le regole vecchie non devono
+        // restare in attesa che lo si riaccenda.
+        add_action('update_option_avacy_webspace_key', [static::class, 'onWebspaceKeyChange'], 10, 2);
+
         // Tutto quello che c'e' qui dentro riguarda le regole di blocco, e le
         // regole servono solo a chi il blocco lo usa: senza la casella, niente
         // periodico e niente pulsante. La versione del banner non passa piu' da
@@ -73,6 +78,31 @@ class PreemptiveBlock {
         // la chiamata no. Priorita' oltre quella di output_end (100), altrimenti
         // il visitatore aspetta la rete con la pagina gia' pronta nel buffer.
         add_action('shutdown', [static::class, 'maybeRefreshOnShutdown'], self::SHUTDOWN_PRIORITY);
+    }
+
+    /**
+     * Le regole in copia locale sono di un webspace solo: se la chiave ne indica
+     * un altro si buttano e si riscarica subito. Se il download fallisce restano
+     * vuote (meglio nessuna regola di quelle di un altro webspace), e la data di
+     * riuscita vuota fa ripartire il bootstrap. Il prefisso `tenant|` che la
+     * pagina aggiunge alla stessa chiave non conta come cambio.
+     */
+    public static function onWebspaceKeyChange($oldKey, $newKey) {
+        if (self::uuidOf($oldKey) === self::uuidOf($newKey)) {
+            return;
+        }
+
+        delete_option(self::OPTION_BLACKLIST);
+        delete_option(self::OPTION_LAST_SUCCESS);
+
+        self::refreshRules();
+    }
+
+    // Come resolveCredentials: col `|` l'uuid e' il secondo pezzo, senza e' la chiave intera.
+    private static function uuidOf($key) {
+        $key = (string) $key;
+
+        return explode('|', $key)[1] ?? $key;
     }
 
     public static function clearScheduledRefresh() {
