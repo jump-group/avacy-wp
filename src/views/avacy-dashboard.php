@@ -4,6 +4,7 @@
     }
     use Jumpgroup\Avacy\AddAdminInterface;
     use Jumpgroup\Avacy\PreemptiveBlock;
+    use Jumpgroup\Avacy\SendFormsToConsentSolution;
     use Jumpgroup\Avacy\BannerVersionGate;
 
     global $api_base_url;
@@ -262,9 +263,10 @@
                                         <td><?php echo esc_attr($form_type); ?></td>
                                         <td>
                                             <div>
-                                                <?php $enabled = esc_attr(get_option('avacy_' . esc_attr($type) . '_' . esc_attr($id) . '_radio_enabled') === 'on')? 'checked' : ''; ?>
-                                                <sl-switch name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled" <?php echo esc_attr($enabled) ?> size="medium">
-                                                    <label for="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_radio_enabled"><?php echo esc_html__('Save', 'avacy')?></label>
+                                                <?php $enabledOption = SendFormsToConsentSolution::enabledOptionName($form_type, $id); ?>
+                                                <?php $enabled = SendFormsToConsentSolution::isEnabled($form_type, $id) ? 'checked' : ''; ?>
+                                                <sl-switch name="<?php echo esc_attr($enabledOption) ?>" <?php echo esc_attr($enabled) ?> size="medium">
+                                                    <label for="<?php echo esc_attr($enabledOption) ?>"><?php echo esc_html__('Save', 'avacy')?></label>
                                                 </sl-switch>
                                             </div>
                                         </td>

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.2",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "html-forms"
+      }
+    },
+    {
+      "step": "wp-cli",
+      "command": "wp plugin activate avacy"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_webspace_key": "test-harness|11111111-1111-1111-1111-111111111111",
+        "avacy_show_banner": "on",
+        "avacy_test_harness_enabled": "on"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; kses_remove_filters(); $id = wp_insert_post(['post_type' => 'html-form', 'post_status' => 'publish', 'post_title' => 'Avacy test', 'post_name' => 'avacy-test', 'post_content' => '<p><input type=\"email\" name=\"EMAIL\" required></p><p><input type=\"submit\" value=\"Send\"></p>']); wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Form', 'post_name' => 'avacy-form', 'post_content' => '[hf_form id=\"' . $id . '\"]']);"
+    }
+  ]
+}

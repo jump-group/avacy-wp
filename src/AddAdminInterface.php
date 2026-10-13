@@ -534,7 +534,7 @@ class AddAdminInterface
         $formValues[$id]['fields'][$formFieldOpt] = get_option($formFieldOpt) ?? 'off';
       }
 
-      $enabledOption = 'avacy_' . $type . '_' . $form->getId() . '_radio_enabled';
+      $enabledOption = SendFormsToConsentSolution::enabledOptionName($form->getType(), $id);
       $enabled = get_option($enabledOption) ?? 'off';
       
       $identifierOption = 'avacy_' . $type . '_' . $id . '_form_user_identifier';

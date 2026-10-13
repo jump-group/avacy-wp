@@ -32,7 +32,22 @@ function avacy_test_json_response( $code, array $body ) {
 	];
 }
 
+// gli switch «Save» dei form salvati finora, per nome di opzione
+function avacy_test_form_switches() {
+	global $wpdb;
+	$rows = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_%\\_radio\\_enabled'" );
+	return wp_list_pluck( $rows, 'option_value', 'option_name' );
+}
+
 add_filter( 'pre_http_request', function ( $preempt, $args, $url ) {
+	// il consenso di un form inviato: si registra e basta, il SaaS non serve
+	if ( preg_match( '#/v4/webspaces/[^/]+/consents$#', $url ) ) {
+		$log = get_option( 'avacy_test_consent_log', [] );
+		$log[] = [ 'url' => $url, 'body' => $args['body'] ?? null ];
+		update_option( 'avacy_test_consent_log', $log, false );
+		return avacy_test_json_response( 201, [ 'ok' => true ] );
+	}
+
 	$isVendorList = strpos( $url, 'custom-vendor-list.json' ) !== false;
 	$isValidate = strpos( $url, '/wp/validate/' ) !== false;
 
@@ -203,6 +218,9 @@ add_action( 'init', function () {
 			'webspaceKey' => get_option( 'avacy_webspace_key', '' ),
 			'webspaceId' => get_option( 'avacy_webspace_id', '' ),
 			'apiToken' => get_option( 'avacy_api_token', '' ),
+			'consentLog' => get_option( 'avacy_test_consent_log', [] ),
+			'formSwitches' => (object) avacy_test_form_switches(),
+			'switchMigrated' => get_option( 'avacy_form_switch_migrated', '' ),
 		] );
 		exit;
 	}
@@ -225,10 +243,13 @@ add_action( 'init', function () {
 			'avacy_webspace_key',
 			'avacy_webspace_id',
 			'avacy_api_token',
+			// la migrazione una tantum degli switch: un test la riarma con '0'
+			'avacy_form_switch_migrated',
 		];
 
 		foreach ( $input as $key => $value ) {
-			if ( in_array( $key, $allowed, true ) ) {
+			// lo switch «Save» di un form e i suoi campi scelti, con i nomi che gli da' la dashboard
+			if ( in_array( $key, $allowed, true ) || preg_match( '/^avacy_(form_field_[A-Za-z0-9_]+|[a-z0-9_]+_radio_enabled)$/', $key ) ) {
 				update_option( $key, $value );
 			}
 		}
@@ -246,6 +267,14 @@ add_action( 'init', function () {
 		delete_option( 'avacy_cdn_url' );
 		delete_option( 'avacy_test_last_request_url' );
 		delete_option( 'avacy_test_request_log' );
+		delete_option( 'avacy_test_consent_log' );
+		// gli switch «Save» dei form: un test non deve ereditare quello del precedente
+		global $wpdb;
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_%\\_radio\\_enabled'" );
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_form\\_field\\_%'" );
+		wp_cache_delete( 'alloptions', 'options' );
+		delete_option( 'avacy_form_switch_migrated' );
+		delete_option( 'avacy_form_switch_migration_attempts' );
 		delete_option( 'avacy_test_scenario' );
 		delete_option( 'avacy_test_banner_version' );
 		delete_option( 'avacy_webspace_id' );
