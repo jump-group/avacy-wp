@@ -53,6 +53,11 @@ class WooCommerceCheckoutForm implements FormInterface
         ]
     ];
 
+    // Fixed id of the checkout in the dashboard: the option names (switch, fields) depend on it.
+    // Keep it empty: sites that already saved the switch use it, and the fields need it empty
+    // (convertToFormSubmission strips only leading underscores from the field name).
+    public const FORM_ID = '';
+
     public static function listen() : void
     {
         add_action('woocommerce_thankyou', [__CLASS__, 'sendFormData']);
@@ -106,6 +111,9 @@ class WooCommerceCheckoutForm implements FormInterface
 
     public static function sendFormData($order_id) : void
     {
+        if (!SendFormsToConsentSolution::isEnabled('WooCommerce Checkout Form', self::FORM_ID)) {
+            return;
+        }
         $form = self::convertToFormSubmission($order_id);
         SendFormsToConsentSolution::send($form);
     }
@@ -123,7 +131,7 @@ class WooCommerceCheckoutForm implements FormInterface
 
             // Check if there are posts found
             if ($query->have_posts()) {
-                $form = new Form(get_the_ID(), 'WooCommerce Checkout Form', self::WC_CHECKOUT_DEFAULT_FIELDS);
+                $form = new Form(self::FORM_ID, 'WooCommerce Checkout Form', self::WC_CHECKOUT_DEFAULT_FIELDS);
                 $forms[] = $form;
             }
         }

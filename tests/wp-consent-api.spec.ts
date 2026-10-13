@@ -26,6 +26,34 @@ async function dispatchAvacyConsent(page, gcm: string[]) {
   }, gcm);
 }
 
+/**
+ * La forma v3: `avacy:consent-saved` su `document`, con l'oggetto a 7 chiavi.
+ * `grants` elenca i soli permessi concessi; gli altri sei vanno a 'denied'.
+ */
+async function dispatchConsentSaved(page, grants: string[] | undefined) {
+  await page.evaluate((granted) => {
+    const ALL = [
+      'ad_storage',
+      'ad_user_data',
+      'ad_personalization',
+      'analytics_storage',
+      'functionality_storage',
+      'personalization_storage',
+      'security_storage',
+    ];
+    const gcm =
+      granted === null
+        ? undefined
+        : ALL.reduce((acc: Record<string, string>, key) => {
+            acc[key] = granted!.indexOf(key) !== -1 ? 'granted' : 'denied';
+            return acc;
+          }, {});
+    document.dispatchEvent(
+      new CustomEvent('avacy:consent-saved', { detail: { type: 'Personalized', timestamp: Date.now(), gcm } }),
+    );
+  }, grants ?? null);
+}
+
 async function getCalls(page) {
   return page.evaluate(() => (window as any).__wpCalls as Array<{ category: string; value: string }>);
 }
@@ -119,6 +147,65 @@ test.describe('WP Consent API integration', () => {
     expect(results.preferences).toBe(false);
     expect(results.statistics).toBe(false);
     expect(results.marketing).toBe(false);
+  });
+
+  test('v3: l\'oggetto a 7 chiavi produce le stesse categorie della lista v2', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => typeof (window as any).wp_set_consent === 'function');
+    await spyOnSetConsent(page);
+
+    await dispatchConsentSaved(page, ['analytics_storage']);
+
+    const calls = await getCalls(page);
+    expect(calls).toEqual(
+      expect.arrayContaining([
+        { category: 'functional', value: 'allow' },
+        { category: 'statistics', value: 'allow' },
+        { category: 'statistics-anonymous', value: 'allow' },
+        { category: 'marketing', value: 'deny' },
+        { category: 'preferences', value: 'deny' },
+      ]),
+    );
+  });
+
+  test('v3: tutto concesso → tutte le categorie allow', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForFunction(() => typeof (window as any).wp_set_consent === 'function');
+    await spyOnSetConsent(page);
+
+    await dispatchConsentSaved(page, [
+      'ad_storage',
+      'ad_user_data',
+      'ad_personalization',
+      'analytics_storage',
+      'functionality_storage',
+      'personalization_storage',
+      'security_storage',
+    ]);
+
+    const calls = await getCalls(page);
+    expect(calls).toEqual(
+      expect.arrayContaining([
+        { category: 'functional', value: 'allow' },
+        { category: 'preferences', value: 'allow' },
+        { category: 'statistics', value: 'allow' },
+        { category: 'statistics-anonymous', value: 'allow' },
+        { category: 'marketing', value: 'allow' },
+      ]),
+    );
+  });
+
+  test('v3 senza GCM: concede i tecnici e non tocca le altre categorie', async ({ page }) => {
+    // Il webspace non ha il GCM acceso: `gcm` arriva undefined. Negare sarebbe
+    // sbagliato quanto concedere — non lo sappiamo, quindi non scriviamo.
+    await page.goto('/');
+    await page.waitForFunction(() => typeof (window as any).wp_set_consent === 'function');
+    await spyOnSetConsent(page);
+
+    await dispatchConsentSaved(page, undefined);
+
+    const calls = await getCalls(page);
+    expect(calls).toEqual([{ category: 'functional', value: 'allow' }]);
   });
 
   test('analytics-only consent → statistics allow, marketing deny', async ({ page }) => {

@@ -73,6 +73,9 @@ class ElementorForms implements FormInterface {
     }
 
     public static function sendFormData($contact_form) : void {
+        if (!SendFormsToConsentSolution::isEnabled('Elementor Forms', $contact_form['id'])) {
+            return;
+        }
         $form = self::convertToFormSubmission($contact_form);
         SendFormsToConsentSolution::send($form);
     }

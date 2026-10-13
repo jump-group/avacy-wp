@@ -7,6 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
 const BLUEPRINTS = [
   { name: 'with-html-forms', port: 9400, testMatch: 'banner-visible.spec.ts' },
   { name: 'with-wp-consent-api', port: 9401, testMatch: 'wp-consent-api.spec.ts' },
+  { name: 'with-preemptive-block', port: 9402, testMatch: ['preemptive-block.spec.ts', 'saas-credentials.spec.ts'] },
+  { name: 'with-form-consents', port: 9403, testMatch: 'form-consents.spec.ts' },
 ];
 
 process.env.PLAYGROUND_PORTS = BLUEPRINTS.map((b) => b.port).join(',');

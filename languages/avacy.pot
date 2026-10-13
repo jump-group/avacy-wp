@@ -16,17 +16,16 @@ msgstr ""
 "Language: en\n"
 "domain: \n"
 
-#: style.css
-#. Author URI of the generic
-msgid ""
-msgstr ""
-
 #: AddAdminInterface.php:130
 msgid "The changes have been saved successfully."
 msgstr ""
 
 #: AddAdminInterface.php:175
 msgid "Team not found. Please check the entered data."
+msgstr ""
+
+#: AddAdminInterface.php:55
+msgid "Avacy could not be reached, so nothing was removed. Please try again later."
 msgstr ""
 
 #: AddAdminInterface.php:182
@@ -187,4 +186,34 @@ msgstr ""
 
 #: views/avacy-dashboard.php:231
 msgid "Save changes"
+msgstr ""
+
+#: views/avacy-dashboard.php:139
+msgid "Current banner version:"
+msgstr ""
+
+#. translators: %s: human-readable time difference, e.g. "2 hours".
+#: views/avacy-dashboard.php:184
+msgid "Updated %s ago"
+msgstr ""
+
+#: views/avacy-dashboard.php:187
+msgid "Not updated yet"
+msgstr ""
+
+#: views/avacy-dashboard.php:194
+msgid "No vendors to block."
+msgstr ""
+
+#: views/avacy-dashboard.php:195
+msgid "Check your vendors on Avacy"
+msgstr ""
+
+#: views/avacy-dashboard.php:198
+msgid "Refresh the vendor list"
+msgstr ""
+
+#: AddAdminInterface.php:152
+#: PreemptiveBlock.php:172
+msgid "You do not have sufficient permissions to access this page."
 msgstr ""

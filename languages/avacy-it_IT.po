@@ -24,6 +24,10 @@ msgstr "Le modifiche sono state salvate con successo."
 msgid "Team not found. Please check the entered data."
 msgstr "Team non trovato. Si prega di verificare i dati inseriti."
 
+#: AddAdminInterface.php:55
+msgid "Avacy could not be reached, so nothing was removed. Please try again later."
+msgstr "Non siamo riusciti a contattare Avacy, quindi non è stato rimosso niente. Riprova più tardi."
+
 #: AddAdminInterface.php:182
 msgid "Webspace not found. Please check the entered data."
 msgstr "Spazio web non trovato. Si prega di verificare i dati inseriti."
@@ -194,6 +198,36 @@ msgstr "Connetti"
 #: views/avacy-dashboard.php:231
 msgid "Save changes"
 msgstr "Salva modifiche"
+
+#: views/avacy-dashboard.php:139
+msgid "Current banner version:"
+msgstr "Versione attuale del banner:"
+
+#. translators: %s: human-readable time difference, e.g. "2 hours".
+#: views/avacy-dashboard.php:184
+msgid "Updated %s ago"
+msgstr "Aggiornato %s fa"
+
+#: views/avacy-dashboard.php:187
+msgid "Not updated yet"
+msgstr "Non ancora aggiornato"
+
+#: views/avacy-dashboard.php:194
+msgid "No vendors to block."
+msgstr "Nessun fornitore da bloccare."
+
+#: views/avacy-dashboard.php:195
+msgid "Check your vendors on Avacy"
+msgstr "Controlla i tuoi fornitori su Avacy"
+
+#: views/avacy-dashboard.php:198
+msgid "Refresh the vendor list"
+msgstr "Aggiorna l'elenco dei fornitori"
+
+#: AddAdminInterface.php:152
+#: PreemptiveBlock.php:172
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Non hai i permessi sufficienti per accedere a questa pagina."
 
 #~ msgid "Consent archive token"
 #~ msgstr "Token dell’archivio dei consensi"

@@ -65,6 +65,9 @@ class ContactForm7 implements FormInterface
 
     public static function sendFormData($contact_form) : void
     {
+        if (!SendFormsToConsentSolution::isEnabled('Contact Form 7', $contact_form->id())) {
+            return;
+        }
         $form = self::convertToFormSubmission($contact_form);
         SendFormsToConsentSolution::send($form);
     }

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.2", "wp": "latest" },
+  "login": true,
+  "steps": [
+    {
+      "step": "wp-cli",
+      "command": "wp plugin activate avacy"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_webspace_key": "test-harness|11111111-1111-1111-1111-111111111111",
+        "avacy_show_banner": "on",
+        "avacy_enable_preemptive_block": "on",
+        "avacy_test_harness_enabled": "on"
+      }
+    }
+  ]
+}
