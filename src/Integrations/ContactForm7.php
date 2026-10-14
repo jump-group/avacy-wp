@@ -81,7 +81,7 @@ class ContactForm7 implements FormInterface
             // Loop through each post
             foreach ($wpCf7Forms as $wpCf7Form) {
                 $fields = self::parseFormFields($wpCf7Form);
-                $form = new Form($wpCf7Form->id, 'Contact Form 7', $fields);
+                $form = new Form($wpCf7Form->id(), 'Contact Form 7', $fields);
                 $forms[] = $form;
             }
         }
