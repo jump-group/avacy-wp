@@ -488,7 +488,7 @@ class PreemptiveBlock {
 
     /**
      * Le sorgenti decidono cosa viene bloccato, e sono l'unico campo del file
-     * che finisce dentro `str_contains`: una stringa vuota li' e' contenuta in
+     * che finisce dentro `strpos`: una stringa vuota li' e' contenuta in
      * qualunque indirizzo, quindi bloccherebbe ogni script della pagina.
      */
     private static function safeSources($sources) {
@@ -542,7 +542,7 @@ class PreemptiveBlock {
     private static function src_contains($src, $blackList) {
         foreach($blackList as $item) {
             foreach($item['sources'] as $source) {
-                if (str_contains($src, $source) !== false) {
+                if (strpos($src, $source) !== false) {
                     return $item;
                 }
             }
@@ -556,7 +556,7 @@ class PreemptiveBlock {
 
         foreach($blackList as $item) {
             foreach($item['sources'] as $source) {
-                if (str_contains($innerHTML, $source) !== false) {
+                if (strpos($innerHTML, $source) !== false) {
                     return $item;
                 }
             }
