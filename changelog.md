@@ -21,6 +21,7 @@ Support for the new Avacy cookie banner, and a faster preemptive block.
 * The settings page shows the banner version in use, when the blocking rules were last updated, and a button to update them now.
 * Your credentials are no longer cleared when Avacy is briefly unreachable: only an explicit answer from Avacy can invalidate them.
 * The "Save" switch of each form in the settings page is now respected: a form is sent to Avacy only when its switch is on. Before, the switch was ignored. On update, the plugin turns the switch on, even if it was off, for the forms that already have fields selected, so nothing changes for sites that are already saving consents. Forms without selected fields no longer send anything.
+* Contact Form 7: the settings page no longer writes "Use id() method instead" deprecation notices to the debug log.
 
 ### 1.3.1
 
