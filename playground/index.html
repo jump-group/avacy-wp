@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avacy CMP – WordPress test site</title>
+<meta name="robots" content="noindex">
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #1d2327; }
+  #wp { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+  #boot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #fff; z-index: 1; padding: 16px; text-align: center; }
+  #boot[hidden] { display: none; }
+  #boot .box { max-width: 30rem; }
+  #boot progress { width: 100%; height: 6px; margin-top: 12px; }
+  #boot .err { color: #b32d2e; }
+</style>
+</head>
+<body>
+<div id="boot" role="status" aria-live="polite">
+  <div class="box">
+    <strong>Avacy CMP – WordPress test site</strong>
+    <div id="caption">Starting WordPress in your browser…</div>
+    <progress id="bar" max="100"></progress>
+  </div>
+</div>
+<iframe id="wp" title="WordPress test site"></iframe>
+<script type="module">
+  // Playground's engine sits at the root of this host: service worker scope "/", sites under
+  // "/scope:<id>/". ?wp-admin opens the admin; ?install runs the full recipe (snapshot.mjs only).
+  const base = new URL('./', location.href).href;
+  const q = new URLSearchParams(location.search);
+  const recipe = q.has('install') ? 'install.json' : 'blueprint.json';
+  const startPath = q.has('wp-admin') ? '/wp-admin/' : q.get('path');
+
+  const caption = document.getElementById('caption');
+  const bar = document.getElementById('bar');
+  const boot = document.getElementById('boot');
+  const t0 = performance.now();
+  try {
+    const { startPlaygroundWeb } = await import('/client/index.js');
+    const raw = await (await fetch(base + recipe, { cache: 'no-cache' })).text();
+    const blueprint = JSON.parse(raw.replaceAll('{{BASE}}', base));
+    if (startPath) blueprint.landingPage = startPath;
+    const client = await startPlaygroundWeb({
+      iframe: document.getElementById('wp'),
+      remoteUrl: new URL('/remote.html', location.href).href,
+      blueprint,
+      onBlueprintStepCompleted: () => {},
+    });
+    await client.isReady();
+    window.__avacyPlayground = { client, bootMs: Math.round(performance.now() - t0) };
+    boot.hidden = true;
+  } catch (e) {
+    caption.innerHTML = '<span class="err">The test site could not start: ' + String((e && e.message) || e).replace(/[<>&]/g, '') + '</span><br>Try a recent Chrome, Edge, Firefox or Safari, outside private browsing.';
+    bar.remove();
+    throw e;
+  }
+</script>
+</body>
+</html>

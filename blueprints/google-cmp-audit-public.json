@@ -1,0 +1,74 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "preferredVersions": {
+    "php": "8.2",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/avacy-demo.php",
+      "data": "<?php\n/*\n * Avacy demo site for the Google CMP Partner Program.\n * - The front end is seen by a logged-out visitor: Playground logs the admin in, and Site Kit does\n *   not print the Google tag for logged-in admins. wp-admin stays logged in.\n * - No calls to api.wordpress.org: the network panel shows only the site, Avacy and Google.\n * - Standard banner layout: the site runs in Playground's iframe, which the banner would detect.\n *   The flag touches layout and title only, not consent or the Google signals.\n */\nadd_filter('determine_current_user', function ($uid) {\n    $uri = $_SERVER['REQUEST_URI'] ?? '';\n    if (preg_match('#/(wp-admin|wp-login\\.php|wp-json|index\\.php\\?rest_route)#', $uri) || (defined('DOING_AJAX') && DOING_AJAX)) {\n        return $uid;\n    }\n    return false;\n}, 99999);\n\nadd_filter('pre_http_request', function ($pre, $args, $url) {\n    if (strpos($url, '://api.wordpress.org/') !== false) {\n        return new WP_Error('avacy_demo_offline', 'Update checks are off on this demo site.');\n    }\n    return $pre;\n}, 10, 3);\nadd_filter('automatic_updater_disabled', '__return_true');\n\nadd_action('wp_enqueue_scripts', function () {\n    wp_add_inline_script('avacy-cmp-web', 'window.__AVACY_FORCE_STANDARD_LAYOUT__ = true;', 'before');\n}, 20);\n"
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "url",
+        "url": "https://downloads.wordpress.org/plugin/avacy.1.4.0-beta.zip"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "wp-consent-api"
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "google-site-kit"
+      }
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_webspace_key": "googlepartnerprogram|58b3a6ab-8444-4c15-a013-357773809e3e",
+        "avacy_show_banner": "on",
+        "avacy_banner_config_version": "v3",
+        "googlesitekit_active_modules": [
+          "analytics-4"
+        ],
+        "googlesitekit_analytics-4_settings": {
+          "accountID": "1000000",
+          "propertyID": "1000000",
+          "webDataStreamID": "1000000",
+          "measurementID": "G-3H5GFE3F78",
+          "useSnippet": true,
+          "ownerID": 1,
+          "trackingDisabled": []
+        },
+        "blogname": "Avacy CMP - Google CMP test site"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; $id = wp_insert_post(['post_title'=>'Avacy CMP v3 - test site','post_name'=>'avacy-demo','post_status'=>'publish','post_type'=>'page','post_content'=>\"<h2>Avacy CMP v3 - test site</h2><p>This page runs Avacy CMP (plugin 1.4.0), WP Consent API and Google Site Kit with a Google tag (G-3H5GFE3F78).</p><ul><li>Before any choice: Consent Mode default is denied (gcs=G100).</li><li>After Accept: consent update granted, WP Consent API categories allowed.</li><li>Admin area: add <code>/wp-admin/</code> to the address (already logged in as admin).</li></ul>\"]); update_option('show_on_front','page'); update_option('page_on_front',$id);"
+    }
+  ],
+  "meta": {
+    "title": "Avacy CMP v3 - Google CMP Partner Program test site",
+    "description": "WordPress with Avacy 1.4.0 (v3 banner, TCF + Consent Mode), WP Consent API and Google Site Kit printing a real GA4 tag, standard banner layout inside Playground. Front end is logged out; /wp-admin/ is open as admin. Snapshot published on wp-demo.avacy-cdn.com by deploy-wp-demo.yml.",
+    "author": "Avacy",
+    "categories": [
+      "consent",
+      "google"
+    ]
+  }
+}
