@@ -220,7 +220,6 @@ add_action( 'init', function () {
 			'apiToken' => get_option( 'avacy_api_token', '' ),
 			'consentLog' => get_option( 'avacy_test_consent_log', [] ),
 			'formSwitches' => (object) avacy_test_form_switches(),
-			'switchMigrated' => get_option( 'avacy_form_switch_migrated', '' ),
 		] );
 		exit;
 	}
@@ -243,8 +242,6 @@ add_action( 'init', function () {
 			'avacy_webspace_key',
 			'avacy_webspace_id',
 			'avacy_api_token',
-			// la migrazione una tantum degli switch: un test la riarma con '0'
-			'avacy_form_switch_migrated',
 		];
 
 		foreach ( $input as $key => $value ) {
@@ -273,8 +270,6 @@ add_action( 'init', function () {
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_%\\_radio\\_enabled'" );
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_form\\_field\\_%'" );
 		wp_cache_delete( 'alloptions', 'options' );
-		delete_option( 'avacy_form_switch_migrated' );
-		delete_option( 'avacy_form_switch_migration_attempts' );
 		delete_option( 'avacy_test_scenario' );
 		delete_option( 'avacy_test_banner_version' );
 		delete_option( 'avacy_webspace_id' );

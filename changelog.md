@@ -1,27 +1,19 @@
-# Avacy CMP
+# Changelog
 
-Contributors: jumptech
-Author: Jump Group
-Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
-Requires at least: 5.3
-Tested up to: 7.0
-Stable tag: 1.4.0
-License: GPL-2.0-or-later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
-
-## Changelog
+Full history of the Avacy CMP plugin. The same entries of the latest versions are in the Changelog section of `readme.md`, which is what WordPress.org shows.
 
 ### 1.4.0
 
-Support for the new Avacy cookie banner, and a faster preemptive block.
+Support for the new Avacy cookie banner, and a faster, more reliable preemptive block.
 
-* The plugin now loads the banner version your webspace is set to. Nothing changes until Avacy switches your webspace over — **update the plugin before that happens.**
-* Preemptive blocking speaks both banners: a blocked script carries the markup each version understands, so it survives the switch.
-* The vendor list is a local copy refreshed every six hours, instead of a download on every page view. Pages load faster, and an Avacy outage no longer reaches your visitors.
-* The settings page shows the banner version in use, when the blocking rules were last updated, and a button to update them now.
-* Your credentials are no longer cleared when Avacy is briefly unreachable: only an explicit answer from Avacy can invalidate them.
-* The "Save" switch of each form in the settings page is now respected: a form is sent to Avacy only when its switch is on. Before, the switch was ignored. On update, the plugin turns the switch on, even if it was off, for the forms that already have fields selected, so nothing changes for sites that are already saving consents. Forms without selected fields no longer send anything.
-* Contact Form 7: the settings page no longer writes "Use id() method instead" deprecation notices to the debug log.
+* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Solution" tab of the settings page.
+* Ready for the new Avacy banner: the plugin loads the version your webspace is set to. **Update the plugin before Avacy switches your webspace over.**
+* Faster pages: the vendor list is kept on your site and refreshed every six hours, so an Avacy outage no longer reaches your visitors.
+* More reliable preemptive block: it no longer breaks structured data or modern scripts, and a new webspace key takes effect at once.
+* The settings page shows the banner version in use and when the blocking rules were last updated, with a button to update them now.
+* Fixes: your credentials are no longer cleared when Avacy is briefly unreachable; uploads from Media no longer end up in the wrong year/month folder; no more fatal error on WordPress 5.3–5.8 with PHP 7.4; no more Contact Form 7 notices in the debug log.
+* Security hardening.
+* Tested up to WordPress 7.1.
 
 ### 1.3.1
 

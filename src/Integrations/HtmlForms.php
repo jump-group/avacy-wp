@@ -10,7 +10,6 @@ use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\FormSubmission;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
-use WP_Query;
 
 class HtmlForms implements FormInterface {
     public static function listen() : void {
@@ -89,20 +88,9 @@ class HtmlForms implements FormInterface {
             'posts_per_page' => -1,    // To retrieve all posts of the specified post type
         );
 
-        $query = new WP_Query($args);
-
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
-                $query->the_post();
-                
-                $content = get_the_content();
-                $fields = self::parseFields($content);
-                $forms[] = new Form(get_the_ID(), 'HTML Forms', $fields);
-
-            }
-
-            // Restore the global post data
-            wp_reset_postdata();
+        foreach (get_posts($args) as $post) {
+            $fields = self::parseFields($post->post_content);
+            $forms[] = new Form($post->ID, 'HTML Forms', $fields);
         }
 
         return $forms;
