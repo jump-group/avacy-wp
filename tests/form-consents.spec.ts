@@ -42,16 +42,20 @@ async function submitForm(page: Page) {
   await expect(page.locator('form.hf-form .hf-message-success')).toBeVisible();
 }
 
+// senza credenziali send() esce prima di inviare: il test passerebbe per il motivo sbagliato
+async function setCredentials(request: APIRequestContext) {
+  await call(request, '/avacy-test-api/set', {
+    avacy_tenant: 'test-harness',
+    avacy_webspace_id: UUID,
+    avacy_api_token: 'test-token',
+    avacy_enable_preemptive_block: 'off',
+  });
+}
+
 test.describe('Consensi dei form — switch «Save» della dashboard', () => {
   test.beforeEach(async ({ request }) => {
     await call(request, '/avacy-test-api/reset');
-    // senza credenziali send() esce prima di inviare: il test passerebbe per il motivo sbagliato
-    await call(request, '/avacy-test-api/set', {
-      avacy_tenant: 'test-harness',
-      avacy_webspace_id: UUID,
-      avacy_api_token: 'test-token',
-      avacy_enable_preemptive_block: 'off',
-    });
+    await setCredentials(request);
   });
 
   test('switch acceso: il consenso arriva al SaaS', async ({ page, request }) => {
@@ -87,6 +91,20 @@ test.describe('Consensi dei form — switch «Save» della dashboard', () => {
     expect(await consentLog(request)).toHaveLength(1);
   });
 
+  // admin_init gira anche su admin-ajax.php, anche per chi non ha fatto il login:
+  // una POST con option_page ma senza permessi e nonce non deve toccare gli switch.
+  test('POST anonima con option_page: lo switch «Save» non cambia', async ({ page, request }) => {
+    const name = await dashboardSwitchName(page, await openForm(page));
+    await call(request, '/avacy-test-api/set', { [name!]: 'on' });
+
+    // un salvataggio vero, privo del suo switch, lo spegnerebbe
+    await request.post('/wp-admin/admin-ajax.php', {
+      form: { action: 'x', option_page: 'avacy-plugin-settings-group' },
+    });
+
+    expect((await state(request)).formSwitches[name!]).toBe('on');
+  });
+
   test('switch spento: nessun consenso', async ({ page, request }) => {
     const name = await dashboardSwitchName(page, await openForm(page));
     await call(request, '/avacy-test-api/set', { [name!]: 'off' });
@@ -106,72 +124,45 @@ test.describe('Consensi dei form — switch «Save» della dashboard', () => {
     expect(await consentLog(request)).toHaveLength(0);
   });
 
-  // Migrazione una tantum: prima lo switch era ignorato, quindi ogni form con un campo scelto inviava.
-  test.describe('migrazione degli switch dopo l\'aggiornamento', () => {
-    // arma lo stato «appena aggiornato»: il nome dello switch si legge dalla dashboard, poi si riscrivono le opzioni
-    async function arm(page: Page, request: APIRequestContext, opts: { fieldOn?: boolean; fieldOff?: boolean; switchValue: string; migrated: string }) {
+  // Dopo l'aggiornamento niente migrazione: prima lo switch era ignorato, ora conta solo lo switch.
+  test.describe('dopo l\'aggiornamento: conta solo lo switch', () => {
+    // arma lo stato «appena aggiornato»: le opzioni vanno scritte PRIMA della prima richiesta dopo il reset
+    // (un'eventuale migrazione girerebbe lì). Il nome dello switch si legge prima dalla dashboard vera.
+    async function arm(page: Page, request: APIRequestContext, opts: { fieldOn?: boolean; switchValue?: string }) {
       const id = await openForm(page);
       const name = (await dashboardSwitchName(page, id))!;
-      const field = `avacy_form_field_htmlforms_${id}_EMAIL`;
+      await call(request, '/avacy-test-api/reset');
+      await setCredentials(request);
       await call(request, '/avacy-test-api/set', {
-        [name]: opts.switchValue,
-        ...(opts.fieldOn ? { [field]: 'on' } : {}),
-        ...(opts.fieldOff ? { [field]: 'off' } : {}),
-        avacy_form_switch_migrated: opts.migrated,
+        ...(opts.switchValue !== undefined ? { [name]: opts.switchValue } : {}),
+        ...(opts.fieldOn ? { [`avacy_form_field_htmlforms_${id}_EMAIL`]: 'on' } : {}),
       });
       return name;
     }
 
-    test('form con un campo scelto e switch spento: la migrazione lo accende e il consenso arriva', async ({ page, request }) => {
-      const name = await arm(page, request, { fieldOn: true, switchValue: 'off', migrated: '0' });
-      // nessuna richiesta è passata dopo il set: la migrazione non è ancora girata
+    test('form con un campo scelto e switch spento: nessun consenso e lo switch resta spento', async ({ page, request }) => {
+      const name = await arm(page, request, { fieldOn: true, switchValue: 'off' });
+      await openForm(page);
       expect((await state(request)).formSwitches[name]).toBe('off');
 
-      await openForm(page);
-      const after = await state(request);
-      expect(after.formSwitches[name]).toBe('on');
-      expect(after.switchMigrated).toBe('1');
+      await submitForm(page);
+      expect(await consentLog(request)).toHaveLength(0);
+    });
 
+    test('form con un campo scelto e switch mai toccato: nessun consenso e nessuno switch creato', async ({ page, request }) => {
+      const name = await arm(page, request, { fieldOn: true });
+      await openForm(page);
+      expect((await state(request)).formSwitches[name]).toBeUndefined();
+
+      await submitForm(page);
+      expect(await consentLog(request)).toHaveLength(0);
+    });
+
+    test('form con un campo scelto e switch acceso a mano: il consenso arriva', async ({ page, request }) => {
+      await arm(page, request, { fieldOn: true, switchValue: 'on' });
+      await openForm(page);
       await submitForm(page);
       expect(await consentLog(request)).toHaveLength(1);
-    });
-
-    test('form senza campi scelti: lo switch resta spento e non parte nulla', async ({ page, request }) => {
-      // un campo presente ma spento non conta come scelto
-      const name = await arm(page, request, { fieldOff: true, switchValue: 'off', migrated: '0' });
-      await openForm(page);
-      const after = await state(request);
-      expect(after.formSwitches[name]).toBe('off');
-      expect(after.switchMigrated).toBe('1');
-
-      await submitForm(page);
-      expect(await consentLog(request)).toHaveLength(0);
-    });
-
-    test('form che i detector non trovano: lo switch si accende dalle opzioni dei campi', async ({ page, request }) => {
-      // id inesistenti: nessun form vero li ha, e nomi di campo con underscore
-      await call(request, '/avacy-test-api/set', {
-        avacy_form_field_wpcf7_9991_your_email: 'on',
-        avacy_form_field_elementorforms_ab12cd3_first_name: 'on',
-        avacy_form_field_wc__billing_email: 'on',
-        avacy_form_field_wpforms_9992_email: 'off',
-        avacy_form_switch_migrated: '0',
-      });
-      await openForm(page);
-      const after = (await state(request)).formSwitches;
-      expect(after.avacy_contact_form_7_9991_radio_enabled).toBe('on');
-      expect(after.avacy_elementor_forms_ab12cd3_radio_enabled).toBe('on');
-      expect(after.avacy_woocommerce_checkout_form__radio_enabled).toBe('on');
-      expect(after.avacy_wp_forms_9992_radio_enabled).toBeUndefined();
-    });
-
-    test('migrazione già fatta: uno switch spento dal cliente resta spento', async ({ page, request }) => {
-      const name = await arm(page, request, { fieldOn: true, switchValue: 'off', migrated: '1' });
-      await openForm(page);
-      expect((await state(request)).formSwitches[name]).toBe('off');
-
-      await submitForm(page);
-      expect(await consentLog(request)).toHaveLength(0);
     });
   });
 });

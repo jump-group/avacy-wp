@@ -516,6 +516,21 @@ class AddAdminInterface
   }
 
   public static function saveFields() {
+    // admin_init gira su ogni richiesta admin (anche ajax e upload, anche da
+    // anonimi): si esce in silenzio, senza wp_die, se non e' il nostro salvataggio.
+    // Il form posta su admin-post.php, dove AvacyAdminSave controlla di nuovo.
+    if (!isset($_REQUEST['option_page']) || $_REQUEST['option_page'] !== 'avacy-plugin-settings-group') {
+      return;
+    }
+
+    if (!current_user_can('manage_options')) {
+      return;
+    }
+
+    if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'avacy-plugin-settings-group-options')) {
+      return;
+    }
+
     // get all forms saved in the database
     $forms = self::detectAllForms();
 
@@ -544,33 +559,31 @@ class AddAdminInterface
       $formValues[$id][$identifierOption] = $identifier;
     }
 
-    if(isset($_REQUEST['option_page']) && $_REQUEST['option_page'] === 'avacy-plugin-settings-group') {
-      // for each field in $fields check if it exists in $request
-      foreach($formValues as $key => $value) {
+    // for each field in $fields check if it exists in $request
+    foreach($formValues as $key => $value) {
 
-        // update fields
-        foreach($value['fields'] as $k => $option) {
+      // update fields
+      foreach($value['fields'] as $k => $option) {
+        if(isset($_REQUEST[$k])) {
+          $sanitized_value = sanitize_text_field($_REQUEST[$k]);
+
+          // save the field name in the database then update option
+          update_option($k, $sanitized_value);
+        } else {
+          update_option($k, 'off');
+        }
+      }
+
+      // take the remaining keys in the array to update
+      foreach($value as $k => $v) {
+        if($k !== 'fields') {
           if(isset($_REQUEST[$k])) {
             $sanitized_value = sanitize_text_field($_REQUEST[$k]);
 
-            // save the field name in the database then update option
+            // save the field name in the database
             update_option($k, $sanitized_value);
           } else {
             update_option($k, 'off');
-          }
-        }
-
-        // take the remaining keys in the array to update
-        foreach($value as $k => $v) {
-          if($k !== 'fields') {
-            if(isset($_REQUEST[$k])) {
-              $sanitized_value = sanitize_text_field($_REQUEST[$k]);
-
-              // save the field name in the database
-              update_option($k, $sanitized_value);
-            } else {
-              update_option($k, 'off');
-            }
           }
         }
       }

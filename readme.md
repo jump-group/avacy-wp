@@ -1,158 +1,154 @@
-# Avacy CMP
-
+=== Avacy CMP ===
 Contributors: jumptech
-Author: Jump Group
-Tags: cookie banner, gdpr, cookie consent, privacy policy, consent
+Tags: cookie banner, gdpr, cookie consent, consent, privacy
 Requires at least: 5.3
-Tested up to: 7.0
+Tested up to: 7.1
+Requires PHP: 7.4
 Stable tag: 1.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-## Overview
+Show the Avacy cookie banner, block trackers until consent is given, and keep form consents in your Avacy consent archive.
 
-The WordPress Consent Solution Plugin is a powerful tool that empowers website owners to easily configure a Consent Management Platform (CMP) and preemptively block all trackers on their website. This plugin ensures compliance with privacy regulations by providing users with the ability to manage their consent preferences for tracking technologies.
+== Description ==
 
-## Features
+Avacy CMP connects your WordPress site to [Avacy](https://avacysolution.com/), a Consent Management Platform (CMP). You need an Avacy account: the plugin does not work on its own.
 
-1. Consent Management Platform (CMP)
-   User-Friendly Interface: The plugin offers an intuitive dashboard for configuring and customizing the Consent Management Platform to suit your website's needs.
-   Customizable Cookie Banners: Easily create and customize consent banners to inform users about the use of trackers on your website.
-   Consent Logging: Keep track of user consent preferences and ensure compliance with privacy regulations.
-2. Tracker Preemptive Blocking
-   Comprehensive Tracker Database: The plugin includes a regularly updated database of known trackers. It enables you to preemptively block these trackers, enhancing user privacy.
-   The plugin preemptively blocks all the scripts that might contain a string in the `src` attribute or in the inner HTML that matches the strings you can configure on [Avacy](https://avacy.eu) for each vendor.
+The plugin does four things.
 
-Avacy is a SaaS-based CMP that helps websites manage user consents efficiently and in compliance with data protection regulations. The platform offers customizable consent forms and integrates seamlessly with various web properties.
+**Cookie banner.** It shows the Avacy cookie banner on your site. The banner version (v2 or v3) is the one set on your webspace in Avacy, and the plugin follows it. The banner is designed and published in Avacy, not in WordPress.
 
-## Compatible with WP Consent API
+**Preemptive block.** It can block the scripts of your vendors until the visitor gives consent. The rules come from the vendor list you manage in Avacy. The plugin keeps a local copy of that list, refreshed every 6 hours. You can also refresh it with a button in the settings page. A script that matches a vendor (by its `src` or by its inline code) is held back, and it runs only after the visitor consents to that vendor and its purposes.
 
-Avacy integrates out-of-the-box with the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin. When WP Consent API is active, Avacy:
+**Consent archive for forms.** It can send to the Avacy consent archive the consents given through your forms. For each form you choose, in the settings page:
 
-- registers itself as a compliant CMP (no admin action required);
-- forces the `optin` consent type so other WP Consent API-aware plugins behave correctly by default;
-- bridges the Avacy banner consent event to `wp_set_consent`, mapping Google Consent Mode flags to WP Consent API categories.
+* the "Save" switch, which turns the sending on or off for that form;
+* the fields to send;
+* the field that identifies the user.
 
-The mapping applied when the user interacts with the banner is:
+Supported forms: Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout. To use the archive you need a token, which you create in the consent archive section of Avacy.
 
-| WP Consent API category | Granted when the user accepts… |
-| --- | --- |
-| `functional` | always `allow` |
-| `preferences` | `personalization_storage` |
-| `statistics` | `analytics_storage` |
-| `statistics-anonymous` | `analytics_storage` |
-| `marketing` | any of `ad_storage`, `ad_user_data`, `ad_personalization` |
+**WP Consent API.** When the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, Avacy registers itself as a compliant CMP, sets the `optin` consent type, and passes the banner choices to `wp_set_consent`. Google Consent Mode flags are mapped to WP Consent API categories like this:
 
-The integration is dormant when WP Consent API is not installed, so it is safe to enable Avacy on any site.
+* `functional`: always allowed;
+* `preferences`: `personalization_storage`;
+* `statistics` and `statistics-anonymous`: `analytics_storage`;
+* `marketing`: any of `ad_storage`, `ad_user_data`, `ad_personalization`.
 
-## Installation
+The integration does nothing when WP Consent API is not installed.
 
-Download: Download the plugin ZIP file from the WordPress Plugin Repository.
-Upload: Upload the ZIP file to your WordPress site through the admin interface or via FTP.
-Activate: Activate the plugin through the 'Plugins' menu in WordPress.
+== External services ==
 
-## Usage
+This plugin connects to two services run by Avacy (Jump Group). Both are needed for the plugin to work.
 
-### Cookie Banners:
+= Avacy CDN =
 
-Cookie banners will automatically appear on your site once configured.
-Users can manage their consent preferences through these banners.
+Address: `https://{team}.avacy-cdn.com`, where `{team}` is your Avacy team name. The domain can be changed by Avacy, which communicates it to the plugin.
 
-### Tracker Control:
+* **Banner.** When the banner is shown, the browser of each visitor loads the banner script and its settings and texts from the CDN. The visitor's browser sends its normal request data (for example the IP address) to the CDN.
+* **Vendor list.** When the preemptive block is on, your site downloads the list of vendors to block from the CDN. The request carries your team name and webspace key in the address. It happens about every 6 hours, when you press the refresh button, when you change the webspace key, and when you save the settings for the first time with the block on. No visitor data is sent.
 
-Trackers are preemptively blocked based on a blacklist JSON file hosted on an AWS content delivery network.
-Every time a page in the website is loaded, Avacy checks if scripts injected in the current page have `src` attribute or the `innerHTML` property containing a string matching the patterns in the blacklist and, if so, overrides some attributes and blocks the script.
-Every script blocked this way will be launched only if user grants consent to the corresponding vendor and purposes by opting-in from the first layer or by selecting the vendor and its purposes from the second layer (the preference center).
+= Avacy API =
 
-#### CDN Information
+Address: `https://api.avacy.eu`.
 
-The CDN used by Avacy is CloudFront, pointing to the following S3 bucket:
+* **Settings.** When an administrator opens or saves the Avacy settings page, the plugin sends your team name and webspace key to check them. If an API token is set, it sends the token too. The answer tells the plugin which banner version and which CDN domain to use.
+* **Form consents.** When a visitor submits a form whose "Save" switch is on, and an API token is set, the plugin sends to Avacy: the visitor's IP address, the consent type, whether consent was given, the values of the fields you selected, the identifier field you chose, the legal documents linked to the form (for example privacy policy and cookie policy), the source ("plugin") and the HTML of the form as proof. The token is sent as authorization.
+* **Banner consents.** If the consent archive is on for your webspace in Avacy, the banner sends each choice of a visitor to the archive: the choice made and, after the first one, the id of the previous record. The request comes from the visitor's browser, so it also carries the visitor's IP address. Nothing is sent when the archive is off.
 
-`https://avacy-cdn.s3.eu-central-1.amazonaws.com/`
+Avacy terms of use: https://avacysolution.com/termini-e-condizioni/
+Avacy privacy policy: https://api.avacy.eu/jumpgroup/privacypolicy/14/en
 
-`https://assets.avacy-cdn.com/`
+== Installation ==
 
-**Integration Example**
-Each custom vendor list can be reached using the following format:
+1. In your WordPress admin, go to Plugins > Add New, search for "Avacy CMP", then click Install Now and Activate. You can also upload the plugin ZIP file, or copy the `avacy` folder to `/wp-content/plugins/`, and activate it from the Plugins menu.
+2. Open the "Avacy CMP" item in the admin menu.
+3. Enter your Avacy team name and the webspace key. You find the key at the end of the webspace configuration in Avacy, or in the webspace settings under "Avacy integration on your webspace".
+4. Click Save. The plugin checks the data with Avacy and shows a confirmation.
+5. In the "Cookie banner" tab, turn on "Show the cookie banner on the website".
+6. Optional: in the "Preemptive Block" tab, turn on the block and save.
+7. Optional: in the "Consent Solution" tab, enter the API token created in Avacy, save, and choose which forms to send.
 
-`https://assets.avacy-cdn.com/config/{avacy_team_name}/{avacy_webspace_key}/custom-vendor-list.json;`
+If you do not have an Avacy account yet, you can create one at https://avacy.eu/registration.
 
-**Explanation**
+== Frequently Asked Questions ==
 
-**Base Url**: The base URL for the configuration file is https://assets.avacy-cdn.com/config/.
-**`avacy_team_name`**: This option should be replaced with your specific tenant identifier. This is a unique identifier for your organization within Avacy.
-**`avacy_webspace_key`**: This option should be replaced with your specific webspace key. This is a unique identifier for your specific webspace within your tenant's account.
+= Do I need an Avacy account? =
 
-**Example URL**
-Assuming the following:
+Yes. The plugin shows a banner and applies rules that you create in Avacy. Without an account, and without the team name and the webspace key, it does nothing.
 
-Tenant ID: _tenant123_
-Webspace Key: _webspace456_
-The URL to access the custom vendor list would be:
+= Where do I customise the banner? =
 
-`https://assets.avacy-cdn.com/config/tenant123/webspace456/custom-vendor-list.json`
+In Avacy, not in WordPress. The settings page has a link to the banner section of your webspace.
 
-**Account Requirements**
-To connect to and utilize Avacy's services, you need an active Avacy account with valid credentials, which include:
+= Why are my form consents not reaching the archive? =
 
-**Tenant ID**: Provided upon registration with Avacy.
-**Webspace Key**: Generated after creating a new web space on Avacy.
-Ensure you have these credentials available to correctly generate the URLs needed for integration.
+Check these points, in order:
 
-### Avacy Consent Solution API
+1. The API token is set in the "Consent Solution" tab and is valid.
+2. The "Save" switch of that form is on. A form with the switch off sends nothing. Updating to 1.4.0 does not turn the switches on for you.
+3. At least one field of the form is selected.
+4. The form is one of the supported ones.
 
-The plugin provides an interface that allows connecting to your consent archive on Avacy. To do this, it's necessary to generate a token from the Avacy platform and insert it into the Token field in the API token tab. This way, all the forms present on the page will be visible, and it will be possible to select various options, including:
+= Which forms are supported? =
 
-- the ability to store consents given for that specific form in the consent archive;
-- the fields to store for that form;
-- a field to identify the user who has given the consent to be stored in the archive.
+Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout.
 
-Everytime a user submits his data from a contact form, Avacy will perform a POST request towards Avacy Consent API, using the previously generated token as authenticator.
+= Does the preemptive block slow my site down? =
 
-#### Under What Circumstances is Avacy Used?
+No download happens when a page is viewed. The plugin reads a local copy of the vendor list, which is refreshed in the background about every 6 hours. If Avacy is not reachable, the site keeps working with the last copy. The page is scanned for matching scripts before it is sent to the browser.
 
-Avacy is utilized whenever users provide consent through forms or interactions on your WordPress site. The plugin sends this consent data to Avacy's servers for storage and processing.
+= When is the vendor list updated? =
 
-#### Avacy Service Link
+About every 6 hours, when you press "Refresh the vendor list", and when you change the webspace key. The settings page shows when it was last updated.
 
-For more information about Avacy and its features, visit Avacy's [website](https://avacysolution.com/).
+= Which scripts does the preemptive block hold back? =
 
-#### Avacy Terms of Use and Privacy Policies
+Only scripts that match a vendor in your list. Data blocks, such as `application/ld+json`, are never touched.
 
-Avacy uses 3rd party services as the Avacy REST API and AWS distributions to provide assets as the blacklist JSON file.
-Before integrating Avacy with this plugin, please review the Avacy [Terms of use](https://avacy.eu/terms-and-conditions) and [Privacy Policy](https://api.avacy.eu/jumpgroup/privacypolicy/14/it) to understand how your data is handled and what responsibilities you have as a user of their service.
+= Does it work with WP Consent API? =
 
-We welcome your feedback and suggestions to improve the functionality of the plugin.
+Yes. If the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, the integration turns on by itself. You do not need to configure anything.
 
-## Disclosure of Third-Party Service Usage
+= What is the difference between banner v2 and v3? =
 
-Our plugin utilizes third-party services to enhance its functionality. Below, we detail the specific circumstances under which these services are used, along with links to the respective service providers, their terms of use, and privacy policies.
+They are two versions of the Avacy banner. Avacy decides which one your webspace uses, and the plugin loads that one. Keep the plugin up to date, so it is ready when Avacy moves your webspace to v3.
 
-### Services Utilized
+== Screenshots ==
 
-**Amazon Web Services (AWS)** is a leading cloud platform offering a wide range of services, including computing power, storage, and networking, as well as advanced technologies like machine learning and IoT. AWS is designed for flexibility, scalability, and service reliability.
+1. Guided, quick and simple installation process in Avacy.
+2. Customizable cookie banner with your brand identity.
+3. Cookie scanner with control panel.
+4. Customer support.
+5. Everything under control in the web space dashboard.
+6. All your web spaces together in one Team.
 
-**AWS CloudFront** is a fast content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to users globally with low latency and high transfer speeds.
+== Changelog ==
 
-> The URLs *https://jumpgroup.avacy-cdn.com* and *https://assets.avacy-cdn.com* are custom domains provided to access the AWS CloudFront service. Each asset is fetched from these URLs.
+= 1.4.0 =
 
-**Script Enqueuing**
-Script enqueuing involves dynamically adding the main JavaScript core in order to display the cookie banner on your page. This method ensures that scripts are loaded only when needed, reducing page load times and improving performance.
+Support for the new Avacy cookie banner, and a faster, more reliable preemptive block.
 
-**Configuration Fetching**
-CMP configuration fetching is used to dynamically load the latest CMP configuration settings and vendor lists from a remote server. This process ensures that the plugin operates with the most current data, improving security, compatibility, and functionality.
+* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Solution" tab of the settings page.
+* Ready for the new Avacy banner: the plugin loads the version your webspace is set to. **Update the plugin before Avacy switches your webspace over.**
+* Faster pages: the vendor list is kept on your site and refreshed every six hours, so an Avacy outage no longer reaches your visitors.
+* More reliable preemptive block: it no longer breaks structured data or modern scripts, and a new webspace key takes effect at once.
+* The settings page shows the banner version in use and when the blocking rules were last updated, with a button to update them now.
+* Fixes: your credentials are no longer cleared when Avacy is briefly unreachable; uploads from Media no longer end up in the wrong year/month folder; no more fatal error on WordPress 5.3–5.8 with PHP 7.4; no more Contact Form 7 notices in the debug log.
+* Security hardening.
+* Tested up to WordPress 7.1.
 
-#### Service Provider Information
+= 1.3.1 =
 
-**Service URL**: [Amazon Web Services](https://aws.amazon.com/)
-**Privacy Policy**: [AWS Privacy Policy](https://d1.awsstatic.com/legal/privacypolicy/AWS%20Privacy%20Notice%20-%202024-01-01_IT.pdf)
-**Terms of Use**: [AWS Terms of Use](https://aws.amazon.com/it/service-terms/)
+Verified and extended compatibility testing up to WordPress 7.0 (Playwright/Playground e2e suite plus manual wp-env QA against WordPress 7.0.1, PHP 8.2 — no errors, warnings or deprecation notices found).
 
-**Legal Protection**
-For your protection and to ensure transparency, we disclose the reliance on third-party services within our plugin. The URLs above provide detailed information on the terms of use and privacy policies of AWS. Users are encouraged to review these documents to understand the terms and conditions under which these third-party services operate.
+= 1.3.0 =
 
-By using our plugin, you acknowledge and agree to these terms and conditions. If you have any questions or concerns, please refer to the provided links or contact us directly for more information.
+Integrate WP Consent API: when the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, Avacy auto-registers as a compliant CMP, forces `optin` consent type and bridges the banner `avacy_consent` event to `wp_set_consent` via a small JS adapter. Google Consent Mode flags are mapped to WP Consent API categories (personalization_storage → preferences, analytics_storage → statistics + statistics-anonymous, ad_* → marketing, functional always allow). No admin UI: the integration stays dormant when the WP Consent API plugin is not installed.
 
-## License
+Older versions are listed in the file changelog.md inside the plugin.
 
-This WordPress Consent Solution Plugin is licensed under the [GNU General Public License v2.0 or later](https://www.gnu.org/licenses/gpl-2.0.html).
+== Upgrade Notice ==
+
+= 1.4.0 =
+Adds support for the Avacy v3 banner: update before Avacy moves your webspace to it. The form "Save" switch now decides which forms are sent: only forms whose switch is on are sent, so turn it on again for the forms you want to keep sending.

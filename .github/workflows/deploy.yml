@@ -57,6 +57,20 @@ jobs:
 
           echo "Release type: ${RELEASE_TYPE} — SVN version: ${SVN_VERSION}"
 
+      - name: Check that version, readme and changelog agree
+        run: |
+          VERSION=$(grep -E "^Version:" avacy.php | awk '{print $2}')
+          STABLE=$(grep -E "^Stable tag:" readme.md | awk '{print $3}')
+          README_TOP=$(grep -m1 -E "^= [0-9]" readme.md | awk '{print $2}')
+          CHANGELOG_TOP=$(grep -m1 -E "^### [0-9]" changelog.md | awk '{print $2}')
+          echo "avacy.php=${VERSION} readme Stable tag=${STABLE} readme changelog=${README_TOP} changelog.md=${CHANGELOG_TOP}"
+          for found in "$STABLE" "$README_TOP" "$CHANGELOG_TOP"; do
+            if [ "$found" != "$VERSION" ]; then
+              echo "::error::Version mismatch: avacy.php says '${VERSION}', but readme.md/changelog.md say '${STABLE}' / '${README_TOP}' / '${CHANGELOG_TOP}'."
+              exit 1
+            fi
+          done
+
       - name: Prepare plugin build
         run: |
           mkdir -p /tmp/plugin-build

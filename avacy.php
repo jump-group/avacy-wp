@@ -8,8 +8,8 @@ Contributors: jumptech
 Author: Jump Group
 Tags: consent, cookie, cookie banner, tracking, privacy, gdpr, cookie consent, cookie notice, privacy policy
 Requires at least: 5.3
-Tested up to: 7.0
-PHP: 7.4
+Tested up to: 7.1
+Requires PHP: 7.4
 Stable tag: 1.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
