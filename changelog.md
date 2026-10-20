@@ -2,6 +2,14 @@
 
 Full history of the Avacy CMP plugin. The same entries of the latest versions are in the Changelog section of `readme.md`, which is what WordPress.org shows.
 
+### 1.4.1
+
+The settings page now uses the same names as Avacy: "Access Key" and "Consent Archive".
+
+* The key that connects the consent archive is now called "Access Key", as in Avacy. The key you already saved keeps working: nothing to do.
+* The "Consent Solution" tab is now "Consent Archive".
+* The link in the "Consent Archive" tab opens the Access Key page of Avacy directly.
+
 ### 1.4.0
 
 Support for the new Avacy cookie banner, and a faster, more reliable preemptive block.

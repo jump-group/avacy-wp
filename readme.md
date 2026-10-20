@@ -4,7 +4,7 @@ Tags: cookie banner, gdpr, cookie consent, consent, privacy
 Requires at least: 5.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,14 @@ They are two versions of the Avacy banner. Avacy decides which one your webspace
 6. All your web spaces together in one Team.
 
 == Changelog ==
+
+= 1.4.1 =
+
+The settings page now uses the same names as Avacy: "Access Key" and "Consent Archive".
+
+* The key that connects the consent archive is now called "Access Key", as in Avacy. The key you already saved keeps working: nothing to do.
+* The "Consent Solution" tab is now "Consent Archive".
+* The link in the "Consent Archive" tab opens the Access Key page of Avacy directly.
 
 = 1.4.0 =
 
