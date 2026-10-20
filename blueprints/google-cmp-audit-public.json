@@ -39,7 +39,7 @@
     {
       "step": "setSiteOptions",
       "options": {
-        "avacy_webspace_key": "googlepartnerprogram|58b3a6ab-8444-4c15-a013-357773809e3e",
+        "avacy_webspace_key": "googlepartnerprogram|b30a45ff-620e-40bf-8c10-f3017da595d5",
         "avacy_show_banner": "on",
         "avacy_banner_config_version": "v3",
         "googlesitekit_active_modules": [
