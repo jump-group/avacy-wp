@@ -37,19 +37,19 @@ msgid "The entered credentials are valid."
 msgstr ""
 
 #: AddAdminInterface.php:246
-msgid "The entered token has an incorrect format."
+msgid "The entered Access Key has an incorrect format."
 msgstr ""
 
 #: AddAdminInterface.php:253
-msgid "Token not found or expired. Please check the entered data."
+msgid "Access Key not found or expired. Please check the entered data."
 msgstr ""
 
 #: AddAdminInterface.php:265
-msgid "The token has been saved successfully."
+msgid "The Access Key has been saved successfully."
 msgstr ""
 
 #: AddAdminInterface.php:274
-msgid "The token has been removed successfully."
+msgid "The Access Key has been removed successfully."
 msgstr ""
 
 #: views/avacy-dashboard.php:21
@@ -114,7 +114,7 @@ msgid "Preemptive Block"
 msgstr ""
 
 #: views/avacy-dashboard.php:107
-msgid "Consent Solution"
+msgid "Consent Archive"
 msgstr ""
 
 #: views/avacy-dashboard.php:113
@@ -140,16 +140,16 @@ msgstr ""
 #: views/avacy-dashboard.php:148
 msgid ""
 "In the <a href=%s target=\"_blank\">consent archive section</a>, create a "
-"new token to link the service with WordPress and enter it in the field "
+"new Access Key to link the service with WordPress and enter it in the field "
 "below."
 msgstr ""
 
 #: views/avacy-dashboard.php:155
-msgid "Consent solution token"
+msgid "Consent Archive Access Key"
 msgstr ""
 
 #: views/avacy-dashboard.php:157
-msgid "Enter the token"
+msgid "Enter the Access Key"
 msgstr ""
 
 #: views/avacy-dashboard.php:172
@@ -161,7 +161,7 @@ msgid "Type"
 msgstr ""
 
 #: views/avacy-dashboard.php:174
-msgid "Save in the Avacy consent solution"
+msgid "Save in the Avacy Consent Archive"
 msgstr ""
 
 #: views/avacy-dashboard.php:175
