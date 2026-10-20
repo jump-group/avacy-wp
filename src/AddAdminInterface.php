@@ -397,14 +397,14 @@ class AddAdminInterface
           case 'invalid_token':
             $setting = 'avacy_api_token';
             $code = 'invalid_token';
-            $message = __('The entered token has an incorrect format.', 'avacy');
+            $message = __('The entered Access Key has an incorrect format.', 'avacy');
             $type = 'warning';
             break;
 
           case 'token_not_found_or_expired':
             $setting = 'avacy_api_token';
             $code = 'token_not_found_or_expired';
-            $message = __('Token not found or expired. Please check the entered data.', 'avacy');
+            $message = __('Access Key not found or expired. Please check the entered data.', 'avacy');
             $type = 'danger';
             break;
 
@@ -420,7 +420,7 @@ class AddAdminInterface
         
         $setting = 'avacy_api_token';
         $code = 'valid_token';
-        $message = __('The token has been saved successfully.', 'avacy');
+        $message = __('The Access Key has been saved successfully.', 'avacy');
         $type = 'success';
       }
     } else {
@@ -429,7 +429,7 @@ class AddAdminInterface
   
         $setting = 'avacy_api';
         $code = 'remove_token';
-        $message = __('The token has been removed successfully.', 'avacy');
+        $message = __('The Access Key has been removed successfully.', 'avacy');
         $type = 'success';
         $status_code = 200;
       } else {

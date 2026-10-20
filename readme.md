@@ -26,7 +26,7 @@ The plugin does four things.
 * the fields to send;
 * the field that identifies the user.
 
-Supported forms: Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout. To use the archive you need a token, which you create in the consent archive section of Avacy.
+Supported forms: Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout. To use the archive you need an Access Key, which you create in the consent archive section of Avacy.
 
 **WP Consent API.** When the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, Avacy registers itself as a compliant CMP, sets the `optin` consent type, and passes the banner choices to `wp_set_consent`. Google Consent Mode flags are mapped to WP Consent API categories like this:
 
@@ -52,8 +52,8 @@ Address: `https://{team}.avacy-cdn.com`, where `{team}` is your Avacy team name.
 
 Address: `https://api.avacy.eu`.
 
-* **Settings.** When an administrator opens or saves the Avacy settings page, the plugin sends your team name and webspace key to check them. If an API token is set, it sends the token too. The answer tells the plugin which banner version and which CDN domain to use.
-* **Form consents.** When a visitor submits a form whose "Save" switch is on, and an API token is set, the plugin sends to Avacy: the visitor's IP address, the consent type, whether consent was given, the values of the fields you selected, the identifier field you chose, the legal documents linked to the form (for example privacy policy and cookie policy), the source ("plugin") and the HTML of the form as proof. The token is sent as authorization.
+* **Settings.** When an administrator opens or saves the Avacy settings page, the plugin sends your team name and webspace key to check them. If an Access Key is set, it sends the Access Key too. The answer tells the plugin which banner version and which CDN domain to use.
+* **Form consents.** When a visitor submits a form whose "Save" switch is on, and an Access Key is set, the plugin sends to Avacy: the visitor's IP address, the consent type, whether consent was given, the values of the fields you selected, the identifier field you chose, the legal documents linked to the form (for example privacy policy and cookie policy), the source ("plugin") and the HTML of the form as proof. The Access Key is sent as authorization.
 * **Banner consents.** If the consent archive is on for your webspace in Avacy, the banner sends each choice of a visitor to the archive: the choice made and, after the first one, the id of the previous record. The request comes from the visitor's browser, so it also carries the visitor's IP address. Nothing is sent when the archive is off.
 
 Avacy terms of use: https://avacysolution.com/termini-e-condizioni/
@@ -67,7 +67,7 @@ Avacy privacy policy: https://api.avacy.eu/jumpgroup/privacypolicy/14/en
 4. Click Save. The plugin checks the data with Avacy and shows a confirmation.
 5. In the "Cookie banner" tab, turn on "Show the cookie banner on the website".
 6. Optional: in the "Preemptive Block" tab, turn on the block and save.
-7. Optional: in the "Consent Solution" tab, enter the API token created in Avacy, save, and choose which forms to send.
+7. Optional: in the "Consent Archive" tab, enter the Access Key created in Avacy, save, and choose which forms to send.
 
 If you do not have an Avacy account yet, you can create one at https://avacy.eu/registration.
 
@@ -85,7 +85,7 @@ In Avacy, not in WordPress. The settings page has a link to the banner section o
 
 Check these points, in order:
 
-1. The API token is set in the "Consent Solution" tab and is valid.
+1. The Access Key is set in the "Consent Archive" tab and is valid.
 2. The "Save" switch of that form is on. A form with the switch off sends nothing. Updating to 1.4.0 does not turn the switches on for you.
 3. At least one field of the form is selected.
 4. The form is one of the supported ones.
@@ -129,7 +129,7 @@ They are two versions of the Avacy banner. Avacy decides which one your webspace
 
 Support for the new Avacy cookie banner, and a faster, more reliable preemptive block.
 
-* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Solution" tab of the settings page.
+* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Archive" tab of the settings page.
 * Ready for the new Avacy banner: the plugin loads the version your webspace is set to. **Update the plugin before Avacy switches your webspace over.**
 * Faster pages: the vendor list is kept on your site and refreshed every six hours, so an Avacy outage no longer reaches your visitors.
 * More reliable preemptive block: it no longer breaks structured data or modern scripts, and a new webspace key takes effect at once.

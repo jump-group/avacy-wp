@@ -37,20 +37,20 @@ msgid "The entered credentials are valid."
 msgstr "Le credenziali inserite sono valide."
 
 #: AddAdminInterface.php:246
-msgid "The entered token has an incorrect format."
-msgstr "Il token inserito ha un formato errato."
+msgid "The entered Access Key has an incorrect format."
+msgstr "L'Access Key inserita ha un formato errato."
 
 #: AddAdminInterface.php:253
-msgid "Token not found or expired. Please check the entered data."
-msgstr "Token non trovato o scaduto. Si prega di verificare i dati inseriti."
+msgid "Access Key not found or expired. Please check the entered data."
+msgstr "Access Key non trovata o scaduta. Si prega di verificare i dati inseriti."
 
 #: AddAdminInterface.php:265
-msgid "The token has been saved successfully."
-msgstr "Il token è stato salvato con successo."
+msgid "The Access Key has been saved successfully."
+msgstr "L'Access Key è stata salvata con successo."
 
 #: AddAdminInterface.php:274
-msgid "The token has been removed successfully."
-msgstr "Il token è stato rimosso con successo."
+msgid "The Access Key has been removed successfully."
+msgstr "L'Access Key è stata rimossa con successo."
 
 #: views/avacy-dashboard.php:21
 msgid "Connect to Avacy"
@@ -119,7 +119,7 @@ msgid "Preemptive Block"
 msgstr "Blocco Preventivo"
 
 #: views/avacy-dashboard.php:107
-msgid "Consent Solution"
+msgid "Consent Archive"
 msgstr "Archivio consensi"
 
 #: views/avacy-dashboard.php:113
@@ -149,19 +149,19 @@ msgstr ""
 #: views/avacy-dashboard.php:148
 msgid ""
 "In the <a href=%s target=\"_blank\">consent archive section</a>, create a "
-"new token to link the service with WordPress and enter it in the field below."
+"new Access Key to link the service with WordPress and enter it in the field below."
 msgstr ""
-"Nella sezione <a href=%s target=“_blank”>archivio dei consensi</a>, crea un "
-"nuovo token per collegare il servizio con WordPress e inseriscilo nel campo "
+"Nella sezione <a href=%s target=“_blank”>archivio dei consensi</a>, crea una "
+"nuova Access Key per collegare il servizio con WordPress e inseriscila nel campo "
 "sottostante."
 
 #: views/avacy-dashboard.php:155
-msgid "Consent solution token"
-msgstr "Token Archivio consensi"
+msgid "Consent Archive Access Key"
+msgstr "Access Key Archivio consensi"
 
 #: views/avacy-dashboard.php:157
-msgid "Enter the token"
-msgstr "Inserisci il token"
+msgid "Enter the Access Key"
+msgstr "Inserisci l'Access Key"
 
 #: views/avacy-dashboard.php:172
 msgid "Form ID"
@@ -172,7 +172,7 @@ msgid "Type"
 msgstr "Tipologia"
 
 #: views/avacy-dashboard.php:174
-msgid "Save in the Avacy consent solution"
+msgid "Save in the Avacy Consent Archive"
 msgstr "Salva nell’archivio consensi di Avacy"
 
 #: views/avacy-dashboard.php:175

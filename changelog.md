@@ -6,7 +6,7 @@ Full history of the Avacy CMP plugin. The same entries of the latest versions ar
 
 Support for the new Avacy cookie banner, and a faster, more reliable preemptive block.
 
-* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Solution" tab of the settings page.
+* **Important: after updating, turn on the "Save" switch of every form whose consents you want to keep sending to Avacy.** Forms with the switch off no longer send their consents. You find the switch in the "Consent Archive" tab of the settings page.
 * Ready for the new Avacy banner: the plugin loads the version your webspace is set to. **Update the plugin before Avacy switches your webspace over.**
 * Faster pages: the vendor list is kept on your site and refreshed every six hours, so an Avacy outage no longer reaches your visitors.
 * More reliable preemptive block: it no longer breaks structured data or modern scripts, and a new webspace key takes effect at once.

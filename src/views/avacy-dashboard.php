@@ -109,7 +109,7 @@
             <sl-tab-group>
                 <sl-tab slot="nav" panel="cookie-banner" <?php echo esc_attr($active_tab) === 'cookie-banner'? 'active' : ''?>><?php echo esc_html__('Cookie banner', 'avacy')?></sl-tab>
                 <sl-tab slot="nav" panel="preemptive-block" <?php echo esc_attr($active_tab) === 'preemptive-block'? 'active' : ''?>><?php echo esc_html__('Preemptive Block', 'avacy')?></sl-tab>
-                <sl-tab slot="nav" panel="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>><?php echo esc_html__('Consent Solution', 'avacy')?></sl-tab>
+                <sl-tab slot="nav" panel="consent-archive" <?php echo esc_attr($active_tab) === 'consent-archive'? 'active' : ''?>><?php echo esc_html__('Consent Archive', 'avacy')?></sl-tab>
                 <input type="hidden" name="avacy_active_tab" value="<?php echo esc_attr($active_tab)?>">
 
                 <sl-tab-panel name="cookie-banner" <?php echo esc_attr($active_tab) === 'cookie-banner'? 'active' : ''?>>
@@ -216,18 +216,18 @@
                                 } else {
                                     $tenant = get_option('avacy_tenant');
                                 }
-                                $consent_solution_href = esc_url($base_api_url).'/redirect/consent-solution/'.$tenant.'/'.$webspaceKey;
+                                $consent_solution_href = esc_url($base_api_url).'/redirect/consent-solution/'.$tenant.'/'.$webspaceKey.'?tab=access-keys';
                             
-                                echo wp_kses_post(sprintf(__('In the <a href=%s target="_blank">consent archive section</a>, create a new token to link the service with WordPress and enter it in the field below.', 'avacy'), esc_url($consent_solution_href))); 
+                                echo wp_kses_post(sprintf(__('In the <a href=%s target="_blank">consent archive section</a>, create a new Access Key to link the service with WordPress and enter it in the field below.', 'avacy'), esc_url($consent_solution_href))); 
                             ?>
                         </p>
                     </div>
 
                     <section class="AvacySection AvacySection--Account">
                             <div class="AvacySection__InlineForm">
-                                <sl-input name="avacy_api_token" placeholder="<?php echo esc_html__('Consent solution token', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_api_token')); ?>">
+                                <sl-input name="avacy_api_token" placeholder="<?php echo esc_html__('Consent Archive Access Key', 'avacy')?>" size="small" value="<?php echo esc_attr(get_option('avacy_api_token')); ?>">
                                     <label for="avacy_api_token" slot="label">
-                                        <span><?php echo esc_html__('Enter the token', 'avacy')?></span>
+                                        <span><?php echo esc_html__('Enter the Access Key', 'avacy')?></span>
                                     </label>
                                     <sl-tooltip slot="suffix" content="This is a tooltip" hoist>
                                         <sl-icon name="info-circle"></sl-icon>
@@ -244,7 +244,7 @@
                                     <tr>
                                         <th><?php echo esc_html__('Form ID', 'avacy')?></th>
                                         <th><?php echo esc_html__('Type', 'avacy')?></th>
-                                        <th><?php echo esc_html__('Save in the Avacy consent solution', 'avacy')?></th>
+                                        <th><?php echo esc_html__('Save in the Avacy Consent Archive', 'avacy')?></th>
                                         <th><?php echo esc_html__('Select which data to save on Avacy', 'avacy')?></th>
                                         <th><?php echo esc_html__('User identification field', 'avacy')?></th>
                                     </tr>
