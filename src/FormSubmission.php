@@ -30,7 +30,8 @@ class FormSubmission
         $this->consentType = $consentType;
         $this->optin = $optin;
         $this->consentData = $consentData;
-        $this->identifier = $identifier;
+        // Senza identificativo (campo assente o vuoto) il consenso parte con null, per ogni integrazione.
+        $this->identifier = ($identifier === '' || $identifier === false) ? null : $identifier;
         $this->source = $source;
         $this->consentFeatures = $consentFeatures;
         $this->proof = $proof;
@@ -38,14 +39,18 @@ class FormSubmission
 
     public function getPayload(): array
     {
+        // Nessuna caratteristica accettata: consenso respinto, con la lista vuota.
+        // Un array vuoto non passa nel corpo form-encoded: il SaaS legge '[]' come lista vuota.
+        $rejected = empty($this->consentFeatures);
+
         return [
             'ip_address' => $this->ipAddress,
             'consent_type' => $this->consentType,
-            'optin' => $this->optin,
+            'optin' => $rejected ? 'rejected' : $this->optin,
             'consent_data' => json_decode($this->consentData, true),
             'identifier' => $this->identifier,
             'source' => $this->source,
-            'consent_features' => $this->consentFeatures,
+            'consent_features' => $rejected ? '[]' : $this->consentFeatures,
             'html_form' => $this->proof,
         ];
     }

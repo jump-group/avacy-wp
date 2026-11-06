@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\ConsentFeatures;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
@@ -18,7 +19,8 @@ class WpForms implements FormInterface {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $id = absint($contact_form['id']);
-        $identifierKey = get_option('avacy_wp_forms_' . $id . '_form_user_identifier');
+        // fino alla 1.4.x il menu salvava la label con gli spazi: si confronta come la nuova
+        $identifierKey = str_replace(' ', '_', (string) get_option('avacy_wp_forms_' . $id . '_form_user_identifier'));
         $identifier = '';
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
@@ -45,10 +47,7 @@ class WpForms implements FormInterface {
         }
 
         $consentData = wp_json_encode($selectedFields);
-        $consentFeatures = [
-            'privacy_policy',
-            'cookie_policy'
-        ];
+        $consentFeatures = ConsentFeatures::accepted('WP Forms', $id, self::tickedBoxes($submittedFields));
 
         $proofs = self::getHTMLForm($id);
         $sub = new FormSubmission(
@@ -81,6 +80,11 @@ class WpForms implements FormInterface {
     }
 
     public static function detectAllForms() : array {
+        // Il tipo esiste solo col plugin attivo: senza, i form orfani restano fuori (#747)
+        if (!post_type_exists('wpforms')) {
+            return [];
+        }
+
         // query all posts of type 'wpforms'
         $args = array(
             'post_type' => 'wpforms',
@@ -94,7 +98,7 @@ class WpForms implements FormInterface {
             $fields = json_decode($postArray['post_content'], true)['fields'];
 
             $parsedFields = self::parseFields($fields);
-            $form = new Form(absint($postArray['ID']), 'WP Forms', $parsedFields);
+            $form = new Form(absint($postArray['ID']), 'WP Forms', $parsedFields, self::parseCheckboxes($fields), $post->post_title);
             $forms[] = $form;
         }
 
@@ -114,6 +118,39 @@ class WpForms implements FormInterface {
         }
 
         return $parsedFields;
+    }
+
+    private const CHECKBOX_TYPES = ['checkbox', 'gdpr-checkbox'];
+
+    // Le caselle del form. Il gdpr-checkbox e' sempre obbligatorio.
+    private static function parseCheckboxes($fields) : array {
+        $boxes = [];
+        foreach($fields as $field) {
+            if(in_array($field['type'] ?? '', self::CHECKBOX_TYPES, true) && ($field['label'] ?? '') !== '') {
+                $boxes[] = [
+                    'name' => strtolower(trim($field['label'])),
+                    // l'id numerico non cambia con la label: le caratteristiche restano agganciate
+                    'key' => self::boxKey($field['id'] ?? ''),
+                    'required' => $field['type'] === 'gdpr-checkbox' || !empty($field['required'])
+                ];
+            }
+        }
+        return $boxes;
+    }
+
+    private static function boxKey($fieldId) : string {
+        return 'id:' . $fieldId;
+    }
+
+    // Le chiavi delle caselle spuntate nell'invio (il valore e' vuoto se nessuna scelta e' spuntata).
+    private static function tickedBoxes($submittedFields) : array {
+        $ticked = [];
+        foreach($submittedFields as $inputValue) {
+            if(in_array($inputValue['type'] ?? '', self::CHECKBOX_TYPES, true) && ConsentFeatures::isTicked($inputValue['value'] ?? '')) {
+                $ticked[] = ConsentFeatures::slug(self::boxKey($inputValue['id'] ?? ''));
+            }
+        }
+        return $ticked;
     }
 
     private static function getFields($id) {

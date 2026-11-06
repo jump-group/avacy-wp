@@ -6,8 +6,10 @@
     use Jumpgroup\Avacy\PreemptiveBlock;
     use Jumpgroup\Avacy\SendFormsToConsentSolution;
     use Jumpgroup\Avacy\BannerVersionGate;
+    use Jumpgroup\Avacy\ConsentFeatures;
+    use Jumpgroup\Avacy\Hosts;
 
-    global $api_base_url;
+    $api_base_url = Hosts::api();
     // esacape the base api url
     $base_api_url = esc_attr($api_base_url . '/wp');
     $registration_url = esc_attr('https://avacy.eu/registration');
@@ -67,7 +69,7 @@
 
         <input type="hidden" name="action" value="avacy_admin_save">
         <input type="hidden" name="option_page" value="avacy-plugin-settings-group">
-        <?php wp_nonce_field('avacy-plugin-settings-group-options'); ?>
+        <?php wp_nonce_field(AddAdminInterface::SETTINGS_NONCE); ?>
         <input type="hidden" name="redirectToUrl" value="<?php echo esc_url(admin_url('admin.php?page=avacy-plugin-settings')) ?>">
         <br>
         <section class="AvacySection AvacySection--Account">
@@ -147,6 +149,13 @@
                     <div>
                         <?php $enabled = (get_option('avacy_enable_preemptive_block') === 'on')? 'checked' : ''; ?>
                         <sl-checkbox name="avacy_enable_preemptive_block" size="medium"  value="on" <?php echo esc_attr($enabled)?>><?php echo esc_html__('Preemptively block all scripts.', 'avacy')?></sl-checkbox>
+                        <?php // #667: stesse condizioni di avacy.php, senza banner nessuno sblocca gli script ?>
+                        <?php if (empty(get_option('avacy_show_banner')) && !empty(get_option('avacy_enable_preemptive_block'))): ?>
+                            <p class="AvacyBannerOff">
+                                <sl-icon name="exclamation-triangle"></sl-icon>
+                                <span><?php echo esc_html__('The cookie banner is turned off. Blocked scripts only run if the cookie banner is installed another way, for example with Google Tag Manager. If you removed the cookie banner from the site, turn off the preemptive block too.', 'avacy'); ?></span>
+                            </p>
+                        <?php endif; ?>
                         <div class="AvacyDescription">
                             <p>
                                 <?php
@@ -196,7 +205,15 @@
                                     <a href="<?php echo esc_url($vendors_href); ?>" target="_blank"><?php echo esc_html__('Check your vendors on Avacy', 'avacy'); ?></a>
                                 </p>
                             <?php endif; ?>
-                            <sl-button href="<?php echo esc_url($refreshUrl); ?>" size="small"><?php echo esc_html__('Refresh the vendor list', 'avacy'); ?></sl-button>
+                            <div class="AvacyRefresh">
+                                <sl-button href="<?php echo esc_url($refreshUrl); ?>" size="small"><?php echo esc_html__('Refresh the vendor list', 'avacy'); ?></sl-button>
+                                <?php if (PreemptiveBlock::lastRefreshFailed()): ?>
+                                    <span class="AvacyRefreshFailed">
+                                        <sl-icon name="exclamation-triangle"></sl-icon>
+                                        <?php echo esc_html__('The last update failed. Please try again later.', 'avacy'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -229,7 +246,7 @@
                                     <label for="avacy_api_token" slot="label">
                                         <span><?php echo esc_html__('Enter the Access Key', 'avacy')?></span>
                                     </label>
-                                    <sl-tooltip slot="suffix" content="This is a tooltip" hoist>
+                                    <sl-tooltip slot="suffix" content="<?php echo esc_html__('Create the Access Key in Avacy: open the webspace settings, then "Avacy integration on your webspace", tab "Access Key". Only the last key you create works.', 'avacy') ?>" hoist>
                                         <sl-icon name="info-circle"></sl-icon>
                                     </sl-tooltip>
                                 </sl-input>
@@ -238,59 +255,104 @@
 
                     <?php if( !empty(get_option('avacy_api_token'))): ?>
                     <?php $forms = AddAdminInterface::detectAllForms(); ?>
+                    <?php $consentFeatures = ConsentFeatures::active(); ?>
                         <section class="AvacySection AvacySection--Table">
+                            <div class="AvacyForms__Scroll">
+                            <?php // Un blocco per form: ogni controllo ha la sua etichetta, niente intestazioni di colonna lontane ?>
                             <table class="AvacyForms">
-                                <thead>
-                                    <tr>
-                                        <th><?php echo esc_html__('Form ID', 'avacy')?></th>
-                                        <th><?php echo esc_html__('Type', 'avacy')?></th>
-                                        <th><?php echo esc_html__('Save in the Avacy Consent Archive', 'avacy')?></th>
-                                        <th><?php echo esc_html__('Select which data to save on Avacy', 'avacy')?></th>
-                                        <th><?php echo esc_html__('User identification field', 'avacy')?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($forms as $form) : ?>
-                                        <?php 
-                                        // dd($form);
-                                        $form_type = $form->getType();
-                                        $type = strtolower(str_replace(' ', '_', $form_type));
-                                        $id = $form->getId();
+                                <?php foreach ($forms as $form) : ?>
+                                    <?php
+                                    $form_type = $form->getType();
+                                    $type = strtolower(str_replace(' ', '_', $form_type));
+                                    $id = $form->getId();
+                                    $enabledOption = SendFormsToConsentSolution::enabledOptionName($form_type, $id);
+                                    $enabled = SendFormsToConsentSolution::isEnabled($form_type, $id) ? 'checked' : '';
                                     ?>
-                
-                                    <tr data-form-id="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>">
-                                        <td><?php echo esc_attr($id); ?></td>
-                                        <td><?php echo esc_attr($form_type); ?></td>
-                                        <td>
-                                            <div>
-                                                <?php $enabledOption = SendFormsToConsentSolution::enabledOptionName($form_type, $id); ?>
-                                                <?php $enabled = SendFormsToConsentSolution::isEnabled($form_type, $id) ? 'checked' : ''; ?>
-                                                <sl-switch name="<?php echo esc_attr($enabledOption) ?>" <?php echo esc_attr($enabled) ?> size="medium">
-                                                    <label for="<?php echo esc_attr($enabledOption) ?>"><?php echo esc_html__('Save', 'avacy')?></label>
-                                                </sl-switch>
+                                <tbody class="AvacyForms__Group" id="avacy-form-<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>" data-form-id="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>">
+                                    <tr class="AvacyForms__Row">
+                                        <td class="AvacyForms__Form">
+                                            <span class="AvacyForms__Title"><?php echo esc_html($form->getName()); ?></span>
+                                            <span class="AvacyForms__Meta"><?php echo esc_html($form->getTypeLabel()); ?> · ID <?php echo esc_html($id); ?></span>
+                                        </td>
+                                        <td class="AvacyForms__Save">
+                                            <sl-switch name="<?php echo esc_attr($enabledOption) ?>" <?php echo esc_attr($enabled) ?> size="medium">
+                                                <?php // testo nello slot dello switch: una <label> annidata assorbiva il clic ?>
+                                                <?php echo esc_html__('Send to Consent Archive', 'avacy')?>
+                                            </sl-switch>
+                                        </td>
+                                    </tr>
+                                    <tr class="AvacyForms__Data">
+                                        <td colspan="2">
+                                            <div class="AvacyData">
+                                                <div class="AvacyData__Identifier">
+                                                    <div class="AvacyForms__Label"><?php echo esc_html__('User identification field', 'avacy')?></div>
+                                                    <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(str_replace(' ', '_', (string) get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier')))?>" size="small" placeholder="Select an option" hoist>
+                                                        <?php foreach ($form->getFields() as $key => $field) : ?>
+                                                            <sl-option name="avacy_form_option_<?php echo esc_attr($key)?>_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>" value="<?php echo esc_attr(str_replace(' ', '_', $field['name']))?>"><?php echo esc_attr($field['name'])?></sl-option>
+                                                        <?php endforeach; ?>
+                                                    </sl-select>
+                                                    <?php if (AddAdminInterface::hasMissingIdentifier($form)) : ?>
+                                                        <div class="AvacyFeatureWarning AvacyFeatureWarning--Identifier"><?php echo esc_html__('The saved identifier field is no longer in the form. Choose another one.', 'avacy') ?></div>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="AvacyData__Fields">
+                                                    <div class="AvacyForms__Label"><?php echo esc_html__('Select which data to save on Avacy', 'avacy')?></div>
+                                                    <div class="AvacyData__Checkboxes">
+                                                        <?php foreach ($form->getFields() as $field) : ?>
+                                                            <?php // lo stesso nome dell'opzione di saveFields: PHP trasforma gli spazi dei nomi inviati in trattini bassi ?>
+                                                            <?php $fieldOption = 'avacy_form_field_' . $field['type'] . '_' . $id . '_' . str_replace(' ', '_', $field['name']); ?>
+                                                            <?php $checked = get_option($fieldOption) === 'on' ? 'checked' : '';?>
+                                                            <sl-checkbox size="small" name="<?php echo esc_attr($fieldOption) ?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <sl-details summary=<?php echo esc_attr(__('Details', 'avacy'))?>>
-                                                <sl-icon slot="collapse-icon" name="caret-left-fill"></sl-icon>
-                                                <sl-icon slot="expand-icon" name="caret-down-fill"></sl-icon>
-                                                <?php foreach ($form->getFields() as $field) : ?>
-                                                    <?php $checked = esc_attr(get_option('avacy_form_field_' . esc_attr($field['type']) . '_' . esc_attr($id) . '_' . esc_attr($field['name'])) === 'on')? 'checked' : '';?>
-                                                    <sl-checkbox size="small" name="avacy_form_field_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>_<?php echo esc_attr($field['name'])?>" <?php echo esc_attr($checked) ?>><?php echo esc_attr($field['name'])?></sl-checkbox>
-                                                <?php endforeach; ?>
-                                            </sl-details>
-                                        </td>
-                                        <td>
-                                            <sl-select name="avacy_<?php echo esc_attr($type) ?>_<?php echo esc_attr($id) ?>_form_user_identifier" id="<?php echo esc_attr($type)  ?>_<?php echo esc_attr($id) ?>_form_user_identifier" value="<?php echo esc_attr(get_option('avacy_' . esc_attr($type)  . '_' . esc_attr($id)  . '_form_user_identifier'))?>" size="small" placeholder="Select an option">
-                                                <?php foreach ($form->getFields() as $key => $field) : ?>
-                                                    <sl-option name="avacy_form_option_<?php echo esc_attr($key)?>_<?php echo esc_attr($field['type'])?>_<?php echo esc_attr($id) ?>" value="<?php echo esc_attr($field['name'])?>"><?php echo esc_attr($field['name'])?></sl-option>
-                                                <?php endforeach; ?>
-                                            </sl-select>
+                                    </tr>
+                                    <?php // Le caratteristiche in una riga sotto il form: la tabella non si allarga ?>
+                                    <tr class="AvacyForms__Features">
+                                        <td colspan="2">
+                                        <div class="AvacyForms__Label"><?php echo esc_html__('Consent features', 'avacy') ?></div>
+                                        <div class="AvacyFeatures">
+                                        <?php foreach ($consentFeatures as $feature) : ?>
+                                            <?php
+                                                // Quale casella (o l'invio) accetta questa caratteristica. L'avviso e' solo informativo.
+                                                $featureOption = ConsentFeatures::optionName($form_type, $id, $feature['key']);
+                                                $featureChoice = ConsentFeatures::choice($form_type, $id, $feature);
+                                                $featureWarning = '';
+                                                if (ConsentFeatures::isMissingField($featureChoice, $form->getCheckboxes())) {
+                                                    $featureWarning = ConsentFeatures::missingText();
+                                                }
+                                                foreach ($form->getCheckboxes() as $box) {
+                                                    if ($featureChoice === ConsentFeatures::fieldChoice($box['key'])) {
+                                                        $mismatch = ConsentFeatures::mismatch($feature['field'], $box['required']);
+                                                        $featureWarning = $mismatch !== null ? ConsentFeatures::mismatchText($mismatch) : '';
+                                                    }
+                                                }
+                                            ?>
+                                            <div class="AvacyFeature">
+                                                <sl-select label="<?php echo esc_attr($feature['label']) ?>" name="<?php echo esc_attr($featureOption) ?>" value="<?php echo esc_attr($featureChoice) ?>" size="small" hoist>
+                                                    <sl-option value="<?php echo esc_attr(ConsentFeatures::plainChoice($feature)) ?>"><?php echo $feature['ack'] ? esc_html__('Acknowledged', 'avacy') : esc_html__('No field', 'avacy') ?></sl-option>
+                                                    <?php foreach ($form->getCheckboxes() as $box) : ?>
+                                                        <sl-option value="<?php echo esc_attr(ConsentFeatures::fieldChoice($box['key'])) ?>" data-required="<?php echo esc_attr($box['required'] === null ? '' : (int) $box['required']) ?>"><?php echo esc_html($box['name']) ?></sl-option>
+                                                    <?php endforeach; ?>
+                                                </sl-select>
+                                                <div class="AvacyFeatureWarning" data-field="<?php echo esc_attr($feature['field']) ?>"
+                                                    data-text-optional-box="<?php echo esc_attr(ConsentFeatures::mismatchText('optional_box')) ?>"
+                                                    data-text-required-box="<?php echo esc_attr(ConsentFeatures::mismatchText('required_box')) ?>"
+                                                    <?php echo $featureWarning === '' ? 'hidden' : '' ?>><?php echo esc_html($featureWarning) ?></div>
+                                                <?php if ($feature['key'] === 'tracking_pixel') : ?>
+                                                    <div class="AvacyFeatureWarning AvacyFeatureWarning--Pixel" <?php echo ConsentFeatures::pixelSharesField($form_type, $id) ? '' : 'hidden' ?>><?php echo esc_html(ConsentFeatures::pixelText()) ?></div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                        </div>
                                         </td>
                                     </tr>
+                                </tbody>
                                 <?php endforeach; ?>
-                            </tbody>
                         </table>
+                        </div>
                     </section>
                     <?php endif; ?>
                 </sl-tab-panel>
@@ -306,5 +368,11 @@
                 }
             ?>
         </sl-button>
+        <p class="AvacySubmitHint" hidden>
+            <?php
+            /* translators: %s: link to the Consent Archive tab. */
+            printf(esc_html__('To save, complete the highlighted forms in the %s tab: choose the user identification field and at least one data field.', 'avacy'), '<a href="#">' . esc_html__('Consent Archive', 'avacy') . '</a>');
+            ?>
+        </p>
     </form>
 </div>

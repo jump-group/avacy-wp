@@ -28,6 +28,10 @@ msgstr ""
 msgid "Avacy could not be reached, so nothing was removed. Please try again later."
 msgstr ""
 
+#: AddAdminInterface.php:68
+msgid "Avacy can't load the data of this account. Please contact Avacy support."
+msgstr ""
+
 #: AddAdminInterface.php:182
 msgid "Webspace not found. Please check the entered data."
 msgstr ""
@@ -131,6 +135,10 @@ msgstr ""
 msgid "Preemptively block all scripts."
 msgstr ""
 
+#: views/avacy-dashboard.php:155
+msgid "The cookie banner is turned off. Blocked scripts only run if the cookie banner is installed another way, for example with Google Tag Manager. If you removed the cookie banner from the site, turn off the preemptive block too."
+msgstr ""
+
 #: views/avacy-dashboard.php:143
 msgid ""
 "Set how Avacy records the data collected from your webspace in the consent "
@@ -152,32 +160,12 @@ msgstr ""
 msgid "Enter the Access Key"
 msgstr ""
 
-#: views/avacy-dashboard.php:172
-msgid "Form ID"
-msgstr ""
-
-#: views/avacy-dashboard.php:173
-msgid "Type"
-msgstr ""
-
-#: views/avacy-dashboard.php:174
-msgid "Save in the Avacy Consent Archive"
-msgstr ""
-
 #: views/avacy-dashboard.php:175
 msgid "Select which data to save on Avacy"
 msgstr ""
 
 #: views/avacy-dashboard.php:176
 msgid "User identification field"
-msgstr ""
-
-#: views/avacy-dashboard.php:195
-msgid "Save"
-msgstr ""
-
-#: views/avacy-dashboard.php:200
-msgid "Details"
 msgstr ""
 
 #: views/avacy-dashboard.php:229
@@ -201,6 +189,10 @@ msgstr ""
 msgid "Not updated yet"
 msgstr ""
 
+#: views/avacy-dashboard.php:205
+msgid "The last update failed. Please try again later."
+msgstr ""
+
 #: views/avacy-dashboard.php:194
 msgid "No vendors to block."
 msgstr ""
@@ -216,4 +208,90 @@ msgstr ""
 #: AddAdminInterface.php:152
 #: PreemptiveBlock.php:172
 msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "This checkbox is not set as required in the form. Make it required in the form builder."
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Required checkbox: this consent must be optional. Make it optional in the form builder."
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "The tracking pixel needs its own checkbox."
+msgstr ""
+
+#: views/avacy-dashboard.php
+msgid "No field"
+msgstr ""
+
+#: views/avacy-dashboard.php
+msgid "Acknowledged"
+msgstr ""
+
+#: AddAdminInterface.php
+msgid "Avacy: some forms need your attention."
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Privacy policy"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Cookie policy"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Newsletter"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Marketing"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Third-party marketing"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Profiling"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Tracking pixel"
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "Terms and conditions"
+msgstr ""
+
+#. translators: %s: name of the form.
+#: AddAdminInterface.php
+msgid "Form \"%s\" was not saved: choose the user identifier field."
+msgstr ""
+
+#: views/avacy-dashboard.php
+msgid "The saved identifier field is no longer in the form. Choose another one."
+msgstr ""
+
+#: views/avacy-dashboard.php
+msgid "Send to Consent Archive"
+msgstr ""
+
+#: views/avacy-dashboard.php
+msgid "Consent features"
+msgstr ""
+
+#. translators: %s: link to the Consent Archive tab.
+#: views/avacy-dashboard.php
+msgid "To save, complete the highlighted forms in the %s tab: choose the user identification field and at least one data field."
+msgstr ""
+
+#: ConsentFeatures.php
+msgid "The linked field is no longer in the form. Choose another one."
+msgstr ""
+
+#: views/avacy-dashboard.php:233
+msgid "Create the Access Key in Avacy: open the webspace settings, then \"Avacy integration on your webspace\", tab \"Access Key\". Only the last key you create works."
 msgstr ""

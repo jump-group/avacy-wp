@@ -19,7 +19,7 @@ class PreemptiveBlock {
     const OPTION_LAST_SUCCESS = 'avacy_preemptive_refresh_ok';
     const LOCK_KEY = 'avacy_preemptive_refresh_lock';
     const LOCK_TTL = 60; // secondi, protegge solo dalle chiamate in contemporanea
-    const REFRESH_INTERVAL = 6 * HOUR_IN_SECONDS;
+    const REFRESH_INTERVAL = 2 * HOUR_IN_SECONDS;
     // Finche' non e' mai riuscita non c'e' una copia da tenere buona: si
     // riprova spesso, ma si riprova, non a ogni visita.
     const BOOTSTRAP_RETRY_INTERVAL = 5 * MINUTE_IN_SECONDS;
@@ -30,6 +30,9 @@ class PreemptiveBlock {
     // l'amministratore che guarda: si aspetta meno.
     const SHUTDOWN_HTTP_TIMEOUT = 3;
     const CRON_HOOK = 'avacy_preemptive_block_refresh';
+    // Il nome e' rimasto quello dei tempi delle sei ore: le installazioni
+    // esistenti hanno gia' l'evento pianificato con questo, e cambiarlo lo
+    // lascerebbe orfano.
     const CRON_SCHEDULE = 'avacy_six_hours';
     // Oltre la priorita' di output_end (100), e pubblica perche' chi vuole
     // staccare l'hook deve passare la stessa a remove_action().
@@ -48,10 +51,9 @@ class PreemptiveBlock {
         // restare in attesa che lo si riaccenda.
         add_action('update_option_avacy_webspace_key', [static::class, 'onWebspaceKeyChange'], 10, 2);
 
-        // Tutto quello che c'e' qui dentro riguarda le regole di blocco, e le
-        // regole servono solo a chi il blocco lo usa: senza la casella, niente
-        // periodico e niente pulsante. La versione del banner non passa piu' da
-        // qui (PO, 05/10/2026).
+        // Tutto quello che c'e' qui dentro riguarda il blocco: le regole e la
+        // versione del banner che le fa leggere giuste servono solo a chi lo
+        // usa. Senza la casella, niente periodico e niente pulsante.
         if (empty(get_option('avacy_enable_preemptive_block'))) {
             // Spento dopo essere stato acceso: il cron di prima resterebbe
             // pianificato, e continuerebbe a chiamare.
@@ -71,6 +73,8 @@ class PreemptiveBlock {
         // ripiego su shutdown: il cron parte solo dopo il primo intervallo pieno
         if (!wp_next_scheduled(self::CRON_HOOK)) {
             wp_schedule_event(time() + self::REFRESH_INTERVAL, self::CRON_SCHEDULE, self::CRON_HOOK);
+        } else {
+            self::alignScheduledInterval();
         }
         add_action(self::CRON_HOOK, [static::class, 'refreshRules']);
 
@@ -105,6 +109,26 @@ class PreemptiveBlock {
         return explode('|', $key)[1] ?? $key;
     }
 
+    /**
+     * L'evento gia' pianificato porta con se' l'intervallo di quando e' nato
+     * (6 ore, nei siti aggiornati): WordPress lo rilegge dallo schedule solo
+     * dopo la prossima esecuzione, che puo' essere lontana. Se non combacia lo
+     * si ripianifica, senza spostare in avanti la prossima esecuzione: la
+     * prima che arriva tra quella gia' fissata e un intervallo intero da adesso.
+     */
+    private static function alignScheduledInterval() {
+        $event = wp_get_scheduled_event(self::CRON_HOOK);
+
+        if (!$event || (int) ($event->interval ?? 0) === self::REFRESH_INTERVAL) {
+            return;
+        }
+
+        $next = min((int) $event->timestamp, time() + self::REFRESH_INTERVAL);
+
+        wp_unschedule_event($event->timestamp, self::CRON_HOOK, $event->args);
+        wp_schedule_event($next, self::CRON_SCHEDULE, self::CRON_HOOK);
+    }
+
     public static function clearScheduledRefresh() {
         wp_clear_scheduled_hook(self::CRON_HOOK);
     }
@@ -118,6 +142,12 @@ class PreemptiveBlock {
         return (int) get_option(self::OPTION_LAST_SUCCESS, 0);
     }
 
+    // Il tentativo si segna sempre, il successo solo se riesce: se il primo
+    // e' piu' recente, l'ultimo aggiornamento non e' andato (#719).
+    public static function lastRefreshFailed() {
+        return (int) get_option(self::OPTION_LAST_REFRESH, 0) > self::getLastRefreshTimestamp();
+    }
+
     /**
      * `display` non tradotto di proposito: il filtro scatta a `plugins_loaded`, e
      * da WP 6.7 una `__()` prima di `init` stampa una notice che rompe i
@@ -126,7 +156,7 @@ class PreemptiveBlock {
     public static function addCronSchedule($schedules) {
         $schedules[self::CRON_SCHEDULE] = [
             'interval' => self::REFRESH_INTERVAL,
-            'display' => 'Every 6 hours (Avacy)',
+            'display' => 'Every 2 hours (Avacy)',
         ];
         return $schedules;
     }
@@ -152,7 +182,8 @@ class PreemptiveBlock {
      * Se la chiamata fallisce la copia locale resta quella di prima.
      */
     public static function maybeRefreshOnShutdown() {
-        if (wp_doing_ajax() || wp_doing_cron() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        // Con WP-CLI nessuno guarda la pagina: un comando non deve aspettare la rete (#586)
+        if (wp_doing_ajax() || wp_doing_cron() || (defined('REST_REQUEST') && REST_REQUEST) || (defined('WP_CLI') && WP_CLI)) {
             return;
         }
 
@@ -169,9 +200,9 @@ class PreemptiveBlock {
     }
 
     /**
-     * Le regole di blocco, e nient'altro: la versione del banner la scrive
-     * `AddAdminInterface::checkSaasAccount()`, da una risposta che la pagina
-     * admin riceve comunque. Chiamato solo dove il blocco e' acceso.
+     * Il giro periodico: prima si riallinea la versione del banner, poi si
+     * scaricano le regole, che sono quelle della versione appena saputa.
+     * Chiamato solo dove il blocco e' acceso.
      */
     public static function refreshRules($timeout = self::HTTP_TIMEOUT) {
         // A blocco spento non c'e' niente da scaricare, e un giro a vuoto
@@ -181,16 +212,21 @@ class PreemptiveBlock {
             return false;
         }
 
+        // Prima delle credenziali, poi il lock: senza credenziali il lock
+        // costerebbe scritture nel database a ogni visita, per niente (#586).
+        [$tenant, $webSpaceKey] = self::resolveCredentials();
+
+        if (empty($tenant) || empty($webSpaceKey)) {
+            return false;
+        }
+
         if (!self::acquireLock()) {
             return false;
         }
 
-        [$tenant, $webSpaceKey] = self::resolveCredentials();
-
-        if (empty($tenant) || empty($webSpaceKey)) {
-            self::releaseLock();
-            return false;
-        }
+        // Prima delle regole: se la versione e' cambiata, le regole che si
+        // scaricano qui sotto sono gia' quelle giuste (#714).
+        self::refreshBannerVersion($tenant, $webSpaceKey, $timeout);
 
         $blackListOk = self::refreshBlackList($tenant, $webSpaceKey, $timeout);
 
@@ -240,6 +276,30 @@ class PreemptiveBlock {
         }
 
         return [$tenant, $webSpaceKey];
+    }
+
+    /**
+     * Chiede al SaaS la versione del banner e la salva. Non e'
+     * `AddAdminInterface::checkSaasAccount()` di proposito: su un 404 quella
+     * cancella le credenziali, e un giro automatico non deve mai poterlo fare.
+     * Qui si scrive solo con una 200 che dice esplicitamente `v2` o `v3`: in
+     * ogni altro caso (rete, 5xx, 404, valore strano) la versione salvata resta.
+     * `store()` mappa a v2 tutto cio' che non e' v3, per questo il filtro sta qui.
+     */
+    private static function refreshBannerVersion($tenant, $webSpaceKey, $timeout = self::HTTP_TIMEOUT) {
+        $url = Hosts::api() . '/wp/validate/' . rawurlencode($tenant) . '/' . rawurlencode($webSpaceKey);
+        $response = wp_remote_get($url, ['timeout' => $timeout]);
+
+        if (is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200) {
+            return;
+        }
+
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        $version = is_array($data) ? ($data['banner_config_version'] ?? null) : null;
+
+        if ($version === 'v2' || $version === 'v3') {
+            BannerVersionGate::store($version);
+        }
     }
 
     private static function refreshBlackList($tenant, $webSpaceKey, $timeout = self::HTTP_TIMEOUT) {
@@ -329,13 +389,35 @@ class PreemptiveBlock {
             return $buffer;
         }
 
+        // libxml legge gli script con le regole di HTML4 e li chiude al primo `</`
+        // seguito da una lettera: il contenuto passa da un segnaposto e torna identico (B1)
+        $originals = [];
+        $token = 'avacy-script-' . bin2hex(random_bytes(8)) . '-';
+        $protected = preg_replace_callback(
+            '#(<script\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>)(.*?)(</script\s*>)#is',
+            function ($m) use ($token, &$originals) {
+                if ($m[2] === '') {
+                    return $m[0];
+                }
+                $key = $token . count($originals);
+                $originals[$key] = $m[2];
+                return $m[1] . $key . $m[3];
+            },
+            $buffer
+        );
+        if ($protected === null) {
+            // regex fallita su una pagina enorme: si torna alla lettura di prima
+            $protected = $buffer;
+            $originals = [];
+        }
+
         $dom = new DOMDocument();
         $previousErrorSetting = libxml_use_internal_errors(true);
 
         // il PI iniettato forza l'UTF-8: senza, libxml ripiega su ISO-8859-1
         // e rompe gli accenti su tutta la pagina, non solo sugli script (problema 2)
         $loaded = $dom->loadHTML(
-            '<?xml encoding="UTF-8">' . $buffer,
+            '<?xml encoding="UTF-8">' . $protected,
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
 
@@ -367,7 +449,7 @@ class PreemptiveBlock {
             $src = $script->getAttribute('src');
 
             if (($src !== '' && ($emt = self::src_contains($src, self::$blackList))) ||
-                ($emt = self::inner_html_contains($script, self::$blackList))) {
+                ($emt = self::inner_html_contains($originals[$script->textContent] ?? $script->textContent, self::$blackList))) {
 
                 if ($isV3) {
                     self::markAsV3($script, $src, $emt);
@@ -377,7 +459,8 @@ class PreemptiveBlock {
             }
         }
 
-        return $dom->saveHTML();
+        // strtr sostituisce prima la chiave piu' lunga: «-10» non viene preso per «-1»
+        return strtr($dom->saveHTML(), $originals);
     }
 
     // webspace v2: marcatura legacy, letta anche dal modulo v3 (default sicuro, 14f)
@@ -551,9 +634,7 @@ class PreemptiveBlock {
         return false;
     }
 
-    private static function inner_html_contains($node, $blackList) {
-        $innerHTML = $node->textContent;
-
+    private static function inner_html_contains($innerHTML, $blackList) {
         foreach($blackList as $item) {
             foreach($item['sources'] as $source) {
                 if (strpos($innerHTML, $source) !== false) {

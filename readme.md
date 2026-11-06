@@ -4,7 +4,7 @@ Tags: cookie banner, gdpr, cookie consent, consent, privacy
 Requires at least: 5.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.1
+Stable tag: 1.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,17 +16,18 @@ Avacy CMP connects your WordPress site to [Avacy](https://avacysolution.com/), a
 
 The plugin does four things.
 
-**Cookie banner.** It shows the Avacy cookie banner on your site. The banner version (v2 or v3) is the one set on your webspace in Avacy, and the plugin follows it. The banner is designed and published in Avacy, not in WordPress.
+**Cookie banner.** It shows the Avacy cookie banner on your site. The banner version (v2 or v3) is the one set on your webspace in Avacy: the plugin always loads the same address, and the Avacy CDN serves the right version. The banner is designed and published in Avacy, not in WordPress.
 
-**Preemptive block.** It can block the scripts of your vendors until the visitor gives consent. The rules come from the vendor list you manage in Avacy. The plugin keeps a local copy of that list, refreshed every 6 hours. You can also refresh it with a button in the settings page. A script that matches a vendor (by its `src` or by its inline code) is held back, and it runs only after the visitor consents to that vendor and its purposes.
+**Preemptive block.** It can block the scripts of your vendors until the visitor gives consent. The rules come from the vendor list you manage in Avacy. The plugin keeps a local copy of that list, refreshed every 2 hours. You can also refresh it with a button in the settings page. A script that matches a vendor (by its `src` or by its inline code) is held back, and it runs only after the visitor consents to that vendor and its purposes.
 
 **Consent archive for forms.** It can send to the Avacy consent archive the consents given through your forms. For each form you choose, in the settings page:
 
-* the "Save" switch, which turns the sending on or off for that form;
+* the "Send to Consent Archive" switch, which turns the sending on or off for that form;
+* the field that identifies the user;
 * the fields to send;
-* the field that identifies the user.
+* which checkbox of the form gives each consent (for example newsletter or marketing).
 
-Supported forms: Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout. To use the archive you need an Access Key, which you create in the consent archive section of Avacy.
+Supported forms: Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms, Avada Forms (Avada Builder) and the WooCommerce checkout. To use the archive you need an Access Key, which you create in the consent archive section of Avacy.
 
 **WP Consent API.** When the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is active, Avacy registers itself as a compliant CMP, sets the `optin` consent type, and passes the banner choices to `wp_set_consent`. Google Consent Mode flags are mapped to WP Consent API categories like this:
 
@@ -46,14 +47,14 @@ This plugin connects to two services run by Avacy (Jump Group). Both are needed 
 Address: `https://{team}.avacy-cdn.com`, where `{team}` is your Avacy team name. The domain can be changed by Avacy, which communicates it to the plugin.
 
 * **Banner.** When the banner is shown, the browser of each visitor loads the banner script and its settings and texts from the CDN. The visitor's browser sends its normal request data (for example the IP address) to the CDN.
-* **Vendor list.** When the preemptive block is on, your site downloads the list of vendors to block from the CDN. The request carries your team name and webspace key in the address. It happens about every 6 hours, when you press the refresh button, when you change the webspace key, and when you save the settings for the first time with the block on. No visitor data is sent.
+* **Vendor list.** When the preemptive block is on, your site downloads the list of vendors to block from the CDN. The request carries your team name and webspace key in the address. It happens about every 2 hours, when you press the refresh button, when you change the webspace key, and when you save the settings for the first time with the block on. No visitor data is sent.
 
 = Avacy API =
 
 Address: `https://api.avacy.eu`.
 
-* **Settings.** When an administrator opens or saves the Avacy settings page, the plugin sends your team name and webspace key to check them. If an Access Key is set, it sends the Access Key too. The answer tells the plugin which banner version and which CDN domain to use.
-* **Form consents.** When a visitor submits a form whose "Save" switch is on, and an Access Key is set, the plugin sends to Avacy: the visitor's IP address, the consent type, whether consent was given, the values of the fields you selected, the identifier field you chose, the legal documents linked to the form (for example privacy policy and cookie policy), the source ("plugin") and the HTML of the form as proof. The Access Key is sent as authorization.
+* **Settings.** When an administrator opens or saves the Avacy settings page, the plugin sends your team name and webspace key to check them. If an Access Key is set, it sends the Access Key too. The answer tells the plugin which banner version and which CDN domain to use. When the preemptive block is on, your site also sends your team name and webspace key about every 2 hours, together with the vendor list update, to read the banner version. No visitor data is sent.
+* **Form consents.** When a visitor submits a form whose "Send to Consent Archive" switch is on, and an Access Key is set, the plugin sends to Avacy: the visitor's IP address, the consent type, whether consent was given, the values of the fields you selected, the identifier field you chose, the consents given (for example privacy policy, cookie policy, newsletter), the source ("plugin") and the HTML of the form as proof. The Access Key is sent as authorization.
 * **Banner consents.** If the consent archive is on for your webspace in Avacy, the banner sends each choice of a visitor to the archive: the choice made and, after the first one, the id of the previous record. The request comes from the visitor's browser, so it also carries the visitor's IP address. Nothing is sent when the archive is off.
 
 Avacy terms of use: https://avacysolution.com/termini-e-condizioni/
@@ -86,21 +87,21 @@ In Avacy, not in WordPress. The settings page has a link to the banner section o
 Check these points, in order:
 
 1. The Access Key is set in the "Consent Archive" tab and is valid.
-2. The "Save" switch of that form is on. A form with the switch off sends nothing. Updating to 1.4.0 does not turn the switches on for you.
-3. At least one field of the form is selected.
+2. The "Send to Consent Archive" switch of that form is on. A form with the switch off sends nothing. Updating to 1.4.0 does not turn the switches on for you.
+3. The identification field and at least one field of the form are selected.
 4. The form is one of the supported ones.
 
 = Which forms are supported? =
 
-Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms and the WooCommerce checkout.
+Contact Form 7, WPForms, Elementor Forms (Elementor Pro), HTML Forms, Avada Forms (Avada Builder) and the WooCommerce checkout. Avada forms set to send without AJAX (the classic page reload) are not covered. With Avada 7.11.6 or later, the consent is sent only when the form is submitted successfully; with older versions it is sent even if the form then fails.
 
 = Does the preemptive block slow my site down? =
 
-No download happens when a page is viewed. The plugin reads a local copy of the vendor list, which is refreshed in the background about every 6 hours. If Avacy is not reachable, the site keeps working with the last copy. The page is scanned for matching scripts before it is sent to the browser.
+No download happens when a page is viewed. The plugin reads a local copy of the vendor list, which is refreshed in the background about every 2 hours. If Avacy is not reachable, the site keeps working with the last copy. The page is scanned for matching scripts before it is sent to the browser.
 
 = When is the vendor list updated? =
 
-About every 6 hours, when you press "Refresh the vendor list", and when you change the webspace key. The settings page shows when it was last updated.
+About every 2 hours, when you press "Refresh the vendor list", and when you change the webspace key. The settings page shows when it was last updated.
 
 = Which scripts does the preemptive block hold back? =
 
@@ -112,7 +113,7 @@ Yes. If the [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plug
 
 = What is the difference between banner v2 and v3? =
 
-They are two versions of the Avacy banner. Avacy decides which one your webspace uses, and the plugin loads that one. Keep the plugin up to date, so it is ready when Avacy moves your webspace to v3.
+They are two versions of the Avacy banner. Avacy decides which one your webspace uses, and the Avacy CDN serves that one: the plugin loads the same address for both. Keep the plugin up to date, so it is ready when Avacy moves your webspace to v3.
 
 == Screenshots ==
 
@@ -124,6 +125,24 @@ They are two versions of the Avacy banner. Avacy decides which one your webspace
 6. All your web spaces together in one Team.
 
 == Changelog ==
+
+= 1.5.0 =
+
+Avada forms, and consents linked to the checkboxes of your forms.
+
+* **Avada forms** now appear in the "Consent Archive" tab, like the other supported forms.
+* **Consents linked to checkboxes.** In the "Consent Archive" tab you can link each consent (newsletter, marketing, profiling, tracking pixel, terms and conditions…) to a checkbox of the form: it is recorded only when the checkbox is ticked. Nothing changes until you link them.
+* Clearer "Consent Archive" tab: "Save changes" stays off until every form you send has an identification field and at least one data field.
+* The WooCommerce checkout now uses the identification field you chose (the email, if that field is empty).
+* The WooCommerce thank-you page no longer shows a fatal error when the order can't be found.
+* The banner version and the vendor list are refreshed every 2 hours instead of 6.
+* With Preemptive Block on, inline scripts that contain HTML or accented characters are no longer altered.
+* Forms of a form plugin that is turned off or removed no longer appear in the "Consent Archive" tab. Turn the plugin back on and they come back with their settings.
+* Deleting the plugin now also removes your Avacy credentials, Access Key included, and the data it downloads. Your settings stay, so a reinstall only asks you to connect again.
+* The Preemptive Block tab now tells you when the last update of the vendor list failed. The rules you already had stay active.
+* With the cookie banner off and Preemptive Block on, the Preemptive Block tab now warns you: blocked scripts only run if the cookie banner is installed another way, for example with Google Tag Manager.
+* If Avacy can't load the data of your account, the settings page now asks you to contact support instead of trying again later.
+* The "Consent Archive" tab now warns you when the tracking pixel shares its checkbox with another consent: the tracking pixel needs its own checkbox.
 
 = 1.4.1 =
 
@@ -157,6 +176,9 @@ Integrate WP Consent API: when the [WP Consent API](https://wordpress.org/plugin
 Older versions are listed in the file changelog.md inside the plugin.
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+**Updating from 1.3.x?** Only forms with the "Send to Consent Archive" switch on send their consents to Avacy. After updating, open the "Consent Archive" tab and turn the switch on for every form you want to keep sending.
 
 = 1.4.0 =
 Adds support for the Avacy v3 banner: update before Avacy moves your webspace to it. The form "Save" switch now decides which forms are sent: only forms whose switch is on are sent, so turn it on again for the forms you want to keep sending.

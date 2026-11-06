@@ -22,7 +22,8 @@ echo "🎮 Starting Playground with blueprint '${BLUEPRINT}' on port ${PORT}..."
 echo "   Plugin mounted from: ${PLUGIN_DIR}"
 echo ""
 
-exec npx --yes wp-playground-cli server \
+# versione fissa: la 3.1.19 del node_modules della monorepo risponde a caso 500 a vuoto sotto carico
+exec npx --yes @wp-playground/cli@3.1.58 server \
   --blueprint="${BLUEPRINT_FILE}" \
   --port="${PORT}" \
   --mount="${PLUGIN_DIR}:/wordpress/wp-content/plugins/avacy" \

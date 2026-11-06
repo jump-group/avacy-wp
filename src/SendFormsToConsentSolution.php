@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\Integrations\AvadaForms;
 use Jumpgroup\Avacy\Integrations\ContactForm7;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
 use Jumpgroup\Avacy\Integrations\HtmlForms;
@@ -25,12 +26,19 @@ class SendFormsToConsentSolution
     WpForms::listen();
     ElementorForms::listen();
     HtmlForms::listen();
+    AvadaForms::listen();
   }
 
   // Name of the option behind the "Save" switch of a form: shared by dashboard, save and send.
   public static function enabledOptionName(string $type, $id): string
   {
     return 'avacy_' . strtolower(str_replace(' ', '_', $type)) . '_' . $id . '_radio_enabled';
+  }
+
+  // Name of the option with the user identification field of a form, as the dashboard saves it.
+  public static function identifierOptionName(string $type, $id): string
+  {
+    return 'avacy_' . strtolower(str_replace(' ', '_', $type)) . '_' . $id . '_form_user_identifier';
   }
 
   // The "Save" switch of the form in the dashboard: off or never saved means nothing is sent.
@@ -41,7 +49,7 @@ class SendFormsToConsentSolution
 
   public static function send(FormSubmission $form)
   {
-    global $api_base_url;
+    $api_base_url = Hosts::api();
 
     $payload = $form->getPayload();
     $apiToken = get_option('avacy_api_token');
@@ -66,6 +74,8 @@ class SendFormsToConsentSolution
     $headers = array(
       'Accept'        => 'application/json',
       'Authorization' => 'Bearer ' . $apiToken,
+      // il SaaS ricava il dominio del consenso da Origin o Referer: home_url() e' quello del sito corrente (anche in multisite)
+      'Referer'       => home_url(),
     );
 
     // API endpoint URL

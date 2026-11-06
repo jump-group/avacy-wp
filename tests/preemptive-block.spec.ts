@@ -101,7 +101,7 @@ test.describe('PreemptiveBlock — refresh (B5 / 10b)', () => {
     expect(state.requestLog.length).toBe(0); // nessuna chiamata: si è fermato al lucchetto
   });
 
-  test('a ogni caricamento si controlla la data, non si chiama la rete prima di 6 ore', async ({ page, request }) => {
+  test('a ogni caricamento si controlla la data, non si chiama la rete prima di 2 ore', async ({ page, request }) => {
     await setState(request, {
       avacy_test_scenario: 'vendor_with_rule',
       avacy_preemptive_refresh_last: Math.floor(Date.now() / 1000),
@@ -112,11 +112,11 @@ test.describe('PreemptiveBlock — refresh (B5 / 10b)', () => {
     expect(state.requestLog.length).toBe(0);
   });
 
-  test('oltre 6 ore, il ripiego su shutdown scarica da solo', async ({ page, request }) => {
-    const sevenHoursAgo = Math.floor(Date.now() / 1000) - 7 * 60 * 60;
+  test('oltre 2 ore, il ripiego su shutdown scarica da solo', async ({ page, request }) => {
+    const threeHoursAgo = Math.floor(Date.now() / 1000) - 3 * 60 * 60;
     await setState(request, {
       avacy_test_scenario: 'vendor_with_rule',
-      avacy_preemptive_refresh_last: sevenHoursAgo,
+      avacy_preemptive_refresh_last: threeHoursAgo,
     });
 
     await page.goto('/');
@@ -129,24 +129,28 @@ test.describe('PreemptiveBlock — refresh (B5 / 10b)', () => {
     // Mai riuscita: nessuna delle due date esiste dopo il reset.
     await setState(request, { avacy_test_scenario: 'network_fail' });
 
+    // Le chiamate di un giro sono due (versione e regole): si contano i giri.
+    const rounds = async () =>
+      (await getState(request)).requestLog.filter((url: string) => url.includes('custom-vendor-list.json')).length;
+
     await page.goto('/');
-    expect(await waitUntil(async () => (await getState(request)).requestLog.length === 1)).toBe(true);
+    expect(await waitUntil(async () => (await rounds()) === 1)).toBe(true);
 
     // La seconda visita arriva subito dopo: il freno del primo avvio e` di
     // cinque minuti, quindi niente seconda chiamata.
     await page.goto('/');
     await page.goto('/');
-    expect((await getState(request)).requestLog.length).toBe(1);
+    expect(await rounds()).toBe(1);
   });
 
-  test('mai riuscita, il freno dura cinque minuti e non sei ore', async ({ page, request }) => {
+  test('mai riuscita, il freno dura cinque minuti e non due ore', async ({ page, request }) => {
     const seiMinutiFa = Math.floor(Date.now() / 1000) - 6 * 60;
     await setState(request, {
       avacy_test_scenario: 'network_fail',
       avacy_preemptive_refresh_last: seiMinutiFa,
     });
 
-    // Sei minuti sono lontani dalle sei ore, ma oltre i cinque del primo avvio.
+    // Sei minuti sono lontani dalle due ore, ma oltre i cinque del primo avvio.
     await page.goto('/');
     expect(await waitUntil(async () => (await getState(request)).requestLog.length > 0)).toBe(true);
   });
@@ -180,6 +184,134 @@ test.describe('PreemptiveBlock — refresh (B5 / 10b)', () => {
     // verifichiamo l'effetto (stato aggiornato), non l'URL esatto del redirect
     const ok = await waitUntil(async () => (await getState(request)).blackListCount === 1, 15000);
     expect(ok).toBe(true);
+  });
+
+  // #586: senza credenziali il refresh esce prima del lock, e non scrive niente a ogni visita
+  test('credenziali vuote: le visite non prendono il lock del refresh (#586)', async ({ page, request }) => {
+    await setState(request, { avacy_webspace_key: '', avacy_tenant: '' });
+    await page.goto('/');
+    await page.goto('/');
+    expect((await getState(request)).lockWrites).toBe(0);
+
+    // con le credenziali il lock si prende: il contatore funziona
+    await resetHarness(request);
+    await page.goto('/');
+    expect(await waitUntil(async () => (await getState(request)).lockWrites > 0)).toBe(true);
+  });
+
+  // #586: con WP-CLI il ripiego su shutdown non parte, una visita normale sì
+  test('WP-CLI: niente refresh di ripiego, nessuna chiamata in rete (#586)', async ({ page, request }) => {
+    await page.goto('/?avacy-test-cli=1');
+    const state = await getState(request);
+    expect(state.lockWrites).toBe(0);
+    expect(state.requestLog ?? []).toEqual([]);
+
+    await page.goto('/');
+    expect(await waitUntil(async () => ((await getState(request)).requestLog ?? []).length > 0)).toBe(true);
+  });
+
+  // #719: l'esito si legge dalle due date, sotto il pulsante
+  async function refreshBox(page: Page) {
+    await page.goto('/wp-admin/admin.php?page=avacy-plugin-settings');
+    await page.waitForSelector('.wrap:not(.hide)');
+    await page.locator('sl-tab:has-text("Preemptive Block")').click();
+    return page.locator('.AvacyDescription', { has: page.locator('sl-button:has-text("Refresh the vendor list")') });
+  }
+
+  test('aggiornamento fallito: avviso sotto il pulsante, regole di prima intatte (#719)', async ({ page, request }) => {
+    await setState(request, { avacy_test_scenario: 'vendor_with_rule' });
+    await triggerRefresh(request);
+    await expect((await refreshBox(page)).locator('.AvacyRefreshFailed')).toHaveCount(0);
+
+    await setState(request, { avacy_test_scenario: 'network_fail' });
+    await triggerRefresh(request);
+    const box = await refreshBox(page);
+    await expect(box.locator('.AvacyRefreshFailed')).toContainText('The last update failed');
+    await expect(box).toContainText('Updated');
+    expect((await getState(request)).blackListCount).toBe(1);
+
+    // il giro dopo riesce: l'avviso sparisce
+    await setState(request, { avacy_test_scenario: 'vendor_with_rule' });
+    await triggerRefresh(request);
+    await expect((await refreshBox(page)).locator('.AvacyRefreshFailed')).toHaveCount(0);
+  });
+
+  test('mai riuscito: «Not updated yet» con l`avviso (#719)', async ({ page, request }) => {
+    await setState(request, { avacy_test_scenario: 'network_fail' });
+    await triggerRefresh(request);
+    const box = await refreshBox(page);
+    await expect(box).toContainText('Not updated yet');
+    await expect(box.locator('.AvacyRefreshFailed')).toContainText('The last update failed');
+  });
+});
+
+// #667: banner spento e blocco acceso, nessuno sblocca gli script
+test.describe('PreemptiveBlock — avviso col banner spento (#667)', () => {
+  // il reset dell'harness non rimette il banner: lo fanno i test, prima e dopo
+  test.beforeEach(async ({ request }) => {
+    await resetHarness(request);
+    await setState(request, { avacy_show_banner: 'on', avacy_enable_preemptive_block: 'on' });
+  });
+  test.afterEach(async ({ request }) => {
+    await setState(request, { avacy_show_banner: 'on', avacy_enable_preemptive_block: 'on' });
+  });
+
+  async function warning(page: Page) {
+    await page.goto('/wp-admin/admin.php?page=avacy-plugin-settings');
+    await page.waitForSelector('.wrap:not(.hide)');
+    await page.locator('sl-tab:has-text("Preemptive Block")').click();
+    return page.locator('sl-tab-panel[name="preemptive-block"] .AvacyBannerOff');
+  }
+
+  test('banner spento e blocco acceso: avviso sotto la spunta', async ({ page, request }) => {
+    await setState(request, { avacy_show_banner: '' });
+    await expect(await warning(page)).toContainText('The cookie banner is turned off');
+  });
+
+  test('banner acceso, oppure blocco spento: nessun avviso', async ({ page, request }) => {
+    await expect(await warning(page)).toHaveCount(0);
+    await setState(request, { avacy_show_banner: '', avacy_enable_preemptive_block: '' });
+    await expect(await warning(page)).toHaveCount(0);
+  });
+});
+
+// #586: «Elimina» nella pagina Plugin toglie dati tecnici e credenziali, tiene le impostazioni
+test.describe('Disinstallazione (#586)', () => {
+  test.afterEach(async ({ request }) => {
+    await resetHarness(request);
+    await setState(request, { avacy_show_banner: 'on' });
+  });
+
+  test('via dati tecnici e credenziali; banner, blocco e form restano', async ({ page, request }) => {
+    // la registrazione la rifà il plugin a ogni caricamento: anche su un sito aggiornato, che non riattiva
+    await request.post('/avacy-test-api/uninstall', { data: { forget: true } });
+    await resetHarness(request);
+    await setState(request, { avacy_test_scenario: 'vendor_with_rule' });
+    await triggerRefresh(request);
+    await loadBannerVersion(page, request, 'v3');
+    await setState(request, {
+      avacy_tenant: 'test-harness',
+      avacy_webspace_id: '42',
+      avacy_api_token: '7|abcdefghijklmnopqrstuvwxyz',
+      avacy_show_banner: 'on',
+      avacy_html_forms_7_radio_enabled: 'on',
+    });
+
+    const removed = [
+      'avacy_preemptive_blacklist', 'avacy_preemptive_refresh_last', 'avacy_preemptive_refresh_ok',
+      'avacy_banner_config_version', 'avacy_tenant', 'avacy_webspace_key', 'avacy_webspace_id', 'avacy_api_token',
+    ];
+    const kept = ['avacy_show_banner', 'avacy_enable_preemptive_block', 'avacy_html_forms_7_radio_enabled'];
+    const res = await request.post('/avacy-test-api/uninstall', { data: { options: [...removed, 'avacy_cdn_url', ...kept] } });
+    const out = await res.json();
+
+    expect(out.registered).toBe(true);
+    for (const name of [...removed, ...kept]) expect(out.before[name], `${name} prima`).not.toBeNull();
+    for (const name of [...removed, 'avacy_cdn_url']) expect(out.after[name], `${name} dopo`).toBeNull();
+    for (const name of kept) expect(out.after[name], `${name} dopo`).toBe(out.before[name]);
+    expect(out.cronBefore).toBeTruthy();
+    expect(out.cron).toBe(false);
+    expect(out.lock).toBe(false);
   });
 });
 
@@ -277,6 +409,18 @@ test.describe('PreemptiveBlock — DOMDocument, problemi 2 e 3 (10e)', () => {
     expect(html).not.toMatch(/Fatal error/i);
     expect(html).not.toMatch(/Parse error/i);
   });
+
+  test('il contenuto degli script esce identico, anche con HTML e accenti dentro (B1)', async ({ request }) => {
+    const html = await (await request.get('/avacy-test-page?variant=inline-html')).text();
+    expect(html).toContain('<script>var s = "<div>a</div>"; var t = "città";</script>');
+  });
+
+  test('uno script inline da bloccare viene marcato e resta intero (B1)', async ({ page, request }) => {
+    const html = await (await request.get('/avacy-test-page?variant=inline-html')).text();
+    expect(html).toContain('var x = "tracker.example.com/t.js"; var h = "<p>x</p>";</script>');
+    await page.goto('/avacy-test-page?variant=inline-html');
+    await expect(page.locator('script[data-managed="as-oil"]')).toHaveCount(1);
+  });
 });
 
 /**
@@ -286,48 +430,30 @@ test.describe('PreemptiveBlock — DOMDocument, problemi 2 e 3 (10e)', () => {
  * `/avacy-test-page`: quella scrive il body a mano e non passa da `wp_head()`,
  * dove gli script in coda vengono stampati.
  */
-test.describe('EnqueueBanner — quale banner carica (14f)', () => {
+test.describe('EnqueueBanner — link unico (#723)', () => {
   const V3_TAG = 'avacy-cdn.com/v3/avacy-cmp-web.js?webspace=11111111-1111-1111-1111-111111111111';
 
   test.beforeEach(async ({ request }) => {
     await resetHarness(request);
   });
 
-  test('senza notizie dal SaaS si carica il banner vecchio', async ({ page }) => {
-    await page.goto('/');
-    const html = await page.content();
+  // Chi decide v2 o v3 e` la CDN: il tag e` lo stesso comunque, anche per
+  // un sito che il SaaS non ha ancora interpellato.
+  for (const version of ['', 'v2', 'v3']) {
+    test(`versione salvata «${version || 'assente'}» -> sempre il tag v3, e nessuna traccia di OIL`, async ({ page, request }) => {
+      if (version) await loadBannerVersion(page, request, version);
 
-    expect(html).toContain('current/dist/oilstub.min.js');
-    expect(html).toContain('current/dist/oil.min.js');
-    expect(html).not.toContain('/v3/avacy-cmp-web.js');
-  });
+      await page.goto('/');
+      const html = await page.content();
 
-  test('un v2 scritto vale quanto l`assenza: oilstub e oil, come prima', async ({ page, request }) => {
-    await loadBannerVersion(page, request, 'v2');
+      expect(html).toContain(V3_TAG);
+      // La prova al contrario: col vecchio if, v2 e assente caricavano OIL.
+      expect(html).not.toContain('oilstub.min.js');
+      expect(html).not.toContain('oil.min.js');
+    });
+  }
 
-    await page.goto('/');
-    const html = await page.content();
-
-    expect(html).toContain('current/dist/oil.min.js');
-    expect(html).not.toContain('/v3/avacy-cmp-web.js');
-  });
-
-  test('webspace v3 -> il tag singolo del loader, e nessuna traccia di OIL', async ({ page, request }) => {
-    await loadBannerVersion(page, request, 'v3');
-
-    await page.goto('/');
-    const html = await page.content();
-
-    expect(html).toContain(V3_TAG);
-    // La prova al contrario: senza il ramo nuovo questi due ci sarebbero
-    // ancora, ed e' esattamente il banner morto che stiamo chiudendo.
-    expect(html).not.toContain('oilstub.min.js');
-    expect(html).not.toContain('oil.min.js');
-  });
-
-  test('il tag v3 e` un <script src> classico, che il loader sa riconoscere', async ({ page, request }) => {
-    await loadBannerVersion(page, request, 'v3');
-
+  test('il tag e` un <script src> classico, che il loader sa riconoscere', async ({ page }) => {
     await page.goto('/');
     const tag = page.locator('script[src*="/v3/avacy-cmp-web.js"]');
 
@@ -371,18 +497,103 @@ test.describe('chi porta cosa, e dove (10b / 14)', () => {
     expect((await getState(request)).cronScheduled).toBe(false);
   });
 
-  test('il giro delle regole non interpella il SaaS', async ({ request }) => {
-    await setState(request, { avacy_test_scenario: 'vendor_with_rule', avacy_test_banner_version: 'v3' });
+  test('il cron e` a 2 ore, nello schedule e nell`evento pianificato', async ({ page, request }) => {
+    await page.goto('/');
 
+    const state = await getState(request);
+    expect(state.scheduleInterval).toBe(2 * 60 * 60);
+    expect(state.cronInterval).toBe(2 * 60 * 60);
+  });
+
+  test('un sito aggiornato con l`evento a 6 ore passa a 2 ore senza riattivare il plugin', async ({ page, request }) => {
+    const legacy = await (await request.post('/avacy-test-api/legacy-cron')).json();
+    expect(legacy.interval).toBe(6 * 60 * 60); // partenza: l'evento della 1.4.x
+
+    // una richiesta qualsiasi: gli hook si registrano a plugins_loaded
+    await page.goto('/');
+
+    const state = await getState(request);
+    expect(state.cronScheduled).toBe(true);
+    expect(state.cronInterval).toBe(2 * 60 * 60);
+    // la prossima esecuzione non sta oltre un intervallo intero da adesso
+    expect(state.cronNext).toBeLessThanOrEqual(Math.floor(Date.now() / 1000) + 2 * 60 * 60 + 5);
+  });
+
+  test('il giro delle regole aggiorna la versione dal SaaS e riscarica le regole (#714)', async ({ page, request }) => {
+    await setState(request, { avacy_test_scenario: 'vendor_with_rule' });
+    await loadBannerVersion(page, request, 'v2');
+    expect((await getState(request)).bannerVersion).toBe('v2');
+
+    // il SaaS ora dice v3, ma nessuno apre la pagina admin
+    await setState(request, { avacy_test_banner_version: 'v3' });
     await triggerRefresh(request);
 
     const state = await getState(request);
-    // le regole sono arrivate dalla CDN...
+    expect(state.bannerVersion).toBe('v3');
     expect(state.blackListCount).toBe(1);
-    // ...e il SaaS non e` stato toccato: la versione la scrive la pagina admin.
-    expect(state.bannerVersion).toBe('');
-    expect(state.requestLog.some((url: string) => url.includes('/wp/validate/'))).toBe(false);
+
+    // la versione si chiede prima delle regole, e con la chiamata normale
+    // (team/uuid), non con quella del token
+    const validate = state.requestLog.findIndex((url: string) => /\/wp\/validate\/test-harness\/11111111-1111-1111-1111-111111111111$/.test(url));
+    const rules = state.requestLog.findIndex((url: string) => url.includes('custom-vendor-list.json'));
+    expect(validate).toBeGreaterThanOrEqual(0);
+    expect(rules).toBeGreaterThan(validate);
+
+    // e il blocco usa subito il vocabolario della versione nuova
+    await page.goto('/avacy-test-page?variant=tracked');
+    await expect(page.locator('script[type="text/avacy-blocked"]')).toHaveCount(1);
   });
+
+  test('anche da v3 a v2 il giro riallinea, senza azioni dell`admin', async ({ page, request }) => {
+    await setState(request, { avacy_test_scenario: 'vendor_with_rule' });
+    await loadBannerVersion(page, request, 'v3');
+    await setState(request, { avacy_test_banner_version: 'v2' });
+
+    await triggerRefresh(request);
+
+    expect((await getState(request)).bannerVersion).toBe('v2');
+    await page.goto('/avacy-test-page?variant=tracked');
+    await expect(page.locator('script[data-managed="as-oil"]')).toHaveCount(1);
+  });
+
+  // Scenari del SaaS che non danno una versione valida: nessuno tocca la
+  // versione salvata, e il giro prosegue con le regole.
+  const noVersion: [string, Record<string, unknown>][] = [
+    ['rete giu`', { avacy_test_scenario: 'validate_fail' }],
+    ['503', { avacy_test_scenario: 'validate_unavailable' }],
+    ['502 senza JSON', { avacy_test_scenario: 'validate_bad_gateway' }],
+    ['404 team non trovato', { avacy_test_scenario: 'validate_denied' }],
+    ['404 webspace non trovato', { avacy_test_scenario: 'validate_denied_webspace' }],
+    ['404 senza codice', { avacy_test_scenario: 'validate_denied_legacy' }],
+    ['200 senza il campo', { avacy_test_banner_version: 'missing' }],
+    ['200 con un valore inatteso', { avacy_test_banner_version: 'v4' }],
+    ['200 con un valore vuoto', { avacy_test_banner_version: '' }],
+  ];
+
+  for (const [label, scenario] of noVersion) {
+    test(`${label}: la versione e le credenziali restano intatte`, async ({ page, request }) => {
+      await loadBannerVersion(page, request, 'v3');
+      await setState(request, {
+        avacy_tenant: 'test-harness',
+        avacy_webspace_id: '4242',
+        avacy_api_token: 'segreto',
+        ...scenario,
+      });
+      const before = await getState(request);
+
+      const result = await triggerRefresh(request);
+      expect(result.refreshed).toBe(true);
+
+      const state = await getState(request);
+      expect(state.bannerVersion).toBe('v3');
+      expect(state.tenant).toBe(before.tenant);
+      expect(state.webspaceKey).toBe(before.webspaceKey);
+      expect(state.webspaceId).toBe('4242');
+      expect(state.apiToken).toBe('segreto');
+      // il giro non si e` fermato: le regole sono arrivate lo stesso
+      expect(state.blackListCount).toBe(1);
+    });
+  }
 
   test('la scheda Cookie Banner mostra la versione in uso', async ({ page, request }) => {
     await loadBannerVersion(page, request, 'v3');

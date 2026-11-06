@@ -1,0 +1,27 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.2",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "wp-cli",
+      "command": "wp plugin activate avacy"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_webspace_key": "test-harness|11111111-1111-1111-1111-111111111111",
+        "avacy_show_banner": "on",
+        "avacy_test_harness_enabled": "on",
+        "avacy_test_avada_enabled": "on"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; kses_remove_filters(); register_post_type('fusion_form'); $d = base64_encode('Accetto l’informativa sulla <a href=\"/privacy\">privacy</a>'); wp_insert_post(['post_type' => 'fusion_form', 'post_status' => 'publish', 'post_title' => 'Avacy Avada test', 'post_name' => 'avacy-avada-test', 'post_content' => '[fusion_builder_form_step title=\"One\" /][fusion_form_text label=\"Your name\" name=\"your_name\" required=\"yes\" /][fusion_form_email label=\"Email\" name=\"your_email\" required=\"yes\" /][fusion_form_password label=\"Password\" name=\"user_pass\" /][fusion_form_upload label=\"CV\" name=\"cv_file\" /][fusion_form_checkbox label=\"Interests\" name=\"interests\" options=\"W10=\" /][fusion_form_consent label=\"Privacy\" name=\"privacy\" description=\"' . $d . '\" /][fusion_form_honeypot name=\"hp_field\" /][fusion_form_recaptcha /][fusion_form_submit /]']);"
+    }
+  ]
+}

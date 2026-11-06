@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use DOMDocument;
+use Jumpgroup\Avacy\ConsentFeatures;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\FormSubmission;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
@@ -18,7 +19,7 @@ class HtmlForms implements FormInterface {
 
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $identifierKey = get_option('avacy_html_forms_'. $contact_form['id'] . '_form_user_identifier');
-        $identifier = $contact_form['submission'][$identifierKey];
+        $identifier = self::flatten($contact_form['submission'][$identifierKey] ?? null);
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
 
@@ -30,17 +31,14 @@ class HtmlForms implements FormInterface {
             if(!empty($field)) {
                 $selectedFields[] = [
                     'label' => $field,
-                    'value' => sanitize_text_field($contact_form['submission'][$field])
+                    'value' => sanitize_text_field(self::flatten($contact_form['submission'][$field] ?? ''))
                 ];
             }
         }
 
         $consentData = wp_json_encode($selectedFields);
 
-        $consentFeatures = [
-            'privacy_policy',
-            'cookie_policy'
-        ];
+        $consentFeatures = ConsentFeatures::accepted('HTML Forms', $contact_form['id'], self::tickedBoxes($contact_form['submission']));
 
         $sub = new FormSubmission(
             $ipAddress,
@@ -83,20 +81,26 @@ class HtmlForms implements FormInterface {
 
     public static function detectAllForms() : array {
         $forms = [];
+        // Il tipo esiste solo col plugin attivo: senza, i form orfani restano fuori (#747)
+        if (!post_type_exists('html-form')) {
+            return $forms;
+        }
         $args = array(
             'post_type' => 'html-form', // Specify the custom post type you want to query
             'posts_per_page' => -1,    // To retrieve all posts of the specified post type
         );
 
         foreach (get_posts($args) as $post) {
-            $fields = self::parseFields($post->post_content);
-            $forms[] = new Form($post->ID, 'HTML Forms', $fields);
+            $checkboxes = [];
+            $fields = self::parseFields($post->post_content, $checkboxes);
+            $forms[] = new Form($post->ID, 'HTML Forms', $fields, $checkboxes, $post->post_title);
         }
 
         return $forms;
     }
 
-    private static function parseFields($fields) {
+    // Le caselle (input checkbox) vanno in $checkboxes; obbligatorie se hanno l'attributo required.
+    private static function parseFields($fields, array &$checkboxes = []) {
         $parsedFields = [];
     
         if (empty($fields) || !is_string($fields)) {
@@ -121,22 +125,55 @@ class HtmlForms implements FormInterface {
         $inputs = $dom->getElementsByTagName('input');
     
         foreach($inputs as $input) {
-            $attrs = $input->attributes;
-    
-            foreach($attrs as $attrName => $attrValue) {
-                if($attrName === 'name') {
-                    $parsedFields[] = [
-                        'name' => strtolower(sanitize_text_field($attrValue->nodeValue)),
-                        'type' => 'htmlforms',
-                        'label' => 'htmlforms'
+            if(!$input->hasAttribute('name')) {
+                continue;
+            }
+            // `interessi[]` arriva nell'invio come `interessi` (PHP toglie le parentesi): stesso nome qui
+            $name = preg_replace('/\[\]$/', '', strtolower(sanitize_text_field($input->getAttribute('name'))));
+            $isCheckbox = strtolower($input->getAttribute('type')) === 'checkbox';
+            // un gruppo di caselle con lo stesso nome e' un campo solo
+            if(in_array($name, array_column($parsedFields, 'name'), true)) {
+                // un campo nascosto con lo stesso nome prima della casella: la casella resta collegabile
+                if($isCheckbox && !in_array($name, array_column($checkboxes, 'name'), true)) {
+                    $checkboxes[] = [
+                        'name' => $name,
+                        'required' => $input->hasAttribute('required')
                     ];
                 }
+                continue;
             }
+            if($isCheckbox) {
+                $checkboxes[] = [
+                    'name' => $name,
+                    'required' => $input->hasAttribute('required')
+                ];
+            }
+            $parsedFields[] = [
+                'name' => $name,
+                'type' => 'htmlforms',
+                'label' => 'htmlforms'
+            ];
         }
     
         libxml_clear_errors();
     
         return $parsedFields;
+    }
+
+    // Un gruppo di caselle (`name="interessi[]"`) arriva come lista delle scelte: la si riduce a testo.
+    private static function flatten($value) {
+        return is_array($value) ? implode(' | ', $value) : $value;
+    }
+
+    // Gli slug delle caselle spuntate: un checkbox non spuntato non arriva nell'invio.
+    private static function tickedBoxes($submission) : array {
+        $ticked = [];
+        foreach($submission as $name => $value) {
+            if(ConsentFeatures::isTicked($value)) {
+                $ticked[] = ConsentFeatures::slug($name);
+            }
+        }
+        return $ticked;
     }
 
     private static function getFields($id) {

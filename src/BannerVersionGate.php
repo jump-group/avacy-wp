@@ -8,9 +8,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Gate puro: legge banner_config_version e basta, nessuna chiamata di rete.
  * Valore assente o sconosciuto = v2 (sbagliare verso v2 è innocuo, vedi 14f).
- * Il valore lo scrive AddAdminInterface::checkSaasAccount(), leggendolo dalla
- * risposta di /wp/validate/ che la pagina admin riceve comunque: nessuna
- * chiamata dedicata, e nessun aggiornamento periodico.
+ * Lo scrivono AddAdminInterface::checkSaasAccount(), dalla risposta di
+ * /wp/validate/ che la pagina admin riceve comunque, e il giro periodico del
+ * blocco preventivo. Il banner non lo usa piu' (link unico): serve al blocco.
  */
 class BannerVersionGate {
 
