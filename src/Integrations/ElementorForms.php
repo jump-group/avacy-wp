@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\ConsentFeatures;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
@@ -20,7 +21,7 @@ class ElementorForms implements FormInterface {
     public static function convertToFormSubmission($contact_form) : FormSubmission {
         $form_id = sanitize_text_field($contact_form['id']);
         $identifierKey = get_option('avacy_elementor_forms_' . $form_id . '_form_user_identifier');
-        $identifier = $contact_form[$identifierKey];
+        $identifier = $contact_form[$identifierKey] ?? null;
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
         $submittedData = $contact_form;
@@ -31,7 +32,7 @@ class ElementorForms implements FormInterface {
             if(!empty($field)) {
                 $selectedFields[] = [
                     'label' => $field,
-                    'value' => $contact_form[$field]
+                    'value' => $contact_form[$field] ?? null
                 ];
             }
         }
@@ -39,10 +40,7 @@ class ElementorForms implements FormInterface {
         $proof = sanitize_text_field($contact_form['source']);
         $consentData = wp_json_encode($selectedFields);
 
-        $consentFeatures = [
-            'privacy_policy',
-            'cookie_policy'
-        ];
+        $consentFeatures = ConsentFeatures::accepted('Elementor Forms', $form_id, $contact_form['avacy_ticked'] ?? []);
 
         $sub = new FormSubmission(
             $ipAddress,
@@ -60,10 +58,18 @@ class ElementorForms implements FormInterface {
 
     public static function elementorFormSubmitted($record, $handler) {
         $formData = [];
-        $values = $record->get_formatted_data();
 
-        foreach($values as $k => $v) {
-            $formData[strtolower($k)] = sanitize_text_field($v);
+        // i valori per id del campo, come li salva la dashboard: get_formatted_data() e' indicizzato per etichetta
+        foreach($record->get('fields') as $id => $field) {
+            $formData[(string) $id] = sanitize_text_field($field['value'] ?? '');
+        }
+
+        // le caselle spuntate, lette per id del campo
+        $formData['avacy_ticked'] = [];
+        foreach($record->get('fields') as $id => $field) {
+            if(in_array($field['type'] ?? '', self::CHECKBOX_TYPES, true) && ConsentFeatures::isTicked($field['value'] ?? '')) {
+                $formData['avacy_ticked'][] = ConsentFeatures::slug((string) $id);
+            }
         }
 
         $formData['id'] = sanitize_text_field($record->get('form_settings')['id']);
@@ -122,8 +128,9 @@ class ElementorForms implements FormInterface {
                             // Set the form name as in Elementor builder.
                             $id = sanitize_text_field($elementor_form['id']);
                             $fields = self::parseFields($elementor_form['settings']['form_fields']);
+                            $checkboxes = self::parseCheckboxes($elementor_form['settings']['form_fields']);
     
-                            $forms[] = new Form($id, 'Elementor Forms', $fields);
+                            $forms[] = new Form($id, 'Elementor Forms', $fields, $checkboxes, $elementor_form['settings']['form_name'] ?? '');
                         }
                     }
                 }
@@ -131,6 +138,22 @@ class ElementorForms implements FormInterface {
         }
 
         return $forms;
+    }
+
+    private const CHECKBOX_TYPES = ['acceptance', 'checkbox'];
+
+    // Le caselle del form (acceptance e checkbox): obbligatorie col suo interruttore Required.
+    private static function parseCheckboxes($fields) : array {
+        $boxes = [];
+        foreach($fields as $field) {
+            if(in_array($field['field_type'] ?? '', self::CHECKBOX_TYPES, true) && ($field['custom_id'] ?? '') !== '') {
+                $boxes[] = [
+                    'name' => sanitize_text_field($field['custom_id']),
+                    'required' => !empty($field['required'])
+                ];
+            }
+        }
+        return $boxes;
     }
 
     private static function parseFields($fields) {

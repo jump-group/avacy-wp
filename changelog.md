@@ -2,6 +2,24 @@
 
 Full history of the Avacy CMP plugin. The same entries of the latest versions are in the Changelog section of `readme.md`, which is what WordPress.org shows.
 
+### 1.5.0
+
+Avada forms, and consents linked to the checkboxes of your forms.
+
+* **Avada forms** now appear in the "Consent Archive" tab, like the other supported forms.
+* **Consents linked to checkboxes.** In the "Consent Archive" tab you can link each consent (newsletter, marketing, profiling, tracking pixel, terms and conditions…) to a checkbox of the form: it is recorded only when the checkbox is ticked. Nothing changes until you link them.
+* Clearer "Consent Archive" tab: "Save changes" stays off until every form you send has an identification field and at least one data field.
+* The WooCommerce checkout now uses the identification field you chose (the email, if that field is empty).
+* The WooCommerce thank-you page no longer shows a fatal error when the order can't be found.
+* The banner version and the vendor list are refreshed every 2 hours instead of 6.
+* With Preemptive Block on, inline scripts that contain HTML or accented characters are no longer altered.
+* Forms of a form plugin that is turned off or removed no longer appear in the "Consent Archive" tab. Turn the plugin back on and they come back with their settings.
+* Deleting the plugin now also removes your Avacy credentials, Access Key included, and the data it downloads. Your settings stay, so a reinstall only asks you to connect again.
+* The Preemptive Block tab now tells you when the last update of the vendor list failed. The rules you already had stay active.
+* With the cookie banner off and Preemptive Block on, the Preemptive Block tab now warns you: blocked scripts only run if the cookie banner is installed another way, for example with Google Tag Manager.
+* If Avacy can't load the data of your account, the settings page now asks you to contact support instead of trying again later.
+* The "Consent Archive" tab now warns you when the tracking pixel shares its checkbox with another consent: the tracking pixel needs its own checkbox.
+
 ### 1.4.1
 
 The settings page now uses the same names as Avacy: "Access Key" and "Consent Archive".

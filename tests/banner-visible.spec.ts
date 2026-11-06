@@ -6,26 +6,23 @@ import { test, expect } from '@playwright/test';
  * inject the CDN scripts on every front-end page.
  */
 test.describe('Avacy banner visibility — with-html-forms blueprint', () => {
-  test('front-end home enqueues both oilstub and oil scripts', async ({ page }) => {
-    await page.goto('/');
+  // Link unico: il plugin non sceglie piu' tra OIL e v3, lo fa la CDN.
+  test('front-end home enqueues the single v3 loader tag, not OIL', async ({ request }) => {
+    // L'HTML che il server stampa, non il DOM dopo l'esecuzione: il loader
+    // vero, su un webspace v2, inietta OIL da solo, ed e` giusto cosi`.
+    const html = await (await request.get('/')).text();
 
-    const oilstub = page.locator('script[src*="test-production.avacy-cdn.com"][src*="oilstub.min.js"]');
-    const oil = page.locator('script[src*="test-production.avacy-cdn.com"][src*="oil.min.js"]');
-
-    await expect(oilstub).toHaveCount(1);
-    await expect(oil).toHaveCount(1);
+    expect(html).toContain('test-production.avacy-cdn.com/v3/avacy-cmp-web.js');
+    expect(html).not.toContain('oilstub.min.js');
+    expect(html).not.toContain('oil.min.js');
   });
 
-  test('oil script is called with the correct team + uuid from webspace key', async ({ page }) => {
+  test('loader is called with the webspace uuid from the webspace key', async ({ page }) => {
     await page.goto('/');
 
-    const oilSrc = await page
-      .locator('script[src*="oil.min.js"]')
-      .first()
-      .getAttribute('src');
+    const src = await page.locator('script[src*="/v3/avacy-cmp-web.js"]').first().getAttribute('src');
 
-    expect(oilSrc).toContain('team=test-production');
-    expect(oilSrc).toContain('uuid=52fd6a7b-32b3-49d7-9092-e8afedb6313f');
+    expect(src).toBe('https://test-production.avacy-cdn.com/v3/avacy-cmp-web.js?webspace=52fd6a7b-32b3-49d7-9092-e8afedb6313f');
   });
 });
 

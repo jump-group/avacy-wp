@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\Integrations\AvadaForms;
 use Jumpgroup\Avacy\Integrations\ContactForm7;
 use Jumpgroup\Avacy\Integrations\HtmlForms;
 use Jumpgroup\Avacy\Integrations\ElementorForms;
@@ -20,6 +21,8 @@ class AddAdminInterface
    */
   const SAAS_DENIALS = ['team_not_found', 'webspace_not_found'];
   const TOKEN_DENIALS = ['invalid_token', 'token_not_found_or_expired'];
+  // Il nonce del form della pagina Avacy: nasce nella vista, si controlla al salvataggio (#747)
+  const SETTINGS_NONCE = 'avacy-plugin-settings-group-options';
 
   private static function isDenial($result, array $denials) {
     return !empty($result)
@@ -57,6 +60,16 @@ class AddAdminInterface
     ];
   }
 
+  /** Il team c'e' ma il suo database no: lo sistema solo il supporto (#586). */
+  private static function tenantMissingNotice() {
+    return [
+      'avacy_saas',
+      'tenant_database_missing',
+      __("Avacy can't load the data of this account. Please contact Avacy support.", 'avacy'),
+      'warning'
+    ];
+  }
+
   /** La chiamata non e' partita o non e' tornata: non sappiamo niente. */
   private static function unreachable() {
     return [
@@ -74,6 +87,7 @@ class AddAdminInterface
     add_action('admin_menu', [static::class, 'addMenuPage']);
     add_action('admin_init', [static::class, 'registerSettings']);
     add_action('admin_init', [static::class, 'saveFields']);
+    add_action('admin_notices', [static::class, 'formsNotice']);
 
     // add action on plugin page load
     add_action('load-toplevel_page_avacy-plugin-settings', [static::class, 'checkDataOnPageLoad']);
@@ -153,7 +167,7 @@ class AddAdminInterface
       wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'avacy'));
     }
 
-    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'avacy-plugin-settings-group-options' ) ) {
+    if ( !isset($_REQUEST['_wpnonce']) || !wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), self::SETTINGS_NONCE ) ) {
       die( 'Security check' ); 
     } 
 
@@ -247,7 +261,7 @@ class AddAdminInterface
   }
 
   private static function checkSaasAccount($tenant, $webspaceKey) {
-    global $api_base_url;
+    $api_base_url = Hosts::api();
 
     $option_account_token = get_option('avacy_webspace_key');
     
@@ -296,6 +310,10 @@ class AddAdminInterface
           $code = 'webspace_not_found';
           $message = __('Webspace not found. Please check the entered data.', 'avacy');
           $type = 'danger';
+          break;
+
+        case 'tenant_database_missing':
+          [$setting, $code, $message, $type] = self::tenantMissingNotice();
           break;
 
         default:
@@ -359,7 +377,7 @@ class AddAdminInterface
   }
 
   public static function checkConsentSolutionToken($apiToken) {
-    global $api_base_url;
+    $api_base_url = Hosts::api();
     $option_api_token = get_option('avacy_api_token');
 
     $setting = '';
@@ -406,6 +424,10 @@ class AddAdminInterface
             $code = 'token_not_found_or_expired';
             $message = __('Access Key not found or expired. Please check the entered data.', 'avacy');
             $type = 'danger';
+            break;
+
+          case 'tenant_database_missing':
+            [$setting, $code, $message, $type] = self::tenantMissingNotice();
             break;
 
           default:
@@ -527,7 +549,7 @@ class AddAdminInterface
       return;
     }
 
-    if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'avacy-plugin-settings-group-options')) {
+    if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), self::SETTINGS_NONCE)) {
       return;
     }
 
@@ -542,6 +564,22 @@ class AddAdminInterface
       $type = str_replace(' ', '_',$form->getType());
       $fields = $form->getFields();
       $id = $form->getId();
+
+      // Save acceso senza identificativo: di questo form non si salva niente, resta com'era. Gli altri si salvano.
+      $enabledName = SendFormsToConsentSolution::enabledOptionName($form->getType(), $id);
+      $identifierName = SendFormsToConsentSolution::identifierOptionName($form->getType(), $id);
+      $enabledPosted = isset($_REQUEST[$enabledName]) ? sanitize_text_field(wp_unslash($_REQUEST[$enabledName])) : '';
+      $identifierPosted = isset($_REQUEST[$identifierName]) ? sanitize_text_field(wp_unslash($_REQUEST[$identifierName])) : '';
+      if ($enabledPosted === 'on' && ($identifierPosted === '' || $identifierPosted === 'off')) {
+        add_settings_error(
+          'avacy_settings',
+          'form_not_saved_' . $type . '_' . $id,
+          /* translators: %s: name of the form. */
+          sprintf(__('Form "%s" was not saved: choose the user identifier field.', 'avacy'), $form->getName()),
+          'danger'
+        );
+        continue;
+      }
       
       foreach($fields as $field) {
         $fieldName = str_replace(' ', '_', $field['name']);
@@ -555,6 +593,19 @@ class AddAdminInterface
       $identifierOption = 'avacy_' . $type . '_' . $id . '_form_user_identifier';
       $identifier = get_option($identifierOption) ?? null;
 
+      // la casella che accetta ogni caratteristica: una scelta non valida o assente lascia quella salvata
+      foreach(ConsentFeatures::active() as $feature) {
+        $featureOption = ConsentFeatures::optionName($form->getType(), $id, $feature['key']);
+        if(isset($_REQUEST[$featureOption])) {
+          $featureChoice = sanitize_text_field(wp_unslash($_REQUEST[$featureOption]));
+          // il predefinito non si scrive se non c'e' gia' una scelta: un form mai toccato resta com'e'
+          $isUntouchedDefault = $featureChoice === ConsentFeatures::defaultChoice($feature) && get_option($featureOption) === false;
+          if(!$isUntouchedDefault && ConsentFeatures::isValidChoice($featureChoice, $feature, $form->getCheckboxes())) {
+            update_option($featureOption, $featureChoice);
+          }
+        }
+      }
+
       $formValues[$id][$enabledOption] = $enabled;
       $formValues[$id][$identifierOption] = $identifier;
     }
@@ -563,9 +614,10 @@ class AddAdminInterface
     foreach($formValues as $key => $value) {
 
       // update fields
-      foreach($value['fields'] as $k => $option) {
+      // un form senza campi di dati (per esempio un form Avada vuoto) non ha 'fields'
+      foreach($value['fields'] ?? [] as $k => $option) {
         if(isset($_REQUEST[$k])) {
-          $sanitized_value = sanitize_text_field($_REQUEST[$k]);
+          $sanitized_value = sanitize_text_field(wp_unslash($_REQUEST[$k]));
 
           // save the field name in the database then update option
           update_option($k, $sanitized_value);
@@ -578,7 +630,7 @@ class AddAdminInterface
       foreach($value as $k => $v) {
         if($k !== 'fields') {
           if(isset($_REQUEST[$k])) {
-            $sanitized_value = sanitize_text_field($_REQUEST[$k]);
+            $sanitized_value = sanitize_text_field(wp_unslash($_REQUEST[$k]));
 
             // save the field name in the database
             update_option($k, $sanitized_value);
@@ -590,20 +642,69 @@ class AddAdminInterface
     }
   }
 
+  // L'identificativo salvato che non c'e' piu' tra i campi del form (rinominato o cancellato nel suo builder).
+  public static function hasMissingIdentifier(Form $form) : bool {
+    $saved = get_option(SendFormsToConsentSolution::identifierOptionName($form->getType(), $form->getId()));
+    if (!is_string($saved) || $saved === '' || $saved === 'off') {
+      return false;
+    }
+    // il menu salva i nomi con gli spazi gia' trasformati in trattini bassi (WPForms usa le label)
+    $names = array_map(function($name) { return str_replace(' ', '_', $name); }, array_column($form->getFields(), 'name'));
+    return !in_array(str_replace(' ', '_', $saved), $names, true);
+  }
+
+  // Un solo avviso, solo nella pagina Avacy: i form con una casella incoerente con la caratteristica scelta
+  // o con l'identificativo che non esiste piu'.
+  // Informativo: non blocca niente.
+  public static function formsNotice() {
+    $screen = get_current_screen();
+    if (!$screen || $screen->id !== 'toplevel_page_avacy-plugin-settings' || empty(get_option('avacy_api_token'))) {
+      return;
+    }
+
+    $items = [];
+    foreach (self::detectAllForms() as $form) {
+      $labels = array_unique(array_column(ConsentFeatures::warnings($form), 'label'));
+      if (self::hasMissingIdentifier($form)) {
+        $labels[] = __('User identification field', 'avacy');
+      }
+      if (!empty($labels)) {
+        $type = str_replace(' ', '_', $form->getType());
+        $items[] = '<li><a href="' . esc_url('#avacy-form-' . $type . '_' . $form->getId()) . '" class="AvacyNoticeLink">'
+          . esc_html($form->getName()) . '</a> (' . esc_html(implode(', ', $labels)) . ')</li>';
+      }
+    }
+    if (empty($items)) {
+      return;
+    }
+
+    echo '<div class="notice notice-warning"><p><strong>'
+      . esc_html__('Avacy: some forms need your attention.', 'avacy')
+      . '</strong></p><ul>' . implode('', $items) . '</ul></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- items escaped above
+  }
+
   public static function addMenuPage() {
     add_menu_page('Avacy CMP', 'Avacy CMP', 'manage_options', 'avacy-plugin-settings', [static::class, 'registerSettingsPage'], 'dashicons-avacy');
   }
 
+  private static $detectedForms = null;
+
   public static function detectAllForms()
   {
+    // la pagina e la notice la chiedono nella stessa richiesta: si rileva una volta
+    if (self::$detectedForms !== null) {
+      return self::$detectedForms;
+    }
     $cf7Forms = ContactForm7::detectAllForms();
     $wcForms = WooCommerceCheckoutForm::detectAllForms();
     $wpForms = WpForms::detectAllForms();
     $elForms = ElementorForms::detectAllForms();
     $htmlForms = HtmlForms::detectAllForms();
+    $avadaForms = AvadaForms::detectAllForms();
 
     // etc. etc.
-    return array_merge($cf7Forms, $wcForms, $wpForms, $elForms, $htmlForms);
+    self::$detectedForms = array_merge($cf7Forms, $wcForms, $wpForms, $elForms, $htmlForms, $avadaForms);
+    return self::$detectedForms;
   }
 
 }

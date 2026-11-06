@@ -9,6 +9,8 @@ const BLUEPRINTS = [
   { name: 'with-wp-consent-api', port: 9401, testMatch: 'wp-consent-api.spec.ts' },
   { name: 'with-preemptive-block', port: 9402, testMatch: ['preemptive-block.spec.ts', 'saas-credentials.spec.ts'] },
   { name: 'with-form-consents', port: 9403, testMatch: 'form-consents.spec.ts' },
+  { name: 'with-avada-forms', port: 9404, testMatch: 'avada-forms.spec.ts' },
+  { name: 'with-woo-forms', port: 9405, testMatch: 'form-consents-woo.spec.ts' },
 ];
 
 process.env.PLAYGROUND_PORTS = BLUEPRINTS.map((b) => b.port).join(',');

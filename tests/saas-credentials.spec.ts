@@ -90,13 +90,54 @@ test.describe('Credenziali — quando il SaaS non dà un verdetto (PBI 32)', () 
    * l'hook ripartirebbe da capo, all'infinito.
    */
   test('senza niente da cancellare la pagina non gira su se stessa', async ({ page, request }) => {
-    await connect(request, { avacy_test_scenario: 'validate_unavailable' });
+    // Giro delle regole gia` fatto adesso: il ripiego su shutdown chiama
+    // /wp/validate/ anche lui, e qui si conta solo la chiamata della pagina.
+    await connect(request, {
+      avacy_test_scenario: 'validate_unavailable',
+      avacy_preemptive_refresh_last: Math.floor(Date.now() / 1000),
+    });
 
     await openAvacyPage(page);
 
     const calls: string[] = (await getState(request)).requestLog ?? [];
     expect(calls.filter((url) => url.includes('/wp/validate/'))).toHaveLength(1);
   });
+});
+
+// #586: il team c'e' ma il suo database no. Non e' un verdetto: si tiene tutto e si manda al supporto
+test.describe('Credenziali — team senza database (#586)', () => {
+  test.beforeEach(async ({ request }) => {
+    await resetHarness(request);
+  });
+
+  test('aprendo la pagina: credenziali e token restano, l`avviso manda al supporto', async ({ page, request }) => {
+    await connect(request, { avacy_api_token: API_TOKEN, avacy_test_scenario: 'tenant_database_missing' });
+
+    await openAvacyPage(page);
+
+    const state = await getState(request);
+    expect(state.tenant).toBe(TENANT);
+    expect(state.webspaceKey).toBe(WEBSPACE_KEY);
+    expect(state.webspaceId).toBe('42');
+    expect(state.apiToken).toBe(API_TOKEN);
+    await expect(page.locator('sl-alert[variant="warning"]')).toContainText("Avacy can't load the data of this account. Please contact Avacy support.");
+    await expect(page.locator('sl-alert[variant="warning"]')).not.toContainText('could not be reached');
+    await expect(page.locator('sl-alert[variant="danger"]')).toHaveCount(0);
+  });
+});
+
+// #586: la globale `$api_base_url` non c'e` piu`: un altro plugin che la usa non sposta le chiamate
+test('un altro plugin con una globale `$api_base_url`: le chiamate restano su api.avacy.eu (#586)', async ({ page, request }) => {
+  await resetHarness(request);
+  await connect(request, { avacy_test_global_clash: 'on' });
+  try {
+    await openAvacyPage(page);
+    const calls: string[] = ((await getState(request)).requestLog ?? []).filter((url: string) => url.includes('/wp/validate/'));
+    expect(calls.length).toBeGreaterThan(0);
+    for (const url of calls) expect(url).toMatch(/^https:\/\/api\.avacy\.eu\/wp\/validate\//);
+  } finally {
+    await setState(request, { avacy_test_global_clash: '' });
+  }
 });
 
 test.describe('Credenziali — quando il SaaS dà un verdetto (PBI 32)', () => {

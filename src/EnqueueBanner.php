@@ -28,27 +28,17 @@ class EnqueueBanner {
             return;
         }
 
-        // Un banner per versione. Quale, lo dice BannerVersionGate, che si
-        // aggiorna quando un amministratore apre la pagina Avacy; valore assente
-        // = v2, quindi un sito che non ha ancora sentito il SaaS resta dov'era.
-        if ( BannerVersionGate::isV3() ) {
-            // Un tag solo, lo stesso che il pannello mostra a chi installa a
-            // mano: il loader legge banner.json e carica da se' bundle e
-            // add-on, stub TCF compreso. Niente oilstub qui, lo stub del v3 e'
-            // un add-on. Versione `null`: a WordPress non interessa mettere un
-            // `&ver=` su un file che la CDN versiona gia' per conto suo.
-            wp_enqueue_script(
-                'avacy-cmp-web',
-                Hosts::tenantCdn($avacy_team) . '/v3/avacy-cmp-web.js?webspace=' . $avacy_uuid,
-                array(),
-                null,
-                false
-            );
-
-            return;
-        }
-
-        wp_enqueue_script( 'avacy-stub', Hosts::tenantCdn($avacy_team) . '/current/dist/oilstub.min.js', array(), '1.0.0', false );
-        wp_enqueue_script( 'avacy-oil', Hosts::tenantCdn($avacy_team) . '/current/dist/oil.min.js?team='.$avacy_team.'&uuid='.$avacy_uuid , array(), '1.0.0', false );
+        // Un tag solo per tutti i webspace, lo stesso del template GTM e dello
+        // snippet manuale: e' la CDN a servire il loader giusto (v2 o v3) in
+        // base al pin del webspace. Il loader legge banner.json e carica da se'
+        // bundle e add-on, stub TCF compreso. Versione `null`: a WordPress non
+        // interessa mettere un `&ver=` su un file che la CDN versiona gia'.
+        wp_enqueue_script(
+            'avacy-cmp-web',
+            Hosts::tenantCdn($avacy_team) . '/v3/avacy-cmp-web.js?webspace=' . $avacy_uuid,
+            array(),
+            null,
+            false
+        );
     }
 }

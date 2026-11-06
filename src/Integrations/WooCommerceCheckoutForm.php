@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\ConsentFeatures;
 use Jumpgroup\Avacy\Form;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
 use Jumpgroup\Avacy\SendFormsToConsentSolution;
@@ -61,11 +62,13 @@ class WooCommerceCheckoutForm implements FormInterface
     public static function listen() : void
     {
         add_action('woocommerce_thankyou', [__CLASS__, 'sendFormData']);
+        // l'ordine non conserva le caselle spuntate (i termini non sono salvati): le annotiamo al checkout
+        add_action('woocommerce_checkout_create_order', [__CLASS__, 'saveTickedBoxes'], 10, 2);
     }
 
     public static function convertToFormSubmission($order_id) : FormSubmission
     {
-        $identifierKey = get_option('avacy_WooCommerce_Checkout_Form_form_user_identifier');
+        $identifierKey = get_option(SendFormsToConsentSolution::identifierOptionName('WooCommerce Checkout Form', self::FORM_ID));
         
         $remoteAddr = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
         $ipAddress = $remoteAddr ?: '0.0.0.0';
@@ -87,11 +90,11 @@ class WooCommerceCheckoutForm implements FormInterface
             }
         }
 
-        $identifier = $posted_data[$identifierKey] ?? ($posted_data['email'] ?? null);
-        $consentFeatures = [
-            'privacy_policy',
-            'cookie_policy'
-        ];
+        // il campo scelto; se manca o e' vuoto, l'email
+        $identifier = is_string($identifierKey) && !empty($posted_data[$identifierKey])
+            ? $posted_data[$identifierKey]
+            : ($posted_data['email'] ?? null);
+        $consentFeatures = ConsentFeatures::accepted('WooCommerce Checkout Form', self::FORM_ID, (array) wc_get_order($order_id)->get_meta(self::TICKED_META));
 
         $consentData = wp_json_encode($selectedFields);
 
@@ -109,9 +112,50 @@ class WooCommerceCheckoutForm implements FormInterface
         return $sub;
     }
 
-    public static function sendFormData($order_id) : void
+    // Chiave del meta dell'ordine con gli slug delle caselle spuntate al checkout.
+    private const TICKED_META = '_avacy_ticked_boxes';
+
+    public static function saveTickedBoxes($order, $data) : void
     {
         if (!SendFormsToConsentSolution::isEnabled('WooCommerce Checkout Form', self::FORM_ID)) {
+            return;
+        }
+        $ticked = [];
+        foreach (self::checkboxes() as $box) {
+            // il valore inviato, non $data: per un checkbox WooCommerce vi mette 1 anche se il campo e' arrivato vuoto
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- il nonce lo verifica WooCommerce prima di creare l'ordine
+            if (ConsentFeatures::isTicked(isset($_POST[$box['name']]) ? sanitize_text_field(wp_unslash($_POST[$box['name']])) : '')) {
+                $ticked[] = ConsentFeatures::slug($box['name']);
+            }
+        }
+        $order->update_meta_data(self::TICKED_META, $ticked);
+    }
+
+    // Le caselle del checkout: i termini (se attivi, obbligatori) e le caselle aggiunte ai campi da temi o plugin.
+    private static function checkboxes() : array
+    {
+        $boxes = [];
+        try {
+            foreach (WC()->checkout()->get_checkout_fields() as $group) {
+                foreach ($group as $key => $field) {
+                    if (($field['type'] ?? '') === 'checkbox') {
+                        $boxes[] = ['name' => $key, 'required' => !empty($field['required'])];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // campi non leggibili in questo contesto: restano i termini
+        }
+        if (function_exists('wc_terms_and_conditions_checkbox_enabled') && wc_terms_and_conditions_checkbox_enabled()) {
+            $boxes[] = ['name' => 'terms', 'required' => true];
+        }
+        return $boxes;
+    }
+
+    public static function sendFormData($order_id) : void
+    {
+        // un ordine che non si trova non deve rompere la pagina di ringraziamento
+        if (!SendFormsToConsentSolution::isEnabled('WooCommerce Checkout Form', self::FORM_ID) || !wc_get_order($order_id)) {
             return;
         }
         $form = self::convertToFormSubmission($order_id);
@@ -131,7 +175,7 @@ class WooCommerceCheckoutForm implements FormInterface
 
             // Check if there are posts found
             if ($query->have_posts()) {
-                $form = new Form(self::FORM_ID, 'WooCommerce Checkout Form', self::WC_CHECKOUT_DEFAULT_FIELDS);
+                $form = new Form(self::FORM_ID, 'WooCommerce Checkout Form', self::WC_CHECKOUT_DEFAULT_FIELDS, self::checkboxes(), 'WooCommerce checkout');
                 $forms[] = $form;
             }
         }

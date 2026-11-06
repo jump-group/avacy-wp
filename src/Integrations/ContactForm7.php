@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Jumpgroup\Avacy\ConsentFeatures;
 use Jumpgroup\Avacy\Form;
 use WPCF7_Submission;
 use Jumpgroup\Avacy\Interfaces\Form as FormInterface;
@@ -33,7 +34,7 @@ class ContactForm7 implements FormInterface
             if(!empty($field)) {
                 $selectedFields[] = [
                     'label' => $field,
-                    'value' => sanitize_text_field($posted_data[$field])
+                    'value' => sanitize_text_field(self::flatten($posted_data[$field] ?? ''))
                 ];
             }
         }
@@ -44,10 +45,7 @@ class ContactForm7 implements FormInterface
         $proof = self::getHTMLForm($id);
         $consentData = wp_json_encode($selectedFields);
         $identifier = $posted_data[$identifierKey] ?? null;
-        $consentFeatures = [
-            'privacy_policy',
-            'cookie_policy'
-        ];
+        $consentFeatures = ConsentFeatures::accepted('Contact Form 7', $id, self::tickedBoxes($contact_form, $posted_data));
 
         $sub = new FormSubmission(
             $ipAddress,
@@ -81,7 +79,7 @@ class ContactForm7 implements FormInterface
             // Loop through each post
             foreach ($wpCf7Forms as $wpCf7Form) {
                 $fields = self::parseFormFields($wpCf7Form);
-                $form = new Form($wpCf7Form->id(), 'Contact Form 7', $fields);
+                $form = new Form($wpCf7Form->id(), 'Contact Form 7', $fields, self::parseCheckboxes($wpCf7Form), $wpCf7Form->title());
                 $forms[] = $form;
             }
         }
@@ -105,6 +103,44 @@ class ContactForm7 implements FormInterface
         }
 
         return $fields;
+    }
+
+    // Un campo a scelta multipla arriva come array (la casella spuntata): lo si riduce a testo.
+    private static function flatten($value) {
+        return is_array($value) ? implode(' | ', $value) : $value;
+    }
+
+    // Le caselle del form. Un acceptance e' obbligatorio salvo l'opzione 'optional': is_required() per lui da' sempre false.
+    private static function parseCheckboxes($form) : array {
+        $boxes = [];
+        foreach ($form->scan_form_tags() as $tag) {
+            if ($tag->name === '' || !in_array($tag->basetype, ['acceptance', 'checkbox'], true)) {
+                continue;
+            }
+            $boxes[] = [
+                'name' => $tag->name,
+                'required' => $tag->basetype === 'acceptance' ? !$tag->has_option('optional') : $tag->is_required()
+            ];
+        }
+        return $boxes;
+    }
+
+    // Gli slug delle caselle spuntate. Con l'opzione 'invert' di un acceptance il consenso e' la casella NON spuntata.
+    private static function tickedBoxes($contact_form, $posted_data) : array {
+        $ticked = [];
+        foreach ($contact_form->scan_form_tags() as $tag) {
+            if ($tag->name === '' || !in_array($tag->basetype, ['acceptance', 'checkbox'], true)) {
+                continue;
+            }
+            $isTicked = ConsentFeatures::isTicked($posted_data[$tag->name] ?? '');
+            if ($tag->basetype === 'acceptance' && $tag->has_option('invert')) {
+                $isTicked = !$isTicked;
+            }
+            if ($isTicked) {
+                $ticked[] = ConsentFeatures::slug($tag->name);
+            }
+        }
+        return $ticked;
     }
 
     private static function getFields($id) {

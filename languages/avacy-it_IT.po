@@ -28,6 +28,10 @@ msgstr "Team non trovato. Si prega di verificare i dati inseriti."
 msgid "Avacy could not be reached, so nothing was removed. Please try again later."
 msgstr "Non siamo riusciti a contattare Avacy, quindi non è stato rimosso niente. Riprova più tardi."
 
+#: AddAdminInterface.php:68
+msgid "Avacy can't load the data of this account. Please contact Avacy support."
+msgstr "Avacy non riesce a caricare i dati di questo account. Contatta il supporto di Avacy."
+
 #: AddAdminInterface.php:182
 msgid "Webspace not found. Please check the entered data."
 msgstr "Spazio web non trovato. Si prega di verificare i dati inseriti."
@@ -138,6 +142,10 @@ msgstr ""
 msgid "Preemptively block all scripts."
 msgstr "Blocca preventivamente tutti gli script."
 
+#: views/avacy-dashboard.php:155
+msgid "The cookie banner is turned off. Blocked scripts only run if the cookie banner is installed another way, for example with Google Tag Manager. If you removed the cookie banner from the site, turn off the preemptive block too."
+msgstr "Il cookie banner è disattivato. Gli script bloccati partono solo se il cookie banner è installato in un altro modo, ad esempio con Google Tag Manager. Se hai tolto il cookie banner dal sito, disattiva anche il blocco preventivo."
+
 #: views/avacy-dashboard.php:143
 msgid ""
 "Set how Avacy records the data collected from your webspace in the consent "
@@ -163,18 +171,6 @@ msgstr "Access Key Archivio consensi"
 msgid "Enter the Access Key"
 msgstr "Inserisci l'Access Key"
 
-#: views/avacy-dashboard.php:172
-msgid "Form ID"
-msgstr "Form ID"
-
-#: views/avacy-dashboard.php:173
-msgid "Type"
-msgstr "Tipologia"
-
-#: views/avacy-dashboard.php:174
-msgid "Save in the Avacy Consent Archive"
-msgstr "Salva nell’archivio consensi di Avacy"
-
 #: views/avacy-dashboard.php:175
 msgid "Select which data to save on Avacy"
 msgstr "Seleziona quali dati salvare su Avacy"
@@ -182,14 +178,6 @@ msgstr "Seleziona quali dati salvare su Avacy"
 #: views/avacy-dashboard.php:176
 msgid "User identification field"
 msgstr "Campo di identificazione utente"
-
-#: views/avacy-dashboard.php:195
-msgid "Save"
-msgstr "Salva"
-
-#: views/avacy-dashboard.php:200
-msgid "Details"
-msgstr "Dettagli"
 
 #: views/avacy-dashboard.php:229
 msgid "Connect"
@@ -212,6 +200,10 @@ msgstr "Aggiornato %s fa"
 msgid "Not updated yet"
 msgstr "Non ancora aggiornato"
 
+#: views/avacy-dashboard.php:205
+msgid "The last update failed. Please try again later."
+msgstr "L'ultimo aggiornamento non è riuscito. Riprova più tardi."
+
 #: views/avacy-dashboard.php:194
 msgid "No vendors to block."
 msgstr "Nessun fornitore da bloccare."
@@ -229,5 +221,91 @@ msgstr "Aggiorna l'elenco dei fornitori"
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Non hai i permessi sufficienti per accedere a questa pagina."
 
+#: ConsentFeatures.php
+msgid "This checkbox is not set as required in the form. Make it required in the form builder."
+msgstr "Questa casella non è obbligatoria nel form. Rendila obbligatoria nel form builder."
+
+#: ConsentFeatures.php
+msgid "Required checkbox: this consent must be optional. Make it optional in the form builder."
+msgstr "Casella obbligatoria: questo consenso deve essere facoltativo. Rendila facoltativa nel form builder."
+
+#: ConsentFeatures.php
+msgid "The tracking pixel needs its own checkbox."
+msgstr "Il pixel di tracciamento richiede una casella dedicata."
+
+#: views/avacy-dashboard.php
+msgid "No field"
+msgstr "Nessun campo"
+
+#: views/avacy-dashboard.php
+msgid "Acknowledged"
+msgstr "Presa visione"
+
+#: AddAdminInterface.php
+msgid "Avacy: some forms need your attention."
+msgstr "Avacy: alcuni form richiedono la tua attenzione."
+
+#: ConsentFeatures.php
+msgid "Privacy policy"
+msgstr "Privacy policy"
+
+#: ConsentFeatures.php
+msgid "Cookie policy"
+msgstr "Cookie policy"
+
+#: ConsentFeatures.php
+msgid "Newsletter"
+msgstr "Newsletter"
+
+#: ConsentFeatures.php
+msgid "Marketing"
+msgstr "Marketing"
+
+#: ConsentFeatures.php
+msgid "Third-party marketing"
+msgstr "Marketing di terze parti"
+
+#: ConsentFeatures.php
+msgid "Profiling"
+msgstr "Profilazione"
+
+#: ConsentFeatures.php
+msgid "Tracking pixel"
+msgstr "Pixel di tracciamento"
+
+#: ConsentFeatures.php
+msgid "Terms and conditions"
+msgstr "Termini e condizioni"
+
+#. translators: %s: name of the form.
+#: AddAdminInterface.php
+msgid "Form \"%s\" was not saved: choose the user identifier field."
+msgstr "Il form \"%s\" non è stato salvato: scegli il campo di identificazione utente."
+
+#: views/avacy-dashboard.php
+msgid "The saved identifier field is no longer in the form. Choose another one."
+msgstr "Il campo di identificazione salvato non è più nel form. Scegline un altro."
+
+#: views/avacy-dashboard.php
+msgid "Send to Consent Archive"
+msgstr "Invia all'archivio consensi"
+
+#: views/avacy-dashboard.php
+msgid "Consent features"
+msgstr "Caratteristiche del consenso"
+
+#. translators: %s: link to the Consent Archive tab.
+#: views/avacy-dashboard.php
+msgid "To save, complete the highlighted forms in the %s tab: choose the user identification field and at least one data field."
+msgstr "Per salvare, completa i form evidenziati nella scheda %s: scegli il campo di identificazione utente e almeno un campo dati."
+
+#: ConsentFeatures.php
+msgid "The linked field is no longer in the form. Choose another one."
+msgstr "Il campo collegato non è più nel form. Scegline un altro."
+
 #~ msgid "Consent archive token"
 #~ msgstr "Token dell’archivio dei consensi"
+
+#: views/avacy-dashboard.php:233
+msgid "Create the Access Key in Avacy: open the webspace settings, then \"Avacy integration on your webspace\", tab \"Access Key\". Only the last key you create works."
+msgstr "Crea l'Access Key in Avacy: apri le impostazioni dello spazio web, poi «Integrazione di Avacy sul tuo spazio web», scheda «Access Key». Vale solo l'ultima chiave creata."
