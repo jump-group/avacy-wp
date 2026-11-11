@@ -257,6 +257,8 @@
                     <?php $forms = AddAdminInterface::detectAllForms(); ?>
                     <?php $consentFeatures = ConsentFeatures::active(); ?>
                         <section class="AvacySection AvacySection--Table">
+                            <?php // saveFields() salva i form solo se la tabella era nella pagina ?>
+                            <input type="hidden" name="<?php echo esc_attr(AddAdminInterface::FORMS_TABLE_FIELD) ?>" value="1">
                             <div class="AvacyForms__Scroll">
                             <?php // Un blocco per form: ogni controllo ha la sua etichetta, niente intestazioni di colonna lontane ?>
                             <table class="AvacyForms">

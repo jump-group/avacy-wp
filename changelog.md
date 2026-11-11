@@ -2,6 +2,12 @@
 
 Full history of the Avacy CMP plugin. The same entries of the latest versions are in the Changelog section of `readme.md`, which is what WordPress.org shows.
 
+### 1.5.1
+
+A fix for the forms of the "Consent Archive" tab.
+
+* Entering the Access Key again and saving no longer turns your forms off. Before, when Avacy stopped accepting the saved key (for example after you created a new one), every form lost its switch, identification field and data fields, and stopped sending consents.
+
 ### 1.5.0
 
 Avada forms, and consents linked to the checkboxes of your forms.

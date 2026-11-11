@@ -23,6 +23,8 @@ class AddAdminInterface
   const TOKEN_DENIALS = ['invalid_token', 'token_not_found_or_expired'];
   // Il nonce del form della pagina Avacy: nasce nella vista, si controlla al salvataggio (#747)
   const SETTINGS_NONCE = 'avacy-plugin-settings-group-options';
+  // Campo nascosto che la vista mette solo insieme alla tabella dei form
+  const FORMS_TABLE_FIELD = 'avacy_forms_table_rendered';
 
   private static function isDenial($result, array $denials) {
     return !empty($result)
@@ -550,6 +552,11 @@ class AddAdminInterface
     }
 
     if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), self::SETTINGS_NONCE)) {
+      return;
+    }
+
+    // Senza Access Key la tabella dei form non c'e': un campo assente non vuol dire «spento».
+    if (!isset($_REQUEST[self::FORMS_TABLE_FIELD])) {
       return;
     }
 
