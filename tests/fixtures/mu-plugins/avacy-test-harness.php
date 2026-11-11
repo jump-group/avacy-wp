@@ -73,6 +73,13 @@ function avacy_test_form_switches() {
 	return wp_list_pluck( $rows, 'option_value', 'option_name' );
 }
 
+// i campi dati scelti e il campo identificativo dei form, per nome di opzione
+function avacy_test_form_data_options() {
+	global $wpdb;
+	$rows = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'avacy\\_form\\_field\\_%' OR option_name LIKE 'avacy\\_%\\_form\\_user\\_identifier'" );
+	return wp_list_pluck( $rows, 'option_value', 'option_name' );
+}
+
 add_filter( 'pre_http_request', function ( $preempt, $args, $url ) {
 	// il consenso di un form inviato: si registra e basta, il SaaS non serve
 	if ( preg_match( '#/v4/webspaces/[^/]+/consents$#', $url ) ) {
@@ -264,6 +271,7 @@ add_action( 'init', function () {
 			'apiToken' => get_option( 'avacy_api_token', '' ),
 			'consentLog' => get_option( 'avacy_test_consent_log', [] ),
 			'formSwitches' => (object) avacy_test_form_switches(),
+			'formDataOptions' => (object) avacy_test_form_data_options(),
 			'consentFeatures' => (object) avacy_test_consent_features(),
 			'phpErrors' => get_option( 'avacy_test_php_errors', [] ),
 			'homeUrl' => home_url(),

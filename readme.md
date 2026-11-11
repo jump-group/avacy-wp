@@ -4,7 +4,7 @@ Tags: cookie banner, gdpr, cookie consent, consent, privacy
 Requires at least: 5.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -126,6 +126,12 @@ They are two versions of the Avacy banner. Avacy decides which one your webspace
 
 == Changelog ==
 
+= 1.5.1 =
+
+A fix for the forms of the "Consent Archive" tab.
+
+* Entering the Access Key again and saving no longer turns your forms off. Before, when Avacy stopped accepting the saved key (for example after you created a new one), every form lost its switch, identification field and data fields, and stopped sending consents.
+
 = 1.5.0 =
 
 Avada forms, and consents linked to the checkboxes of your forms.
@@ -176,6 +182,9 @@ Integrate WP Consent API: when the [WP Consent API](https://wordpress.org/plugin
 Older versions are listed in the file changelog.md inside the plugin.
 
 == Upgrade Notice ==
+
+= 1.5.1 =
+If your forms stopped sending consents after you entered the Access Key again, open the "Consent Archive" tab and turn them back on: the update prevents it from happening again, but does not restore them.
 
 = 1.5.0 =
 **Updating from 1.3.x?** Only forms with the "Send to Consent Archive" switch on send their consents to Avacy. After updating, open the "Consent Archive" tab and turn the switch on for every form you want to keep sending.

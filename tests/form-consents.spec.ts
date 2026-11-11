@@ -104,7 +104,8 @@ test.describe('Consensi dei form — switch «Save» della dashboard', () => {
 
     // un salvataggio vero, privo del suo switch, lo spegnerebbe
     await request.post('/wp-admin/admin-ajax.php', {
-      form: { action: 'x', option_page: 'avacy-plugin-settings-group' },
+      // col campo della tabella dei form: a fermarla devono essere permessi e nonce
+      form: { action: 'x', option_page: 'avacy-plugin-settings-group', avacy_forms_table_rendered: '1' },
     });
 
     expect((await state(request)).formSwitches[name!]).toBe('on');
@@ -1165,4 +1166,39 @@ test('upload da Media: il file va nella cartella del mese corrente, non in quell
   const [media] = await (await page.request.get('/wp-json/wp/v2/media?search=avacy-upload-747&orderby=id&order=desc&per_page=1')).json();
   const month = new Date().toISOString().slice(0, 7).replace('-', '/');
   expect(media.source_url).toContain(`/uploads/${month}/`);
+});
+
+// Il SaaS non riconosce più l'Access Key: la pagina la cancella e la tabella dei form sparisce.
+// Il salvataggio con la chiave reinserita non deve spegnere i form che nel POST non c'erano.
+test('Access Key cancellata e reinserita: la configurazione dei form resta quella di prima', async ({ page, request }) => {
+  await call(request, '/avacy-test-api/reset');
+  await setCredentials(request);
+  const id = (await openForm(page))!;
+  const switchOpt = `avacy_html_forms_${id}_radio_enabled`;
+  const fieldOpt = `avacy_form_field_htmlforms_${id}_email`;
+  const identifierOpt = `avacy_html_forms_${id}_form_user_identifier`;
+  await call(request, '/avacy-test-api/set', { [switchOpt]: 'on', [fieldOpt]: 'on', [identifierOpt]: 'email' });
+
+  await call(request, '/avacy-test-api/set', { avacy_test_scenario: 'token_denied' });
+  await page.goto('/wp-admin/admin.php?page=avacy-plugin-settings');
+  await page.waitForSelector('.wrap:not(.hide)');
+  expect((await state(request)).apiToken).toBe('');
+  await expect(page.locator('table.AvacyForms')).toHaveCount(0);
+
+  // il titolare incolla la chiave nuova e salva dalla pagina vera
+  await call(request, '/avacy-test-api/set', { avacy_test_scenario: 'vendor_with_rule' });
+  await page.waitForFunction(() => document.querySelector('.AvacyLoader')?.classList.contains('hidden'));
+  await page.locator('sl-input[name=avacy_api_token] input').fill('new-token');
+  await page.locator('sl-button.Submit--Global').click();
+  await page.waitForSelector('.wrap:not(.hide)');
+
+  const st = await state(request);
+  expect(st.apiToken).toBe('new-token');
+  expect.soft(st.formSwitches[switchOpt]).toBe('on');
+  expect.soft(st.formDataOptions[fieldOpt]).toBe('on');
+  expect.soft(st.formDataOptions[identifierOpt]).toBe('email');
+
+  await openForm(page);
+  await submitForm(page);
+  expect(await consentLog(request)).toHaveLength(1);
 });
