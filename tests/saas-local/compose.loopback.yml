@@ -1,0 +1,8 @@
+# Solo per run.sh (progetto avacy-plugin-saas): docker-compose.e2e.yml pubblica le porte su 0.0.0.0.
+# Il SaaS resta su 127.0.0.1:3000; MariaDB non si pubblica, il test la usa solo da docker exec.
+services:
+  traefik-e2e:
+    ports: !override
+      - "127.0.0.1:3000:80"
+  mysql-e2e:
+    ports: !reset []

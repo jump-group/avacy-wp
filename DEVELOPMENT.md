@@ -119,6 +119,10 @@ start immediately.
 CI: `.github/workflows/test-wp-plugin.yml` runs the same suite on every PR touching
 `services/wp-plugin` (needs network: wordpress.org and the test webspaces on the CDN).
 
+**Against the real SaaS, locally:** `yarn test:plugin-saas` runs the consent journey
+(CF7 → plugin → local SaaS → archive) with one command. Run it before any PR touching the
+plugin or the consent side of the SaaS. See [`tests/saas-local/README.md`](./tests/saas-local/README.md).
+
 **Add a new scenario:**
 
 1. Drop a new `<name>.json` in `blueprints/`

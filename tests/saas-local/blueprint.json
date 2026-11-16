@@ -1,0 +1,43 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "7.1.4"
+  },
+  "steps": [
+    {
+      "step": "defineWpConfigConsts",
+      "method": "rewrite-wp-config",
+      "consts": {
+        "AVACY_SAAS_LOCAL": true,
+        "AVACY_API_URL": "http://apiavacy.test:3000",
+        "AVACY_CDN_URL": "avacy.test",
+        "WP_HTTP_BLOCK_EXTERNAL": true,
+        "WP_ACCESSIBLE_HOSTS": "apiavacy.test,*.avacy.test",
+        "DISALLOW_FILE_EDIT": true,
+        "DISALLOW_FILE_MODS": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "vfs",
+        "path": "/avacy-cache/contact-form-7.zip"
+      }
+    },
+    {
+      "step": "activatePlugin",
+      "pluginPath": "avacy/avacy.php"
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "avacy_show_banner": "off"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; kses_remove_filters(); $forms = ['cf7-saas-local' => \"[text* your_name]\\n[email* your_email]\\n[acceptance privacy] Accetto la privacy [/acceptance]\\n[acceptance newsletter optional] Newsletter [/acceptance]\\n[submit \\\"Send\\\"]\", 'cf7-solo-email' => \"[email* your_email]\\n[acceptance privacy] Accetto la privacy [/acceptance]\\n[submit \\\"Send\\\"]\"]; foreach ($forms as $slug => $body) { $cf = WPCF7_ContactForm::get_template(['title' => $slug]); $cf->set_properties(['form' => $body]); $cf->save(); wp_update_post(['ID' => $cf->id(), 'post_name' => $slug]); wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => $slug, 'post_name' => $slug, 'post_content' => '[contact-form-7 id=\"' . $cf->id() . '\"]']); }"
+    }
+  ]
+}
