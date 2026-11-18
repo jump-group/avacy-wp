@@ -4,7 +4,7 @@ Tags: cookie banner, gdpr, cookie consent, consent, privacy
 Requires at least: 5.3
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -125,6 +125,12 @@ They are two versions of the Avacy banner. Avacy decides which one your webspace
 6. All your web spaces together in one Team.
 
 == Changelog ==
+
+= 1.5.2 =
+
+Complete Italian translation of the plugin.
+
+* Every text of the settings pages is now translated into Italian, with the same terms used in Avacy.
 
 = 1.5.1 =
 

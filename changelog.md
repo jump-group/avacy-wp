@@ -2,6 +2,12 @@
 
 Full history of the Avacy CMP plugin. The same entries of the latest versions are in the Changelog section of `readme.md`, which is what WordPress.org shows.
 
+### 1.5.2
+
+Complete Italian translation of the plugin.
+
+* Every text of the settings pages is now translated into Italian, with the same terms used in Avacy.
+
 ### 1.5.1
 
 A fix for the forms of the "Consent Archive" tab.
