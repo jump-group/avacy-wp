@@ -58,7 +58,7 @@ Address: `https://api.avacy.eu`.
 * **Banner consents.** If the consent archive is on for your webspace in Avacy, the banner sends each choice of a visitor to the archive: the choice made and, after the first one, the id of the previous record. The request comes from the visitor's browser, so it also carries the visitor's IP address. Nothing is sent when the archive is off.
 
 Avacy terms of use: https://avacysolution.com/termini-e-condizioni/
-Avacy privacy policy: https://api.avacy.eu/jumpgroup/privacypolicy/14/en
+Avacy privacy policy: https://api.avacy.eu/weave-srl/privacypolicy/2/en
 
 == Installation ==
 
