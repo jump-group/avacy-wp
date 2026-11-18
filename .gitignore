@@ -7,3 +7,4 @@ node_modules/
 .wp-env/
 test-results/
 playwright-report/
+.cache/

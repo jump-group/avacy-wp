@@ -4,7 +4,7 @@
   "description": "Avacy's compliance plugin offers an all-in-one, easy solution for a GDPR compliant website, with features verified by experienced lawyers.",
   "private": true,
   "scripts": {
-    "makepot": "npx @wp-blocks/make-pot ./src languages/ --slug=\"avacy\" --exclude=\"vendors\"",
+    "makepot": "bash ./scripts/makepot.sh",
     "start": "wp-env start",
     "stop": "wp-env stop",
     "clean": "wp-env clean all",
